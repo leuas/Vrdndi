@@ -8,6 +8,7 @@ wandb/
 __pycache__/
 .vscode/
 *.egg-info/
+.tmp.driveupload
 
 !data/**/*.gitkeep
 !secrets/.gitkeep

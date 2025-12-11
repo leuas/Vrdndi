@@ -413,7 +413,6 @@ def pad_aw_sequence(aw_sequence:pd.Series,aw_tensor_feature_size:int) -> tuple[t
     
     padded_mask=pad_sequence(mask_list,batch_first=True) #After the padding, mask shape become (sequence_size,token_size)
 
-    pprint.pprint('aw seuqnce shape: ', padded_data.shape)
 
     return padded_data,padded_mask
 

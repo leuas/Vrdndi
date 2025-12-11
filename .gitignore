@@ -1,7 +1,6 @@
 .DS_Store
 
-data/*
-!data/**/
+data/**/*
 !data/**/*.gitkeep
 
 secrets/*
@@ -18,7 +17,6 @@ __pycache__/
 .vscode/
 *.egg-info/
 .tmp.driveupload
-
 
 
 

@@ -1,0 +1,4 @@
+[core]
+    remote = sync
+['remote "sync"']
+    url = gdrive://1vRRtQgbuTF67X6FpGZn-w38DVyfbvdpO

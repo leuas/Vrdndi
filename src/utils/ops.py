@@ -383,13 +383,17 @@ def pad_aw_sequence(aw_sequence:pd.Series,aw_tensor_feature_size:int) -> tuple[t
             
                 
         Returns:
-            padded_data{torch.Tensor}:
-                the aw_sequence input after padding
-                Shape:(sequence_size,token_size)
+            padded_data (torch.Tensor):
+                The aw_sequence input after padding
+                Shape:
+                - Single sequence: (Seq_size, Token_size)
+                - Batch input: (Batch_size, Seq_size, Token_size)
 
-            padded_mask{torch.Tensor}:
-                the attention mask of padded_data
-                Shape:(sequence_size,token_size)'''
+            padded_mask (torch.Tensor):
+                The attention mask of padded_data
+                Shape: Same with padded_data
+                
+        '''
 
     aw_data_list=[]
     mask_list=[]
@@ -415,7 +419,6 @@ def pad_aw_sequence(aw_sequence:pd.Series,aw_tensor_feature_size:int) -> tuple[t
 
 
     return padded_data,padded_mask
-
 
 def prepare_sentence_transformer_input(aw_data:pd.DataFrame):
     '''preparet the sentence transformer's input

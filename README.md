@@ -5,12 +5,12 @@
 
 Vrdndi (Verdandi) is a full stack recommendation system that process your media data (Youtube currently) to provide personal feed base on what you did previously in your computer (i.e dynamicly change the feed base on time and previous app history)
 
-![ActivityWatcher](https://img.shields.io/badge/ActivityWatcher-1D1D1D?style=flat&logo=activity&logoColor=white)
-![NiceGUI](https://img.shields.io/badge/NiceGUI-5898d4?style=flat&logoColor=white)
+
 ![PyTorch](https://img.shields.io/badge/PyTorch-%23EE4C2C.svg?style=flat&logo=PyTorch&logoColor=white)
 ![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?style=flat&logo=Streamlit&logoColor=white)
 ![SQLite3](https://img.shields.io/badge/SQLite-07405E?style=flat&logo=sqlite&logoColor=white)
-
+![ActivityWatcher](https://img.shields.io/badge/ActivityWatcher-1D1D1D?style=flat&logo=activity&logoColor=white)
+![NiceGUI](https://img.shields.io/badge/NiceGUI-5898d4?style=flat&logoColor=white)
 
 
 
@@ -50,7 +50,7 @@ Residual Block:
 
 ## Model Performance
 
-So the picture below is the model performance in k-fold (n_splits equal to 5) under 200-300 rougly productive datapoints (plus 1000 interest data)
+So the picture below is the model performance in k-fold (n_splits equal to 5) under 200-300 rougly productive datapoints (plus 1000 interest data). I think the performance is not bad, one of the all 5 folds could hit 0.95 f1, which is pretty high. 
 
 ![[Prodcuctive head's performance]](docs/images/productive_val_f1_with_std.svg)
 

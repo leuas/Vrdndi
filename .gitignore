@@ -6,7 +6,8 @@ wandb/
 .nicegui/
 .pytest_cache/
 __pycache__/
-
+.vscode/
+*.egg-info/
 
 !data/**/*.gitkeep
 !secrets/.gitkeep

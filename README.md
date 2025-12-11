@@ -5,6 +5,9 @@
 
 Vrdndi (Verdandi) is a full stack recommendation system that process your media data (Youtube currently) to provide personal feed base on what you did previously in your computer (i.e dynamicly change the feed base on time and previous app history)
 
+The original goal of this project is not to increase your watching time in your feed like other recommendation system. It's the opposite, minimize your watch time, increase your productivity and keep your interest still (so it won't be a very boring feed you don't want to come back tommorrow)
+
+
 
 ![PyTorch](https://img.shields.io/badge/PyTorch-%23EE4C2C.svg?style=flat&logo=PyTorch&logoColor=white)
 ![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?style=flat&logo=Streamlit&logoColor=white)
@@ -40,7 +43,7 @@ There's two type of input, the media data data(i.e. title or description of a vi
 Main Structure: 
 ![[Main structure]](docs/images/Model_main_structure.svg)
 
-For the ones who may wonder, the reason I used AdaLN instead of normal LN is because the duration is a numerical value, it can't go through the BGE-M3's embedding layer, so either I need to put it as a separate token or put it as a condition to diffuse the AW data. I chose the latter.  And use SE block to "gate" each token to pick the important one.
+For the ones who may wonder, the reason I used AdaLN instead of normal LN is because the duration is a numerical value, it can't go through the BGE-M3's embedding layer, so either I need to put it as a separate token or put it as a condition to diffuse the AW data. I chose the latter.  And use SE block to "gate" each token to pick the important one. And I replace the common GLU with SiLY to be consistant with SWiGLU, since it's almost interchangable.
 
 
 Residual Block: 
@@ -48,15 +51,40 @@ Residual Block:
 ![[Residual block ]](docs/images/Residual_block_structure.svg)
 
 
+And there's two head as the output layer of the model: interest head and productive head. The interest head would use as a trainsition before you have enough productive data(i.e. The data you labelled in the website) and the productive head as what it's called 
+
 ## Model Performance
 
-So the picture below is the model performance in k-fold (n_splits equal to 5) under 200-300 rougly productive datapoints (plus 1000 interest data). I think the performance is not bad, one of the all 5 folds could hit 0.95 f1, which is pretty high. 
+I think the performance is not bad, one of the all 5 folds could hit 0.95 f1, which is suspiciously high. But since it only had one fold hitted that, so for now I'm fine with that. And the model structure is decent enough as the test proved.
+
+The config of the test:
+```python
+#intereset loss weight divided by 3 before backward
+config.interest_loss_weight=0.33 
+
+#Number of interest data:Number of productive data = 3 : 1 
+config.sampler_interest_ratio=3/4
+
+#try to prevent overfitting
+config.productive_output_layer_dropout=0.5
+config.productive_label_smooth=0.1
+
+```
+Productive head f1 performance:
 
 ![[Prodcuctive head's performance]](docs/images/productive_val_f1_with_std.svg)
 
 More performance detail:
 
 ![[detail performance chart]](docs/images/overall_model_performance_chart.png)
+
+## Hardware requirement
+
+I don't know the exact performance requirement of this project, but I could give your some references:
+
+- RTX 3060 laptop with 16 GB RAM would be perfectly fine with this project.
+- M1 Macbook Air with 16 GB RAM could run the inference, but may not be able to train the model
+
 
 ## Usage/Examples
 
@@ -68,14 +96,14 @@ Step 2:
 Run the train.py to train the model, you could adjust the name of the model, etc. 
 
 ```bash
-  python train.py 
+python train.py 
 ```
 
 Step 3:
 Run the scheduler to setup the website and update the feed in the range of time
 
 ```bash
-  python scheduler.py
+python scheduler.py
 ```
 
 
@@ -106,9 +134,9 @@ As you may know, I used NiceGUI to create this website. And even tho it's funtio
 - Add more error handling
 
 
-## Project Status
+## Limitation
 
-Currently, the model performance would be consistently higher than 0.8, but I'm uncertain 
+
 
 
 

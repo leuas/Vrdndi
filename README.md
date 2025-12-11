@@ -69,7 +69,7 @@ config.productive_output_layer_dropout=0.5
 config.productive_label_smooth=0.1
 
 ```
-Productive head f1 performance:
+Productive head's mean F1 performance with Standard Deviation:
 
 ![[Prodcuctive head's performance]](docs/images/productive_val_f1_with_std.svg)
 

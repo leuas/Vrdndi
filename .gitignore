@@ -1,13 +1,10 @@
 .DS_Store
 
-data/**/*
-!data/**/*.gitkeep
 
-secrets/*
-!secrets/.gitkeep
+data/
+secrets/
 
-artifacts/*
-!artifacts/.gitkeep
+artifacts/
 
 
 wandb/

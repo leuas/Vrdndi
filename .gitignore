@@ -1,7 +1,16 @@
 .DS_Store
-data/**/*
-secrets/
-artifacts/
+
+data/*
+!data/**/
+!data/**/*.gitkeep
+
+secrets/*
+!secrets/.gitkeep
+
+artifacts/*
+!artifacts/.gitkeep
+
+
 wandb/
 .nicegui/
 .pytest_cache/
@@ -10,9 +19,7 @@ __pycache__/
 *.egg-info/
 .tmp.driveupload
 
-!data/**/*.gitkeep
-!secrets/.gitkeep
-!artifacts/.gitkeep
 
-/data
-/artifacts
+
+
+

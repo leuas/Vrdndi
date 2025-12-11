@@ -5,7 +5,7 @@
 
 Vrdndi (Verdandi) is a full stack recommendation system that process your media data (Youtube currently) to provide personal feed base on what you did previously in your computer (i.e dynamicly change the feed base on time and previous app history)
 
-The original goal of this project is not to increase your watching time in your feed like other recommendation system. It's the opposite, minimize your watch time, increase your productivity and keep your interest still (so it won't be a very boring feed you don't want to come back tommorrow)
+The original goal of this project is not to increase your watching time in your feed like other recommendation system. It's the opposite, minimize your watch time, increase your productivity but keep your interest still (Currently it won't work in such way, see Limitation section)
 
 
 
@@ -22,15 +22,14 @@ The original goal of this project is not to increase your watching time in your 
 Step 1: Clone the repository
 
 ```bash
-  npm install my-proje
-  cd my-project
+npm install vrdndi
+cd my-project
 ```
 
 Step 2: Install the package. You may need to adjust the hyperparameter of the model, so install in editable mode
 
 ```bash
-  pip install -e . 
-
+pip install -e . 
 ```
 
 
@@ -55,7 +54,7 @@ And there's two head as the output layer of the model: interest head and product
 
 ## Model Performance
 
-I think the performance is not bad, one of the all 5 folds could hit 0.95 f1, which is suspiciously high. But since it only had one fold hitted that, so for now I'm fine with that. And the model structure is decent enough as the test proved.
+I think the performance is not bad, one of the all 5 folds could hit 0.95 f1, which is suspiciously high. But since it only had one fold hitted that, so for now I'm fine with that. And the model structure is decent enough as the test may prove.
 
 The config of the test:
 ```python
@@ -129,13 +128,14 @@ As you may know, I used NiceGUI to create this website. And even tho it's funtio
 
 ## Optimizations
 
-- Improve code clarity
+- Improve code clarity and readability
 
 - Add more error handling
 
 
 ## Limitation
 
+As you may notice, current project doesn't do anything about the original goal. It's more like keeping or organizing your feed as you want, even if it's not a productive way. In the future version, we may reach that goal.
 
 
 
@@ -144,8 +144,8 @@ As you may know, I used NiceGUI to create this website. And even tho it's funtio
 
 ```
 .
-├── artifacts
-├── data
+├── artifacts                                The location of model file 
+├── data                                     
 │   ├── database
 │   ├── processed
 │   │   ├── inference

@@ -1,0 +1,59 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+
+[project]
+name = "vrdndi"
+version = "0.1.0"
+description = ""
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    # --- Core ML & Deep Learning ---
+    "torch",                    
+    "transformers",             
+    "accelerate",               
+    "sentence-transformers",    # For embeding the text in AW sequence data
+    "datasets",                 
+    "evaluate",                 
+    "peft",                     # Parameter-Efficient Fine-Tuning (LoRA)
+
+    # --- Data Processing & NLP ---
+    "pandas",
+    "numpy",
+    "scikit-learn",
+    "scikit-multilearn",
+    "jieba",                    # Asian character segmentation 
+    "nltk",                     # Natural Language Toolkit
+
+    # --- Web & Frontend ---
+    "nicegui",                  # Main website 
+    "fastapi",                  
+    "uvicorn",                  
+    "streamlit",                # Labeling Tool
+    "apscheduler",              
+
+    # --- Database & Storage ---
+    "SQLAlchemy",               
+    "alembic",                  
+
+    # --- MLOps & Logging ---
+    "wandb",                    # Weights & Biases Logging
+    "mlflow",                   # May switch to mlflow in future 
+    "aw-client",                # ActivityWatcher Client 
+    "python-dotenv",            
+    "torchmetrics",             # Calculate the metrics
+
+    # --- API ---
+    "google-api-python-client", # For fetching Youtube data
+    "google_auth_oauthlib"
+
+]
+
+
+
+[tool.setuptools.packages.find]
+where = ["."]       # Look in the root directory
+include = ["src*"]  # Only include the folder named 'src' (and subfolders)
+

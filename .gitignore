@@ -1,0 +1,14 @@
+.DS_Store
+data/**/*
+secrets/
+artifacts/
+wandb/
+.nicegui/
+.pytest_cache/
+__pycache__/
+
+
+!data/**/*.gitkeep
+!secrets/.gitkeep
+!artifacts/.gitkeep
+

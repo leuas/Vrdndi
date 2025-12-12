@@ -21,8 +21,6 @@ def test_combine_title_category() ->None:
 
     output=combine_aw_title_category(data)
 
-    #TODO:there's bug, see notion,report bug:test_combine_title_category str joint error
-
     row_num_in=data.shape[0]
     row_num_out=output.shape[0]
 

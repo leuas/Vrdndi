@@ -130,7 +130,7 @@ As you may know, I used NiceGUI to create this website. And even tho it's funtio
 
 - Improve code clarity and readability
 
-- Add more error handling
+- Fix the productive inference test function
 
 
 ## Limitation

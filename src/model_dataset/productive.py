@@ -10,7 +10,6 @@ from transformers import AutoTokenizer
 from pathlib import Path
 
 from src.utils.ops import split_xy
-from src.config import AW_TENSOR_PATH
 
 
 class ProductiveData(Dataset):

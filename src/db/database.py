@@ -13,7 +13,7 @@ from sqlalchemy import text
 
 from typing import Literal,Any,Iterable,TypeAlias
 
-from src.config import DATABASE_PATH,RAW_DATA_PATH
+from src.path import DATABASE_PATH
 
 
 WriteTableName: TypeAlias = Literal[

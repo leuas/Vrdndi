@@ -16,7 +16,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score,classification_report
 
 
-from src.utils.data_etl import prepare_rf_data
+from src.utils.ops import prepare_rf_data
 
 
 

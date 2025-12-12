@@ -35,7 +35,9 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 
 from src.models.activity_watcher_encoder import ActivityWatcherEncoder
 from src.db.database import PersonalFeedDatabase
-from src.config import PROJECT_ROOT,DEVICE,SECRET_PATH,ASSETS_PATH,RAW_DATA_PATH
+from src.config import DEVICE
+
+from src.path import SECRET_PATH,ASSETS_PATH,RAW_DATA_PATH,PROJECT_ROOT
 
 db=PersonalFeedDatabase()
 

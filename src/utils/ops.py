@@ -30,8 +30,8 @@ from src.db.database import PersonalFeedDatabase
 
 from src.models.activity_watcher_encoder import ActivityWatcherEncoder
 from src.utils.data_etl import get_video,clean_yt_video,get_aw_raw_data,convert_timezone,get_video_data,videoid_split,duration_transform,iso_duration_transform
-from src.config import PROJECT_ROOT,DEVICE,HOSTNAME,HOST,PORT,ARTIFACTS_PATH,TRAIN_DATA_PATH,INFERENCE_DATA_PATH,LEGACY_PATH
-
+from src.config import DEVICE,HOSTNAME,HOST,PORT
+from src.path import ARTIFACTS_PATH
 
 import wandb
 

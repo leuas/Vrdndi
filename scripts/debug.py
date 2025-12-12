@@ -5,7 +5,6 @@ import os
 import sqlite3 as sq
 import torch
 import numpy as np
-from src.config import PROJECT_ROOT,HOST,HOSTNAME,PORT,TRAIN_DATA_PATH
 from src.db.database import PersonalFeedDatabase
 
 from src.utils.data_etl import get_and_save_his_data_for_database,get_and_save_liked_disliked_data_for_database

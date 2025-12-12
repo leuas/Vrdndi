@@ -1,15 +1,25 @@
 .DS_Store
-data/**/*
+
+
+data/
 secrets/
+
 artifacts/
+
+
 wandb/
 .nicegui/
 .pytest_cache/
 __pycache__/
 .vscode/
 *.egg-info/
+.tmp.driveupload
 
-!data/**/*.gitkeep
-!secrets/.gitkeep
-!artifacts/.gitkeep
 
+
+/data
+/artifacts
+/secrets
+
+*.dvc
+dvc/

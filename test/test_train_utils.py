@@ -4,23 +4,13 @@ import pandas as pd
 import torch
 import pprint
 
-from src.utils.ops import calc_bce_posweigt,combine_aw_title_category,prepare_aw_events_data,pad_aw_sequence
+from unittest import mock
+
+from src.utils.ops import combine_aw_title_category,prepare_aw_events_data,pad_aw_sequence
+
 
 from src.path import FIXTURE_PATH
 
-
-
-@pytest.mark.parametrize("label2,posweight2",[
-    ([0, 1, 0, 1, 0, 1],1.0),
-    ([0, 0, 0, 0, 0, 0, 0, 0, 0, 1],9.0),
-    ([1, 1, 1, 0], 1 / 3), 
-    ([0, 0, 0, 0],4.0), #handle zero division 
-])
-
-def test_calc_bce_posweight_another_way(label2,posweight2) -> None:
-    '''test the calc bec psoweight function'''
-
-    assert calc_bce_posweigt(label2) ==pytest.approx(posweight2)
 
 
 def test_combine_title_category() ->None:
@@ -59,7 +49,9 @@ def test_prepare_aw_events_data(mocker,get_aw_data,get_processed_data,get_time) 
     mock_get.assert_called_once_with(
         end_time=get_time,
         hours=24,
-        hostname='leuasMacBook-Air.local'
+        hostname='leuasMacBook-Air.local',
+        host=mock.ANY,
+        port=mock.ANY,
     )
 
 

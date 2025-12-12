@@ -55,6 +55,7 @@ dependencies = [
 
     # -- Test --
     "pytest",
+    "pytest-mock",
 
 ]
 

@@ -73,12 +73,12 @@ def get_aw_data() ->pd.DataFrame:
 def get_processed_data() ->pd.DataFrame:
     '''the output data of function prepare_aw_events_data which is literally the processed data of the data above '''
     
-    data=[{'duration': 2.37,
+    data=[{'duration': -0.7071067811865476,
         'time_cos': -0.13629194316349444,
         'time_sin': -0.990668716690256,
         'title_category': 'category: Uncategorized | title: gorse-io/gorse: Gorse '
                             'open source recommender system engine'},
-        {'duration': 85.522,
+        {'duration': 0.7071067811865475,
         'time_cos': -0.13607580953541654,
         'time_sin': -0.9906984274032543,
         'title_category': 'category: Productivity,Gemini | title: Google Gemini'}

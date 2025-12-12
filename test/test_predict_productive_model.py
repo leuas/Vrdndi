@@ -19,7 +19,7 @@ def test_prepare_predicting_data(hpm_predict)->None:
 
     data_col=['youtuber', 'description', 'title', 'videoId', 'data_state', 'duration','upload_time', 'timestamp']
 
-    assert data.columns == data_col,' some data columns is missed'
+    assert set(data_col).issubset(data.columns),' some data columns is missed'
 
 
 def test_get_preds_from_hybird_productive_model(hpm_predict) -> None:

@@ -3,7 +3,7 @@ import pytest
 import torch
 import pandas as pd
 import numpy as np
-
+import pprint
 from datetime import datetime
 
 from src.pipelines.productive import HybirdProductiveModelTraining
@@ -12,12 +12,12 @@ from src.models.productive import ProductiveModel
 from src.models.activity_watcher_encoder import ActivityWatcherEncoder
 
 from src.model_dataset.productive import ProductiveData
-from src.utils.ops import set_random_seed,duration_transform
+from src.utils.ops import set_random_seed,duration_transform,iso_duration_transform
 from src.utils.ops import prepare_sentence_transformer_input
 
 from src.inference.productive import HybirdProductiveModelPredicting
 
-from src.config import DEVICE
+from src.config import DEVICE,ProductiveModelConfig
 from src.path import FIXTURE_PATH
 
 
@@ -116,43 +116,43 @@ def get_timestamp() ->pd.Series:
 @pytest.fixture
 def produc_model() -> ProductiveModel:
     '''create a fresh model class'''
+    config=ProductiveModelConfig
 
-    return ProductiveModel().to(DEVICE)
+    return ProductiveModel(config).to(DEVICE)
 
 
-def productive_dataset(not_y:bool) -> ProductiveData:
+def productive_dataset(with_y:bool=True) -> ProductiveData:
     '''give a fresh dataset class to test'''
 
     #this is not the correct train data model should get,but they have similar structure, so we could use it to test
     data=pd.read_csv(FIXTURE_PATH/"like_dislike_tag_data_tag's_interest=1.csv")
 
-    x_col=['youtuber','description','title','duration']
+    #convert string number to float
+    data.loc[:,'duration']=iso_duration_transform(data.loc[:,'duration']).apply(float) 
 
-    y_col=['interest'] #the data doesn't contain a productive rate, so we use interest to test it
-    
-    x=data[x_col]
-    
-    if not_y:
-        y=None
+    #the data doesn't contain a productive rate, so we use interest to test it
+    if with_y:
+        data.loc[:,'productive_rate']= data.loc[:,'interest']
+       
+
     else:
-        y=data[y_col].rename(columns={y_col[0]:'productive_rate'}) #match the model forward part, and it's a dataframe here
+        data=data.drop(columns='interest')
+ 
 
-        y.loc[:,'interest']= y.loc[:,'productive_rate']
-    x.loc[:,'duration']=duration_transform(x)
-
-    return ProductiveData(x,y)
+    return ProductiveData(data)
 
 @pytest.fixture
 def dataset_with_y() ->ProductiveData:
     '''the productive dataset with y'''
+    
 
-    return productive_dataset(not_y=False)
+    return productive_dataset()
 
 @pytest.fixture
 def dataset_without_y() ->ProductiveData:
     '''the productive dataset without y'''
 
-    return productive_dataset(not_y=True)
+    return productive_dataset(with_y=False)
 
 
 @pytest.fixture

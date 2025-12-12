@@ -128,7 +128,7 @@ def get_activity_watcher_encoder_input(get_processed_data) ->tuple[np.ndarray,to
 def get_activity_watcher_encoder_output() -> torch.Tensor:
     '''get the output  of activity watcher encoder(i.e. the data after encoded)'''
 
-    output=torch.load(FIXTURE_PATH/'encode_aw_events_function_fixture.pt')
+    output=torch.load(FIXTURE_PATH/'encode_aw_events_function_fixture.pt',map_location=DEVICE)
 
     return output
 

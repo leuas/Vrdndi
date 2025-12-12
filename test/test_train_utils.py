@@ -10,7 +10,7 @@ from src.utils.ops import combine_aw_title_category,prepare_aw_events_data,pad_a
 
 
 from src.path import FIXTURE_PATH
-
+from src.config import DEVICE
 
 
 def test_combine_title_category() ->None:
@@ -69,7 +69,7 @@ def test_encode_aw_events(get_activity_watcher_encoder_input,get_encoder) ->None
     output=model(aw_text)
 
 
-    expected_output=torch.load(FIXTURE_PATH/'encode_aw_events_function_fixture.pt')
+    expected_output=torch.load(FIXTURE_PATH/'encode_aw_events_function_fixture.pt',map_location=DEVICE)
 
 
     torch.testing.assert_close(output.detach().cpu(),expected_output.cpu())

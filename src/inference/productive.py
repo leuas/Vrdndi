@@ -14,7 +14,8 @@ from src.utils.ops import duration_transform,text_col_fillna,convert_timestamp_t
 from src.model_dataset.loader import HybirdProductiveLoader
 
 
-from src.config import DEVICE,HybirdProductiveModelConfig,INFERENCE_DATA_PATH
+from src.config import DEVICE,HybirdProductiveModelConfig
+from src.path import INFERENCE_DATA_PATH
 
 
 class HybirdProductiveModelPredicting:

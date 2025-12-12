@@ -37,3 +37,18 @@ dirs_to_create= [
 
 for dir in dirs_to_create:
     dir.mkdir(parents=True,exist_ok=True)
+
+
+
+
+TEST_PATH=PROJECT_ROOT/'test'
+
+FIXTURE_PATH=TEST_PATH/'fixture'
+
+
+SRC=PROJECT_ROOT/'src'
+
+ASSETS_PATH=SRC/'assets'
+
+
+LEGACY_PATH=PROJECT_ROOT/'legacy'

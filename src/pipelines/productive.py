@@ -34,9 +34,9 @@ from src.model_dataset.productive import ProductiveData,HybirdProductiveData
 from src.model_dataset.loader import ProductiveLoader,HybirdProductiveLoader
 
 from src.db.database import PersonalFeedDatabase
-from src.config import PROJECT_ROOT,DEVICE,ProductiveModelConfig,HybirdProductiveModelConfig,ARTIFACTS_PATH
+from src.config import DEVICE,ProductiveModelConfig,HybirdProductiveModelConfig
 
-
+from src.path import ARTIFACTS_PATH
 
 
 ConfigType=TypeVar('ConfigType',bound='ProductiveModelConfig')

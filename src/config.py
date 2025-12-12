@@ -1,7 +1,6 @@
 '''the config file of the project'''
 import torch
 
-from pathlib import Path
 
 from dataclasses import dataclass
 from typing import TypeVar
@@ -9,28 +8,6 @@ from typing import TypeVar
 
 #path constant
 
-current_file_path=Path(__file__)
-PROJECT_ROOT=Path(__file__).parent.parent
-
-
-
-TEST_PATH=PROJECT_ROOT/'test'
-
-FIXTURE_PATH=TEST_PATH/'fixture'
-
-AW_TENSOR_PATH=PROJECT_ROOT/'aw_tensor'
-
-
-
-
-
-SRC=PROJECT_ROOT/'src'
-
-
-ASSETS_PATH=SRC/'assets'
-
-
-LEGACY_PATH=PROJECT_ROOT/'legacy'
 
 DEVICE=torch.device('mps' if torch.mps.is_available() else 'cuda' )
 

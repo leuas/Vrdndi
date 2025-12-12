@@ -49,26 +49,16 @@ Residual Block:
 
 ![[Residual block ]](docs/images/Residual_block_structure.svg)
 
-
 And there's two head as the output layer of the model: interest head and productive head. The interest head would use as a trainsition before you have enough productive data(i.e. The data you labelled in the website) and the productive head as what it's called 
+
+
+Output Layer:
+![[Output layer]](docs/images/output_layer.svg)
 
 ## Model Performance
 
 I think the performance is not bad, one of the all 5 folds could hit 0.95 f1, which is suspiciously high. But since it only had one fold hitted that, so for now I'm fine with that. And the model structure is decent enough as the test may prove.
 
-The config of the test:
-```python
-#intereset loss weight divided by 3 before backward
-config.interest_loss_weight=0.33 
-
-#Number of interest data:Number of productive data = 3 : 1 
-config.sampler_interest_ratio=3/4
-
-#try to prevent overfitting
-config.productive_output_layer_dropout=0.5
-config.productive_label_smooth=0.1
-
-```
 Productive head's mean F1 performance with Standard Deviation:
 
 ![[Prodcuctive head's performance]](docs/images/productive_val_f1_with_std.svg)
@@ -122,7 +112,7 @@ As you may know, I used NiceGUI to create this website. And even tho it's funtio
 
 - Add more media data (e.g. Email, RSS feed,etc) 
 
-- switch to mlflow from wandb
+- Refine the feed displaying method (i.e. not just display the highest rated items)
 
 - Rewrite the website 
 

@@ -4,23 +4,13 @@ import pandas as pd
 import torch
 import pprint
 
-from src.utils.ops import calc_bce_posweigt,combine_aw_title_category,prepare_aw_events_data,pad_aw_sequence
+from unittest import mock
 
-from src.config import FIXTURE_PATH
+from src.utils.ops import combine_aw_title_category,prepare_aw_events_data,pad_aw_sequence
 
 
-
-@pytest.mark.parametrize("label2,posweight2",[
-    ([0, 1, 0, 1, 0, 1],1.0),
-    ([0, 0, 0, 0, 0, 0, 0, 0, 0, 1],9.0),
-    ([1, 1, 1, 0], 1 / 3), 
-    ([0, 0, 0, 0],4.0), #handle zero division 
-])
-
-def test_calc_bce_posweight_another_way(label2,posweight2) -> None:
-    '''test the calc bec psoweight function'''
-
-    assert calc_bce_posweigt(label2) ==pytest.approx(posweight2)
+from src.path import FIXTURE_PATH
+from src.config import DEVICE
 
 
 def test_combine_title_category() ->None:
@@ -30,8 +20,6 @@ def test_combine_title_category() ->None:
     data=pd.read_csv(FIXTURE_PATH/'aw_app_sequence_test.csv')
 
     output=combine_aw_title_category(data)
-
-    #TODO:there's bug, see notion,report bug:test_combine_title_category str joint error
 
     row_num_in=data.shape[0]
     row_num_out=output.shape[0]
@@ -59,7 +47,9 @@ def test_prepare_aw_events_data(mocker,get_aw_data,get_processed_data,get_time) 
     mock_get.assert_called_once_with(
         end_time=get_time,
         hours=24,
-        hostname='leuasMacBook-Air.local'
+        hostname='leuasMacBook-Air.local',
+        host=mock.ANY,
+        port=mock.ANY,
     )
 
 
@@ -79,7 +69,7 @@ def test_encode_aw_events(get_activity_watcher_encoder_input,get_encoder) ->None
     output=model(aw_text)
 
 
-    expected_output=torch.load(FIXTURE_PATH/'encode_aw_events_function_fixture.pt')
+    expected_output=torch.load(FIXTURE_PATH/'encode_aw_events_function_fixture.pt',map_location=DEVICE)
 
 
     torch.testing.assert_close(output.detach().cpu(),expected_output.cpu())
@@ -92,8 +82,11 @@ def test_pad_aw_sequence(get_activity_watcher_encoder_output) ->None:
     #Here I only use two timestamp as fixture to test, 
     # which may less robust than using real timestamp series which contains some -100
 
+    #NOTE If you input a 3 dimension vector in size, say (batch,seq, feature ), then the output would also be that shape
+    input_token_size=384
+    input_sq_len=len(get_activity_watcher_encoder_output)
 
-    aw_tensor,aw_attention_mask=pad_aw_sequence(get_activity_watcher_encoder_output,384)
+    aw_tensor,aw_attention_mask=pad_aw_sequence(get_activity_watcher_encoder_output,input_token_size)
 
 
     assert isinstance(aw_tensor,torch.Tensor),f'aw_tensor expected type: torch.Tensor, but got {type(aw_tensor)} instead'
@@ -106,7 +99,7 @@ def test_pad_aw_sequence(get_activity_watcher_encoder_output) ->None:
 
     assert aw_tensor_dim_num==2,f'Expected aw_tensor has two dimension, got {aw_tensor_dim_num} insetad'
 
-    assert aw_tensor_shape==(2,1024),f'Expected aw_tensor has shape of (2,1024), got {aw_tensor_shape} instead )'
+    assert aw_tensor_shape==(input_sq_len,input_token_size),f'Expected aw_tensor has shape of (2,1024), got {aw_tensor_shape} instead )'
 
     assert aw_tensor_shape== aw_mask_shape,'Expected aw_tensor has same shape with aw_attention_mask'
 

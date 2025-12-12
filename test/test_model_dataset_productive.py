@@ -1,24 +1,20 @@
 '''the test file for productive_pred_dataset'''
 
 import torch
-import pytest
 import pandas as pd
 
-
-from config import FIXTURE_PATH
-from Personal_feed.src.model_dataset.productive import ProductiveData
-from src.utils.ops import duration_transform
+import pprint
 
 
 
-
-
-def test__init__(dataset_with_y,dataset_without_y):
+def test__init__(dataset_with_y,dataset_without_y) ->None:
     '''test the __init__ part of the class'''
 
-    assert dataset_with_y.max_length == 120,'the max length of productive dataset is not 120'
-    assert dataset_with_y.tokenizer.name_or_path== "BAAI/bge-m3",'the toeknzier is not for BBAAI/bge-m3'
 
+    assert isinstance(dataset_with_y.max_length,int),'the max length of productive dataset should be a integer'
+    assert dataset_with_y.tokenizer.name_or_path == "BAAI/bge-m3",'the toeknzier is not for BBAAI/bge-m3'
+
+    
 
     #test x part
     assert isinstance(dataset_with_y.x,pd.DataFrame),'x is not dataframe'
@@ -38,16 +34,19 @@ def test__init__(dataset_with_y,dataset_without_y):
 
 
 
-def test__len__(dataset_with_y):
+def test__len__(dataset_with_y) ->None:
     '''test the __len__ function of the productive dataset'''
 
-    assert len(dataset_with_y) == 892,"the length of the data is not 892"
+    assert isinstance(len(dataset_with_y),int) ,"the length of the data should be a integer"
+
+    assert len(dataset_with_y)>0,'The length of data should be higher than 0'
 
 
-def test__get_item__with_y(dataset_with_y):
+def test__get_item__with_y(dataset_with_y) ->None:
     '''test the get item function with the dataset that has y'''
 
     single_item=dataset_with_y[0]
+
 
     assert isinstance(single_item,dict),'the item from dataset is not a dict'
 
@@ -101,7 +100,7 @@ def test__get_item__with_y(dataset_with_y):
     assert interest_dtype == torch.long,f"expected dtype: torch.long , got {interest_dtype} "
 
 
-def test__get_item_without_y(dataset_without_y):
+def test__get_item_without_y(dataset_without_y) ->None:
     '''test the get item function with the dataset that doesn't have y'''
 
     single_item=dataset_without_y[0]

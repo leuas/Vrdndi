@@ -53,6 +53,10 @@ dependencies = [
     "dvc",
     "dvc-gdrive",
 
+    # -- Test --
+    "pytest",
+    "pytest-mock",
+
 ]
 
 

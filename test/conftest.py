@@ -3,7 +3,7 @@ import pytest
 import torch
 import pandas as pd
 import numpy as np
-
+import pprint
 from datetime import datetime
 
 from src.pipelines.productive import HybirdProductiveModelTraining
@@ -12,12 +12,13 @@ from src.models.productive import ProductiveModel
 from src.models.activity_watcher_encoder import ActivityWatcherEncoder
 
 from src.model_dataset.productive import ProductiveData
-from src.utils.ops import set_random_seed,duration_transform
+from src.utils.ops import set_random_seed,duration_transform,iso_duration_transform
 from src.utils.ops import prepare_sentence_transformer_input
 
 from src.inference.productive import HybirdProductiveModelPredicting
 
-from src.config import FIXTURE_PATH,DEVICE
+from src.config import DEVICE,ProductiveModelConfig
+from src.path import FIXTURE_PATH
 
 
 
@@ -42,7 +43,35 @@ def get_hybird_productive_model_training_class() ->HybirdProductiveModelTraining
 
     return HybirdProductiveModelTraining()
 
+@pytest.fixture
+def aw_raw_data() ->list:
+    '''get the raw server data'''
 
+    data=[[{'data': {'$category': ['Productivity', 'Gemini'],
+            'app': 'Zen',
+            'title': 'Google Gemini'},
+            'duration': 17.991,
+            'id': 186156,
+            'timestamp': '2025-12-12T14:22:30.983500Z'},
+            {'data': {'$category': ['Productivity', 'Remote Work'],
+                        'app': 'Parsec',
+                        'title': 'Parsec'},
+            'duration': 49.135,
+            'id': 186157,
+            'timestamp': '2025-12-12T14:22:48.974500Z'},
+            {'data': {'$category': ['Comms', 'IM'], 'app': 'QQ', 'title': 'QQ'},
+            'duration': 0.66,
+            'id': 186158,
+            'timestamp': '2025-12-12T14:23:38.109500Z'},
+            {'data': {'$category': ['Productivity', 'Gemini'],
+                        'app': 'Zen',
+                        'title': 'Google Gemini'},
+            'duration': 82.302,
+            'id': 186159,
+            'timestamp': '2025-12-12T14:23:38.769500Z'}]]
+    
+
+    return data
 
 @pytest.fixture
 def get_aw_data() ->pd.DataFrame:
@@ -72,12 +101,12 @@ def get_aw_data() ->pd.DataFrame:
 def get_processed_data() ->pd.DataFrame:
     '''the output data of function prepare_aw_events_data which is literally the processed data of the data above '''
     
-    data=[{'duration': 2.37,
+    data=[{'duration': -0.7071067811865476,
         'time_cos': -0.13629194316349444,
         'time_sin': -0.990668716690256,
         'title_category': 'category: Uncategorized | title: gorse-io/gorse: Gorse '
                             'open source recommender system engine'},
-        {'duration': 85.522,
+        {'duration': 0.7071067811865475,
         'time_cos': -0.13607580953541654,
         'time_sin': -0.9906984274032543,
         'title_category': 'category: Productivity,Gemini | title: Google Gemini'}
@@ -99,7 +128,7 @@ def get_activity_watcher_encoder_input(get_processed_data) ->tuple[np.ndarray,to
 def get_activity_watcher_encoder_output() -> torch.Tensor:
     '''get the output  of activity watcher encoder(i.e. the data after encoded)'''
 
-    output=torch.load(FIXTURE_PATH/'encode_aw_events_function_fixture.pt')
+    output=torch.load(FIXTURE_PATH/'encode_aw_events_function_fixture.pt',map_location=DEVICE)
 
     return output
 
@@ -115,43 +144,43 @@ def get_timestamp() ->pd.Series:
 @pytest.fixture
 def produc_model() -> ProductiveModel:
     '''create a fresh model class'''
+    config=ProductiveModelConfig
 
-    return ProductiveModel().to(DEVICE)
+    return ProductiveModel(config).to(DEVICE)
 
 
-def productive_dataset(not_y:bool) -> ProductiveData:
+def productive_dataset(with_y:bool=True) -> ProductiveData:
     '''give a fresh dataset class to test'''
 
     #this is not the correct train data model should get,but they have similar structure, so we could use it to test
     data=pd.read_csv(FIXTURE_PATH/"like_dislike_tag_data_tag's_interest=1.csv")
 
-    x_col=['youtuber','description','title','duration']
+    #convert string number to float
+    data.loc[:,'duration']=iso_duration_transform(data.loc[:,'duration']).apply(float) 
 
-    y_col=['interest'] #the data doesn't contain a productive rate, so we use interest to test it
-    
-    x=data[x_col]
-    
-    if not_y:
-        y=None
+    #the data doesn't contain a productive rate, so we use interest to test it
+    if with_y:
+        data.loc[:,'productive_rate']= data.loc[:,'interest']
+       
+
     else:
-        y=data[y_col].rename(columns={y_col[0]:'productive_rate'}) #match the model forward part, and it's a dataframe here
+        data=data.drop(columns='interest')
+ 
 
-        y.loc[:,'interest']= y.loc[:,'productive_rate']
-    x.loc[:,'duration']=duration_transform(x)
-
-    return ProductiveData(x,y)
+    return ProductiveData(data)
 
 @pytest.fixture
 def dataset_with_y() ->ProductiveData:
     '''the productive dataset with y'''
+    
 
-    return productive_dataset(not_y=False)
+    return productive_dataset()
 
 @pytest.fixture
 def dataset_without_y() ->ProductiveData:
     '''the productive dataset without y'''
 
-    return productive_dataset(not_y=True)
+    return productive_dataset(with_y=False)
 
 
 @pytest.fixture

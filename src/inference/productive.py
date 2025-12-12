@@ -69,9 +69,8 @@ class HybirdProductiveModelPredicting:
         else :
             now = time
 
-        get_data=PersonalFeedDatabase()
 
-        data=get_data.fetch_videos_from_past_days(time_range)
+        data=self.db.fetch_videos_from_past_days(time_range)
 
         data['timestamp']=now.isoformat()
 

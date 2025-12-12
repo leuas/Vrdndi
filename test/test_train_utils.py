@@ -6,7 +6,7 @@ import pprint
 
 from src.utils.ops import calc_bce_posweigt,combine_aw_title_category,prepare_aw_events_data,pad_aw_sequence
 
-from src.config import FIXTURE_PATH
+from src.path import FIXTURE_PATH
 
 
 
@@ -92,8 +92,11 @@ def test_pad_aw_sequence(get_activity_watcher_encoder_output) ->None:
     #Here I only use two timestamp as fixture to test, 
     # which may less robust than using real timestamp series which contains some -100
 
+    #NOTE If you input a 3 dimension vector in size, say (batch,seq, feature ), then the output would also be that shape
+    input_token_size=384
+    input_sq_len=len(get_activity_watcher_encoder_output)
 
-    aw_tensor,aw_attention_mask=pad_aw_sequence(get_activity_watcher_encoder_output,384)
+    aw_tensor,aw_attention_mask=pad_aw_sequence(get_activity_watcher_encoder_output,input_token_size)
 
 
     assert isinstance(aw_tensor,torch.Tensor),f'aw_tensor expected type: torch.Tensor, but got {type(aw_tensor)} instead'
@@ -106,7 +109,7 @@ def test_pad_aw_sequence(get_activity_watcher_encoder_output) ->None:
 
     assert aw_tensor_dim_num==2,f'Expected aw_tensor has two dimension, got {aw_tensor_dim_num} insetad'
 
-    assert aw_tensor_shape==(2,1024),f'Expected aw_tensor has shape of (2,1024), got {aw_tensor_shape} instead )'
+    assert aw_tensor_shape==(input_sq_len,input_token_size),f'Expected aw_tensor has shape of (2,1024), got {aw_tensor_shape} instead )'
 
     assert aw_tensor_shape== aw_mask_shape,'Expected aw_tensor has same shape with aw_attention_mask'
 

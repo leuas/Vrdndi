@@ -20,3 +20,6 @@ __pycache__/
 /data
 /artifacts
 /secrets
+
+*.dvc
+dvc/

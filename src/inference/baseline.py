@@ -7,7 +7,7 @@ import pandas as pd
 
 
 from src.utils.data_etl import prepare_log_model_feed,prepare_rf_model_feed
-from src.config import ARTIFACTS_PATH
+from src.path import ARTIFACTS_PATH
 
 def make_log_model_prediction() ->pd.DataFrame:
     '''logistic model make prediction'''

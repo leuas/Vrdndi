@@ -13,7 +13,9 @@ from transformers import AutoTokenizer
 from transformers import DataCollatorWithPadding
 
 from src.utils.ops import split_xy
-from src.config import HybirdProductiveModelConfig,TRAIN_DATA_PATH,INFERENCE_DATA_PATH
+from src.config import HybirdProductiveModelConfig
+
+from src.path import TRAIN_DATA_PATH,INFERENCE_DATA_PATH
 
 
 def seed_worker(worker_id):

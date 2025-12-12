@@ -47,7 +47,11 @@ dependencies = [
 
     # --- API ---
     "google-api-python-client", # For fetching Youtube data
-    "google_auth_oauthlib"
+    "google_auth_oauthlib",
+
+    # --- Sync ---
+    "dvc",
+    "dvc-gdrive",
 
 ]
 

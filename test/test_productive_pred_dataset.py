@@ -1,13 +1,7 @@
 '''the test file for productive_pred_dataset'''
 
 import torch
-import pytest
 import pandas as pd
-
-
-from config import FIXTURE_PATH
-from Personal_feed.src.model_dataset.productive import ProductiveData
-from src.utils.ops import duration_transform
 
 
 

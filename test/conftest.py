@@ -17,7 +17,8 @@ from src.utils.ops import prepare_sentence_transformer_input
 
 from src.inference.productive import HybirdProductiveModelPredicting
 
-from src.config import FIXTURE_PATH,DEVICE
+from src.config import DEVICE
+from src.path import FIXTURE_PATH
 
 
 

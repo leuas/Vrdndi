@@ -6,7 +6,6 @@ import pprint
 import numpy as np
 from datetime import datetime
 
-from src.config import FIXTURE_PATH
 
 from src.utils.data_etl import convert_timezone,get_aw_raw_data
 

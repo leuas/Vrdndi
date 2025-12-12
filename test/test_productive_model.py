@@ -5,10 +5,8 @@ from transformers import AutoModel
 from src.models.productive_model import ProductiveModel
 from torch import nn
 
-#NOTE I didn't set the random seed which is because currently the test is only about sanity check,
-#so it should be fine under different random seed
+from src.config import DEVICE
 
-device='mps'
 
 
 
@@ -49,7 +47,7 @@ def test_forward(produc_model):
         
         produc_model.eval()
 
-        output=produc_model(input_ids=fake_data.to(device),attention_mask=attention_mask.to(device),duration=duration.to(device))
+        output=produc_model(input_ids=fake_data.to(DEVICE),attention_mask=attention_mask.to(DEVICE),duration=duration.to(DEVICE))
 
 
         expect_shape=(batch_size,out_feature)

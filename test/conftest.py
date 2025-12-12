@@ -43,7 +43,35 @@ def get_hybird_productive_model_training_class() ->HybirdProductiveModelTraining
 
     return HybirdProductiveModelTraining()
 
+@pytest.fixture
+def aw_raw_data() ->list:
+    '''get the raw server data'''
 
+    data=[[{'data': {'$category': ['Productivity', 'Gemini'],
+            'app': 'Zen',
+            'title': 'Google Gemini'},
+            'duration': 17.991,
+            'id': 186156,
+            'timestamp': '2025-12-12T14:22:30.983500Z'},
+            {'data': {'$category': ['Productivity', 'Remote Work'],
+                        'app': 'Parsec',
+                        'title': 'Parsec'},
+            'duration': 49.135,
+            'id': 186157,
+            'timestamp': '2025-12-12T14:22:48.974500Z'},
+            {'data': {'$category': ['Comms', 'IM'], 'app': 'QQ', 'title': 'QQ'},
+            'duration': 0.66,
+            'id': 186158,
+            'timestamp': '2025-12-12T14:23:38.109500Z'},
+            {'data': {'$category': ['Productivity', 'Gemini'],
+                        'app': 'Zen',
+                        'title': 'Google Gemini'},
+            'duration': 82.302,
+            'id': 186159,
+            'timestamp': '2025-12-12T14:23:38.769500Z'}]]
+    
+
+    return data
 
 @pytest.fixture
 def get_aw_data() ->pd.DataFrame:

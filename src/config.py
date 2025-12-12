@@ -12,7 +12,6 @@ from typing import TypeVar
 current_file_path=Path(__file__)
 PROJECT_ROOT=Path(__file__).parent.parent
 
-ARTIFACTS_PATH=PROJECT_ROOT/'artifacts'
 
 
 TEST_PATH=PROJECT_ROOT/'test'
@@ -23,24 +22,13 @@ AW_TENSOR_PATH=PROJECT_ROOT/'aw_tensor'
 
 
 
-DATA_PATH=PROJECT_ROOT/'data'
-
-PROCESSED_DATA_PATH=DATA_PATH/'processed'
-
-RAW_DATA_PATH=DATA_PATH/'raw'
-
-TRAIN_DATA_PATH=PROCESSED_DATA_PATH/'train'
-
-INFERENCE_DATA_PATH=PROCESSED_DATA_PATH/'inference'
 
 
 SRC=PROJECT_ROOT/'src'
 
-DATABASE_PATH=DATA_PATH/'database'
 
 ASSETS_PATH=SRC/'assets'
 
-SECRET_PATH=PROJECT_ROOT/'secrets'
 
 LEGACY_PATH=PROJECT_ROOT/'legacy'
 

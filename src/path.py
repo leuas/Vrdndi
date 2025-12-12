@@ -6,6 +6,7 @@ from pathlib import Path
 
 
 current_file_path=Path(__file__)
+
 PROJECT_ROOT=Path(__file__).parent.parent
 
 ARTIFACTS_PATH=PROJECT_ROOT/'artifacts'
@@ -35,8 +36,8 @@ dirs_to_create= [
     ARTIFACTS_PATH,
 ]
 
-for dir in dirs_to_create:
-    dir.mkdir(parents=True,exist_ok=True)
+for path in dirs_to_create:
+    path.mkdir(parents=True,exist_ok=True)
 
 
 

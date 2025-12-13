@@ -81,7 +81,7 @@ class HybirdProductiveModelPredicting:
 
 
 
-    def predict(self,time:datetime|None = None,time_range:int=7, inference_data:pd.DataFrame|None=None) ->pd.DataFrame:
+    def predict(self,time:datetime|None = None,time_range:int=7, inference_data:pd.DataFrame|None=None,update_db:bool=True) ->pd.DataFrame:
         ''' get the prediction from productive model
 
             Args:
@@ -89,6 +89,7 @@ class HybirdProductiveModelPredicting:
                 time_range{int}: The lookback windows for video retrival.
                     Filter the database for videos uploaded within these many days prior to time argment.
                 inference_data(pd.dataframe): The data used for inference. Default to None, fetching inference data from database
+                update_db(bool): Whether update the output data to database as website feed
             
             Returns:
                 pd.Dataframe that contain the video data and inference output. 
@@ -151,8 +152,8 @@ class HybirdProductiveModelPredicting:
             left_on='videoId',
             right_on='videoId'
         )
-
-        self.db.update_feed(contain_predic_data)
+        if update_db:
+            self.db.update_feed(contain_predic_data)
 
         return contain_predic_data
 

@@ -710,7 +710,7 @@ def productive_data_preprocess()->pd.DataFrame:
 
 
 
-def inerest_productive_data_preprocess()->None:
+def interest_productive_data_preprocess()->None:
     '''preprocess the interest and productive model's training data'''
 
     like_dislike_streamlit_data_preprocess()

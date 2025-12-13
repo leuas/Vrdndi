@@ -2,7 +2,7 @@
 
 import os
 
-from src.utils.ops import like_dislike_data_preprocess,inerest_productive_data_preprocess,timestamp_data_preprocess
+from src.utils.ops import interest_productive_data_preprocess,timestamp_data_preprocess
 from src.pipelines.productive import HybirdProductiveModelTraining
 from src.config import HybirdProductiveModelConfig,TRAIN_DATA_PATH
 

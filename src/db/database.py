@@ -27,11 +27,11 @@ ReadTableName: TypeAlias = Literal[
 
 
 
-class PersonalFeedDatabase:
-    '''The database contain all training or content data for personal feed'''
+class VrdndiDatabase:
+    '''The database contain all training or content data for Vrdndi'''
     def __init__(self) -> None:
 
-        self.dbpath=DATABASE_PATH/'personal_feed_db.sqlite'
+        self.dbpath=DATABASE_PATH/'vrdndi_db.sqlite'
 
         self.conn=sq.connect(self.dbpath)
 
@@ -78,7 +78,7 @@ class PersonalFeedDatabase:
     
     
     def _initial_video_table(self) ->None:
-        '''Connect the yt_video database'''
+        '''Connect the vrdndi database'''
         with sq.connect(self.dbpath) as conn:
         
 
@@ -94,16 +94,13 @@ class PersonalFeedDatabase:
 
             ''')
 
-        print('Created/ Connected to yt_video database')
+        print('Created/ Connected to vrdndi database')
 
     def _insert_if_not_exits(self,table:Any,conn:sqlalchemy.engine.Connection,keys:list,data_iter:Iterable) ->int:
         '''Insert new data into target table '''
-        pprint.pprint(data_iter)
-        pprint.pprint(keys)
-        pprint.pprint(table)
+
         data=[dict(zip(keys,row)) for row in data_iter]
 
-        pprint.pprint(data)
 
         statement = insert(table.table).values(data)
 

@@ -4,7 +4,7 @@ import pprint
 import pandas as pd
 
 from datetime  import datetime
-from src.db.database import PersonalFeedDatabase
+from src.db.database import VrdndiDatabase
 from src.pipelines.productive import HybirdProductiveModelTraining
 from src.models.productive import HybirdProductiveModel
 
@@ -39,7 +39,7 @@ class HybirdProductiveModelPredicting:
         
         self.loader = HybirdProductiveLoader(self.config)
 
-        self.db=PersonalFeedDatabase()
+        self.db=VrdndiDatabase
 
 
     def _load_feed_data(self,data:pd.DataFrame,batch_size:int = 32) ->DataLoader:

@@ -26,7 +26,7 @@ from torch.nn.utils.rnn import pad_sequence
 
 from sklearn.model_selection import train_test_split
 
-from src.db.database import PersonalFeedDatabase
+from src.db.database import VrdndiDatabase
 
 from src.models.activity_watcher_encoder import ActivityWatcherEncoder
 from src.utils.data_etl import get_video,clean_yt_video,get_aw_raw_data,convert_timezone,get_video_data,videoid_split,duration_transform,iso_duration_transform
@@ -671,7 +671,7 @@ def data_preprocess() ->None:
 def like_dislike_streamlit_data_preprocess() ->None:
     '''concat the like, dislike data with tag labelled data '''
 
-    db=PersonalFeedDatabase()
+    db=VrdndiDatabase()
 
     like_data=db.get_data('like_data')
     dislike_data=db.get_data('dislike_data')
@@ -695,7 +695,7 @@ def inerest_productive_data_preprocess()->None:
     '''preprocess the interest and productive model's training data'''
 
     like_dislike_streamlit_data_preprocess()
-    db=PersonalFeedDatabase()
+    db=VrdndiDatabase()
 
     interest=db.get_data('interest_data')
 
@@ -762,7 +762,7 @@ def timestamp_data_preprocess(path:Path) -> None:
     '''Convert each timestamp data to a Sentence Transformer encoded vector and save it into the path 
         Args:
             path(Path): The folder where you save the tensor data.'''
-    db=PersonalFeedDatabase()
+    db=VrdndiDatabase()
     
     productive_data=db.get_feedback().drop(columns='is_trained')
 
@@ -780,7 +780,7 @@ def manifest_process(path:Path) -> None:
     '''Helper function: use for motifying the manifest file to assume every feedback data in the database has a relate tensor file 
         '''
 
-    db=PersonalFeedDatabase()
+    db=VrdndiDatabase()
     
     productive_data=db.get_feedback().drop(columns='is_trained')
 

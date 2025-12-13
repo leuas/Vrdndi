@@ -22,7 +22,7 @@ class Demo:
 
 
     def predict_normally(self) ->None:
-        '''predict fake vide data with offline encoded app sequence'''
+        '''Predict fake vide data with offline encoded app sequence'''
 
         with patch('src.utils.data_etl.ActivityWatchClient.query') as mock_aw_sequence:
             
@@ -36,7 +36,7 @@ class Demo:
             self.model_inference.predict(inference_data=inference_data,update_db=False)
 
     def predict_unproperly(self) ->None:
-        '''predict fake video data without offline encoded app sequence '''
+        '''Predict fake video data without offline encoded app sequence '''
 
         with patch('src.utils.data_etl.ActivityWatchClient.query') as mock_aw_sequence:
                 
@@ -73,7 +73,7 @@ fake_aw_sequence=[[{'data': {'$category': ['Productivity', 'Gemini'],
 if __name__=='__main__':
     demo=Demo()
 
-    demo.predict_unproperly()
+    demo.predict_normally()
     
 
 

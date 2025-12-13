@@ -33,7 +33,7 @@ from src.models.productive import ProductiveModel,HybirdProductiveModel
 from src.model_dataset.productive import ProductiveData,HybirdProductiveData
 from src.model_dataset.loader import ProductiveLoader,HybirdProductiveLoader
 
-from src.db.database import PersonalFeedDatabase
+from src.db.database import VrdndiDatabase
 from src.config import DEVICE,ProductiveModelConfig,HybirdProductiveModelConfig
 
 from src.path import ARTIFACTS_PATH
@@ -62,7 +62,7 @@ class ProductiveModelTraining(Generic[ConfigType]):
         self.loader= ProductiveLoader(self.config.seed)
         self.optimizer = AdamW(self.model.parameters(), lr = self.config.lr)
 
-        self.db=PersonalFeedDatabase()
+        self.db=VrdndiDatabase()
 
         self.interest_train_metrics=self._get_metrics_bundle()
         self.productive_train_metrics=self._get_metrics_bundle()

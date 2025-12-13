@@ -153,7 +153,7 @@ def productive_dataset(with_y:bool=True) -> ProductiveData:
     '''give a fresh dataset class to test'''
 
     #this is not the correct train data model should get,but they have similar structure, so we could use it to test
-    data=pd.read_csv(FIXTURE_PATH/"like_dislike_tag_data_tag's_interest=1.csv")
+    data=pd.read_csv(FIXTURE_PATH/"fake_video_data.csv")
 
     #convert string number to float
     data.loc[:,'duration']=iso_duration_transform(data.loc[:,'duration']).apply(float) 

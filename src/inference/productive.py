@@ -4,7 +4,7 @@ import pprint
 import pandas as pd
 
 from datetime  import datetime
-from src.db.database import PersonalFeedDatabase
+from src.db.database import VrdndiDatabase
 from src.pipelines.productive import HybirdProductiveModelTraining
 from src.models.productive import HybirdProductiveModel
 
@@ -39,7 +39,7 @@ class HybirdProductiveModelPredicting:
         
         self.loader = HybirdProductiveLoader(self.config)
 
-        self.db=PersonalFeedDatabase()
+        self.db=VrdndiDatabase()
 
 
     def _load_feed_data(self,data:pd.DataFrame,batch_size:int = 32) ->DataLoader:
@@ -54,13 +54,14 @@ class HybirdProductiveModelPredicting:
         return feed_dataloader
     
 
-    def _prepare_predicting_data(self,time:datetime|None = None,time_range:int=7) ->pd.DataFrame:
+    def prepare_predicting_data(self,time:datetime|None = None,time_range:int=7, inference_data:pd.DataFrame|None=None) ->pd.DataFrame:
         '''prepare the aw seuqence data for predicting
             
             Args:
-                time{datetime}: The time mode used to predict what feed user(you) should watch at that time
+                time{datetime}: The time used to predict what feed user should watch at that specific time
                 time_range{int}: The lookback windows for video retrival.
                     Filter the database for videos uploaded within these many days prior to time argment.
+                inference_data(pd.dataframe): The data used for inference. Default to None, fetching inference data from database.
                      
             '''
         if time is None:
@@ -69,8 +70,10 @@ class HybirdProductiveModelPredicting:
         else :
             now = time
 
-
-        data=self.db.fetch_videos_from_past_days(time_range)
+        if inference_data is not None:
+            data=inference_data
+        else:
+            data=self.db.fetch_videos_from_past_days(time_range)
 
         data['timestamp']=now.isoformat()
 
@@ -81,13 +84,22 @@ class HybirdProductiveModelPredicting:
 
 
 
-    def get_preds_from_hybird_productive_model(self,time:datetime|None = None,time_range:int=7) ->None:
-        ''' get the prediction from productive model'''
-        
-        data=self._prepare_predicting_data(time,time_range)
-        print(data)
+    def predict(self,inference_data:pd.DataFrame,update_db:bool=True) ->pd.DataFrame:
+        ''' get the prediction from productive model
 
-        dataloader=self._load_feed_data(data=data)
+            Args:
+                inference_data(pd.dataframe): The data used for inference. Default to None, fetching inference data from database.
+                update_db(bool): Whether update the output data to database as website feed
+            
+            Returns:
+                pd.Dataframe that contain the video data and inference output. 
+                
+            Notes:
+                This function would update the data to database feed table, so you may not need fot retain the output dataframe
+        
+        '''
+
+        dataloader=self._load_feed_data(data=inference_data)
 
         outputs={
             'productive_rate':[],
@@ -109,13 +121,10 @@ class HybirdProductiveModelPredicting:
                 interest_s=pd.Series(interest[:,1].tolist())
                 productive_s=pd.Series(productive_rate[:,1].tolist())
 
-                outputs['interest'].append(interest_s)#There's two columns, one for uninterest, one for inter
+                outputs['interest'].append(interest_s)#There's two columns, one for uninterest, one for interest
                 outputs['productive_rate'].append(productive_s) #As above
                 outputs['videoId'].append(batch['videoId_series'])
 
-                print(batch['videoId_series'])
-
-                
 
                 
         interest_series=pd.concat(outputs['interest'])
@@ -129,14 +138,16 @@ class HybirdProductiveModelPredicting:
             
         pprint.pprint(predicts_data)
 
-        contain_predic_data=data.merge(
+        contain_predic_data=inference_data.merge(
             predicts_data,
             how='left',
             left_on='videoId',
             right_on='videoId'
         )
+        if update_db:
+            self.db.update_feed(contain_predic_data)
 
-        self.db.update_feed(contain_predic_data)
+        return contain_predic_data
 
 
             

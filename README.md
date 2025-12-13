@@ -49,7 +49,7 @@ Residual Block:
 
 ![[Residual block ]](docs/images/Residual_block_structure.svg)
 
-And there's two head as the output layer of the model: interest head and productive head. The interest head would use as a trainsition before you have enough productive data(i.e. The data you labelled in the website) and the productive head to predict a rate base on previous app history, time for each media data. And the reason why I used SWiGLU instead of normal ReLU is that previously the interest head can't quite converge (at least the bouncing range is larger than now), and since the sequence compressor for interest head is kinda partial functional (It won't receive a app sequence to predict interest, so the output token would just represent the duration that diffused in it). 
+And there's two head as the output layer of the model: interest head and productive head. The interest head would use as a trainsition before you have enough productive data(i.e. The data you labelled in the website) and the productive head to predict a rate base on previous app history, time for each media data. And the reason why I used SWiGLU instead of normal ReLU is that previously the interest head can't quite converge (at least the bouncing range is larger than now), and since the sequence compressor for interest head is kinda partial functional (It won't receive a app sequence to predict interest, so the output token would just represent the duration that diffused in it). So probably adding a strong activation function in output layer would be a good idea, and I also switch the productive head to SWiGLU at that time as convient, but seemingly it cause the overfitting problem that is faced on currently.  
 
 
 Output Layer:

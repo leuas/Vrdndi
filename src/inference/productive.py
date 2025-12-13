@@ -81,13 +81,14 @@ class HybirdProductiveModelPredicting:
 
 
 
-    def get_preds_from_hybird_productive_model(self,time:datetime|None = None,time_range:int=7) ->pd.DataFrame:
+    def get_preds_from_hybird_productive_model(self,time:datetime|None = None,time_range:int=7, inference_data:pd.DataFrame|None=None) ->pd.DataFrame:
         ''' get the prediction from productive model
 
             Args:
-                time{datetime}: The time used to predict what feed user should watch at that time
+                time{datetime}: The time used to predict what feed user should watch at that specific time
                 time_range{int}: The lookback windows for video retrival.
                     Filter the database for videos uploaded within these many days prior to time argment.
+                inference_data(pd.dataframe): The data used for inference. Default to None, fetching inference data from database
             
             Returns:
                 pd.Dataframe that contain the video data and inference output. 
@@ -96,8 +97,10 @@ class HybirdProductiveModelPredicting:
                 This function would update the data to database feed table, so you may not need fot retain the output dataframe
         
         '''
-        
-        data=self._prepare_predicting_data(time,time_range)
+        if inference_data is None:
+            data=self._prepare_predicting_data(time,time_range)
+        else:
+            data=inference_data
         print(data)
 
         dataloader=self._load_feed_data(data=data)

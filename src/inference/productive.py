@@ -39,7 +39,7 @@ class HybirdProductiveModelPredicting:
         
         self.loader = HybirdProductiveLoader(self.config)
 
-        self.db=VrdndiDatabase
+        self.db=VrdndiDatabase()
 
 
     def _load_feed_data(self,data:pd.DataFrame,batch_size:int = 32) ->DataLoader:

@@ -81,7 +81,7 @@ class HybirdProductiveModelPredicting:
 
 
 
-    def get_preds_from_hybird_productive_model(self,time:datetime|None = None,time_range:int=7, inference_data:pd.DataFrame|None=None) ->pd.DataFrame:
+    def predict(self,time:datetime|None = None,time_range:int=7, inference_data:pd.DataFrame|None=None) ->pd.DataFrame:
         ''' get the prediction from productive model
 
             Args:

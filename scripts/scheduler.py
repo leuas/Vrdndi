@@ -15,7 +15,7 @@ def feed_update() ->None:
     config=HybirdProductiveModelConfig()
     config.eval_test_num_workers=8
     model=HybirdProductiveModelPredicting('hybird_productive_model_4BS_10E_EMA_save_loss_weighted.pth',config=config)
-    model.get_preds_from_hybird_productive_model(time_range=300)
+    model.predict(time_range=300)
     
 
     

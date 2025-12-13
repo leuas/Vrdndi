@@ -90,9 +90,22 @@ fake_aw_sequence=[[{'data': {'$category': ['Productivity', 'Gemini'],
 if __name__=='__main__':
     os.environ['NO_PROXY']='100.100.6.64'
     
-    with patch('src.utils.ops.get_aw_raw_data') as mock_aw_sequence:
+    with patch('src.utils.data_etl.ActivityWatchClient.query') as mock_aw_sequence:
         
         mock_aw_sequence.return_value=fake_aw_sequence
+
+        drop_columns=['interest','tag']
+
+        video_data=pd.read_csv(FIXTURE_PATH/'fake_video_data.csv').drop(columns=drop_columns)
+
+        time=datetime.now()
+
+
+        model_inference=HybirdProductiveModelPredicting()
+
+        inference_data=model_inference.prepare_predicting_data(inference_data=video_data)
+
+        model_inference.predict(inference_data=inference_data,update_db=False)
 
 
 

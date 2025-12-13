@@ -54,13 +54,14 @@ class HybirdProductiveModelPredicting:
         return feed_dataloader
     
 
-    def _prepare_predicting_data(self,time:datetime|None = None,time_range:int=7) ->pd.DataFrame:
+    def prepare_predicting_data(self,time:datetime|None = None,time_range:int=7, inference_data:pd.DataFrame|None=None) ->pd.DataFrame:
         '''prepare the aw seuqence data for predicting
             
             Args:
-                time{datetime}: The time mode used to predict what feed user(you) should watch at that time
+                time{datetime}: The time used to predict what feed user should watch at that specific time
                 time_range{int}: The lookback windows for video retrival.
                     Filter the database for videos uploaded within these many days prior to time argment.
+                inference_data(pd.dataframe): The data used for inference. Default to None, fetching inference data from database.
                      
             '''
         if time is None:
@@ -69,8 +70,10 @@ class HybirdProductiveModelPredicting:
         else :
             now = time
 
-
-        data=self.db.fetch_videos_from_past_days(time_range)
+        if inference_data is not None:
+            data=inference_data
+        else:
+            data=self.db.fetch_videos_from_past_days(time_range)
 
         data['timestamp']=now.isoformat()
 
@@ -81,14 +84,11 @@ class HybirdProductiveModelPredicting:
 
 
 
-    def predict(self,time:datetime|None = None,time_range:int=7, inference_data:pd.DataFrame|None=None,update_db:bool=True) ->pd.DataFrame:
+    def predict(self,inference_data:pd.DataFrame,update_db:bool=True) ->pd.DataFrame:
         ''' get the prediction from productive model
 
             Args:
-                time{datetime}: The time used to predict what feed user should watch at that specific time
-                time_range{int}: The lookback windows for video retrival.
-                    Filter the database for videos uploaded within these many days prior to time argment.
-                inference_data(pd.dataframe): The data used for inference. Default to None, fetching inference data from database
+                inference_data(pd.dataframe): The data used for inference. Default to None, fetching inference data from database.
                 update_db(bool): Whether update the output data to database as website feed
             
             Returns:
@@ -98,13 +98,8 @@ class HybirdProductiveModelPredicting:
                 This function would update the data to database feed table, so you may not need fot retain the output dataframe
         
         '''
-        if inference_data is None:
-            data=self._prepare_predicting_data(time,time_range)
-        else:
-            data=inference_data
-        print(data)
 
-        dataloader=self._load_feed_data(data=data)
+        dataloader=self._load_feed_data(data=inference_data)
 
         outputs={
             'productive_rate':[],
@@ -132,8 +127,6 @@ class HybirdProductiveModelPredicting:
 
 
                 
-
-                
         interest_series=pd.concat(outputs['interest'])
         productive_series=pd.concat(outputs['productive_rate'])
 
@@ -145,7 +138,7 @@ class HybirdProductiveModelPredicting:
             
         pprint.pprint(predicts_data)
 
-        contain_predic_data=data.merge(
+        contain_predic_data=inference_data.merge(
             predicts_data,
             how='left',
             left_on='videoId',

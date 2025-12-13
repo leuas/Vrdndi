@@ -35,6 +35,7 @@ from src.path import ARTIFACTS_PATH
 
 import wandb
 
+db=VrdndiDatabase()
 
 class FocalLoss(Module):
     '''
@@ -671,7 +672,6 @@ def data_preprocess() ->None:
 def like_dislike_streamlit_data_preprocess() ->None:
     '''concat the like, dislike data with tag labelled data '''
 
-    db=VrdndiDatabase()
 
     like_data=db.get_data('like_data')
     dislike_data=db.get_data('dislike_data')
@@ -688,16 +688,8 @@ def like_dislike_streamlit_data_preprocess() ->None:
 
     print('saved!')
 
-
-
-
-def inerest_productive_data_preprocess()->None:
-    '''preprocess the interest and productive model's training data'''
-
-    like_dislike_streamlit_data_preprocess()
-    db=VrdndiDatabase()
-
-    interest=db.get_data('interest_data')
+def productive_data_preprocess()->pd.DataFrame:
+    '''preprocess productive data'''
 
     productive_data=db.get_feedback()
 
@@ -713,6 +705,19 @@ def inerest_productive_data_preprocess()->None:
     productive_df['timestamp']=productive_data['timestamp']
 
     print(productive_df)
+
+    return productive_df
+
+
+
+def inerest_productive_data_preprocess()->None:
+    '''preprocess the interest and productive model's training data'''
+
+    like_dislike_streamlit_data_preprocess()
+    productive_df=productive_data_preprocess()
+
+    interest=db.get_data('interest_data')
+
 
     interest['productive_rate']=-100
     interest['timestamp']=-100
@@ -762,7 +767,6 @@ def timestamp_data_preprocess(path:Path) -> None:
     '''Convert each timestamp data to a Sentence Transformer encoded vector and save it into the path 
         Args:
             path(Path): The folder where you save the tensor data.'''
-    db=VrdndiDatabase()
     
     productive_data=db.get_feedback().drop(columns='is_trained')
 
@@ -780,7 +784,6 @@ def manifest_process(path:Path) -> None:
     '''Helper function: use for motifying the manifest file to assume every feedback data in the database has a relate tensor file 
         '''
 
-    db=VrdndiDatabase()
     
     productive_data=db.get_feedback().drop(columns='is_trained')
 

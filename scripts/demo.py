@@ -29,6 +29,8 @@ class Demo:
     def predict_feedback(self):
         '''use model to predict feedback in different time'''
 
-        self.inference.get_preds_from_hybird_productive_model()
+        data=self.db.get_feedback()
+
+        self.inference.predict()
 
         

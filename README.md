@@ -77,31 +77,23 @@ I don't know the exact performance requirement of this project, but I could give
 
 ## Usage/Examples
 
-
-Step 1: Go to google api to make a project and get your client file. Please place the client file in the secret folder.
-
-
-Step 2: 
-Run the train.py to train the model, you could adjust the name of the model, etc. 
+Quick start:
+Showcase of basic model inference
 
 ```bash
-python train.py 
+cd Vrdndi/scripts
+
+python demo.py
+
 ```
 
-Step 3:
-Run the scheduler to setup the website and update the feed in the range of time
+For detail or general usage, please see [Usage Guide](docs/USAGE.md)
 
-```bash
-python scheduler.py
-```
-
-
-Optional: Model would use your like and dislike video list as its training data to train the interest head, and probably it won't be enough of data. And you may use the streamlit script in the scripts folder to label the data by yourself. The script would use your youtube history data as its source and you could review your history video and label if it's interesting. Personally, the lableing process is quite fun, so probably you would like it too.
 
 ## Website
 The website is functional as watching video and scrolling the feed and giving feedback.
 
-As you may know, I used NiceGUI to create this website. And even tho it's funtional, probably I would rewrite the website later on :) 
+
 
 ## Roadmap
 
@@ -134,28 +126,21 @@ As you may notice, current project doesn't do anything about the original goal. 
 
 ```
 .
-├── artifacts                                The location of model file 
+├── artifacts/              #Where project place the model artifacts                           
 ├── data                                     
-│   ├── database
-│   ├── processed
-│   │   ├── inference
-│   │   └── train
-│   └── raw
-├── docs
+│   ├── database            #Database file
+│   ├── processed           
+│   │   ├── inference       #Where place offline encoded tensor for inference
+│   │   └── train           #Where place offline encoded tensor for inference
+│   └── raw                 #Raw data(e.g. watch-history.json)
+├── docs/
 ├── pyproject.toml
 ├── pytest.ini
-├── scripts
-│   ├── datalabel_streamlit.py
-│   ├── debug.py
-│   ├── run.py
-│   ├── scheduler.py
-│   ├── train.py
-│   └── visualise_model.py
-├── secrets
+├── scripts/
+├── secrets/
 ├── src
 │   ├── __init__.py
-│   ├── assets
-│   │   └── hit_stopwords.txt
+│   ├── assets/
 │   ├── config.py
 │   ├── db
 │   │   ├── __init__.py

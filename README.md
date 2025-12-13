@@ -49,7 +49,7 @@ Residual Block:
 
 ![[Residual block ]](docs/images/Residual_block_structure.svg)
 
-And there's two head as the output layer of the model: interest head and productive head. The interest head would use as a trainsition before you have enough productive data(i.e. The data you labelled in the website) and the productive head as what it's called 
+And there's two head as the output layer of the model: interest head and productive head. The interest head would use as a trainsition before you have enough productive data(i.e. The data you labelled in the website) and the productive head to predict a rate base on previous app history, time for each media data. And the reason why I used SWiGLU instead of normal ReLU is that previously the interest head can't quite converge (at least the bouncing range is larger than now), and since the sequence compressor for interest head is kinda partial functional (It won't receive a app sequence to predict interest, so the output token would just represent the duration that diffused in it). 
 
 
 Output Layer:

@@ -13,10 +13,9 @@ def feed_update() ->None:
     '''use model to predict feed and update the feed in the website'''
     
     config=HybirdProductiveModelConfig()
-    config.eval_test_num_workers=8
+    config.eval_test_num_workers=4
     model=HybirdProductiveModelPredicting('hybird_productive_model_4BS_10E_EMA_save_loss_weighted.pth',config=config)
     model.predict(time_range=300)
-    
 
     
     requests.post('http://127.0.0.1:8080/trigger-update')

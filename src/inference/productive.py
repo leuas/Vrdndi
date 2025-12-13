@@ -130,7 +130,6 @@ class HybirdProductiveModelPredicting:
                 outputs['productive_rate'].append(productive_s) #As above
                 outputs['videoId'].append(batch['videoId_series'])
 
-                print(batch['videoId_series'])
 
                 
 

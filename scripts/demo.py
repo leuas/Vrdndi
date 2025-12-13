@@ -2,14 +2,14 @@
 import os
 import pprint
 import pandas as pd
-
+from unittest.mock import patch
 from datetime import datetime,timedelta
 
 from src.utils.ops import productive_data_preprocess,convert_timestamp_to_pt_file
 
 from src.db.database import VrdndiDatabase
 from src.inference.productive import HybirdProductiveModelPredicting
-from src.path import INFERENCE_DATA_PATH
+from src.path import INFERENCE_DATA_PATH,PROCESSED_DATA_PATH,FIXTURE_PATH
 
 class Demo:
     '''A demo for model performance showcase'''
@@ -18,7 +18,7 @@ class Demo:
         
         self.db=VrdndiDatabase()
 
-        self.inference=HybirdProductiveModelPredicting()
+        self.inference=HybirdProductiveModelPredicting('hybird_productive_model_4BS_10E_ratio31_prodc_label_smooth0.1_dropout0.5.pth')
     def get_unique_items(self,input_df:pd.DataFrame) ->None:
         '''Find the datapoint that belong to same itemds but has different feedback (in different time)
         '''
@@ -29,45 +29,72 @@ class Demo:
         mask=unique_counts>1
 
         pprint.pprint(input_df[mask])
+        input_df[mask].to_csv(PROCESSED_DATA_PATH/'demo_data.csv')
 
     def predict_feedback(self):
         '''use model to predict feedback in different time'''
 
         now=datetime.now()
 
-        print(now)
-
-        to_hours=timedelta(hours=12)
-
-        last_night=now-to_hours
-        print(last_night)
-
-        time_list=[now,last_night]
+        print(now.isoformat())
 
         
-        data=productive_data_preprocess()
+        data=self.db.get_feed()
+        data=data.drop(columns=['interest','productive_rate'])
 
         data_list=[]
+        convert_timestamp_to_pt_file(pd.Series(now.isoformat()),path=INFERENCE_DATA_PATH)
+   
+        data['timestamp']=now()
 
-        for time in time_list:
-            convert_timestamp_to_pt_file(time,path=INFERENCE_DATA_PATH)
-            data['timestamp']=time
+        prediction=self.inference.predict(time=now,inference_data=data,update_db=False)
 
-            prediction=self.inference.predict(time=time,inference_data=data)
-
-            data_list.append(prediction)
+        data_list.append(prediction)
 
 
-        cat_df=pd.concat(data_list,ignore_index=True)
+        merged_df=pd.merge(data_list[0],data_list[1],on='videoId',suffixes=('_0','_1'))
 
-        self.get_unique_items(cat_df)
+        diff=(merged_df['productive_rate_0']-merged_df['productive_rate_1']).abs()
 
+        changes=merged_df[diff>0.01].drop(columns=['duration_1','interest_1','description_1','title_1','youtuber_1','data_state_1','upload_time_1','duration_0','interest_0','data_state_0','upload_time_0','description_0'])
+
+
+
+        pprint.pprint(changes)
+        changes.to_csv(PROCESSED_DATA_PATH/'changes.csv')
+
+
+fake_aw_sequence=[[{'data': {'$category': ['Productivity', 'Gemini'],
+            'app': 'Zen',
+            'title': 'Google Gemini'},
+            'duration': 17.991,
+            'id': 186156,
+            'timestamp': '2025-12-12T14:22:30.983500Z'},
+            {'data': {'$category': ['Productivity', 'Remote Work'],
+                        'app': 'Parsec',
+                        'title': 'Parsec'},
+            'duration': 49.135,
+            'id': 186157,
+            'timestamp': '2025-12-12T14:22:48.974500Z'},
+            {'data': {'$category': ['Comms', 'IM'], 'app': 'QQ', 'title': 'QQ'},
+            'duration': 0.66,
+            'id': 186158,
+            'timestamp': '2025-12-12T14:23:38.109500Z'},
+            {'data': {'$category': ['Productivity', 'Gemini'],
+                        'app': 'Zen',
+                        'title': 'Google Gemini'},
+            'duration': 82.302,
+            'id': 186159,
+            'timestamp': '2025-12-12T14:23:38.769500Z'}]]
 
 if __name__=='__main__':
     os.environ['NO_PROXY']='100.100.6.64'
-    demo=Demo()
+    
+    with patch('src.utils.ops.get_aw_raw_data') as mock_aw_sequence:
+        
+        mock_aw_sequence.return_value=fake_aw_sequence
 
-    demo.predict_feedback()
+
 
 
 

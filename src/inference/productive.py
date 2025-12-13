@@ -81,8 +81,21 @@ class HybirdProductiveModelPredicting:
 
 
 
-    def get_preds_from_hybird_productive_model(self,time:datetime|None = None,time_range:int=7) ->None:
-        ''' get the prediction from productive model'''
+    def get_preds_from_hybird_productive_model(self,time:datetime|None = None,time_range:int=7) ->pd.DataFrame:
+        ''' get the prediction from productive model
+
+            Args:
+                time{datetime}: The time used to predict what feed user should watch at that time
+                time_range{int}: The lookback windows for video retrival.
+                    Filter the database for videos uploaded within these many days prior to time argment.
+            
+            Returns:
+                pd.Dataframe that contain the video data and inference output. 
+                
+            Notes:
+                This function would update the data to database feed table, so you may not need fot retain the output dataframe
+        
+        '''
         
         data=self._prepare_predicting_data(time,time_range)
         print(data)
@@ -109,7 +122,7 @@ class HybirdProductiveModelPredicting:
                 interest_s=pd.Series(interest[:,1].tolist())
                 productive_s=pd.Series(productive_rate[:,1].tolist())
 
-                outputs['interest'].append(interest_s)#There's two columns, one for uninterest, one for inter
+                outputs['interest'].append(interest_s)#There's two columns, one for uninterest, one for interest
                 outputs['productive_rate'].append(productive_s) #As above
                 outputs['videoId'].append(batch['videoId_series'])
 
@@ -137,6 +150,8 @@ class HybirdProductiveModelPredicting:
         )
 
         self.db.update_feed(contain_predic_data)
+
+        return contain_predic_data
 
 
             

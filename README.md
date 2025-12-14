@@ -43,12 +43,14 @@ There's two type of input:
 
 2, **App Sequence Data**: Activity history from ActivityWatcher. Processed by a custom sequential residual block to encode the sequence into a single token.
 
+And I also add SE block to "gate" each token to pick the important one and replace the common GLU with SiLU to be consistant with SWiGLU, since it's almost interchangable.
+
 **Main Structure**: 
 ![[Main structure]](docs/images/Model_main_structure.svg)
 
 >**WhyAdaLN** Duration is a numerical value, it can't go through the BGE-M3's embedding layer, so either I need to put it as a separate token or put it as a condition to diffuse the AW data. In former, seemingly it would cause distribution mismatch(?), so I use the latter.
 
- And I also use SE block to "gate" each token to pick the important one. And I replace the common GLU with SiLU to be consistant with SWiGLU, since it's almost interchangable.
+
 
 
 **Residual Block**: 
@@ -61,6 +63,7 @@ And there's two head as the output layer of the model: interest head and product
 
 
 **Output Layer**:
+
 ![[Output layer]](docs/images/output_layer.svg)
 
 ## Model Performance

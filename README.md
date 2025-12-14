@@ -107,7 +107,14 @@ All the data is processed locally. You would use the data yourself to train the 
 ## Website
 The website is functional as watching video and scrolling the feed and giving feedback.
 
+Main page would render 21 videos at once, you could press the ``LOAD MORE`` button to get more videos
 
+
+**Main Page**:
+![[main page]](docs/images/Main_page.png)
+
+**Video Page**:
+![[video page]](docs/images/Video-play_page.png)
 
 ## Backlog
 

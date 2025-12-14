@@ -38,7 +38,7 @@ Current system Architecture as the picture shown would fetch the data from Youtu
 
 **End-to-End Pipelines**:
 
-![[system_architecture]](docs/images/System_Architecture.svg)
+![[system_architecture]](docs/images/System_Architecture_big.svg)
 
 
 
@@ -65,7 +65,7 @@ There's two type of input:
 
 **Residual Block**: 
 
-![[Residual block ]](docs/images/residual_block_small.svg)
+![[Residual block ]](docs/images/Residual_block_structure.svg)
 
 And there's two head as the output layer of the model: interest head and productive head. The interest head would use as a trainsition before you have enough productive data(i.e. The data you labelled in the website) and the productive head to predict a rate base on previous app history, time for each media data. 
 

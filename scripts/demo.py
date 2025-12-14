@@ -20,9 +20,9 @@ class Demo:
                   'dry_run' skips loading to test pipeline logic only.
     '''
 
-    def __init__(self,mode:Literal['standard','dry-run']) -> None:
+    def __init__(self,mode:Literal['standard','dry-run']='standard') -> None:
         
-        if mode is 'standard':
+        if mode == 'standard':
             self.model_inference=HybirdProductiveModelPredicting('example_model.pth')
         else:
             self.model_inference=HybirdProductiveModelPredicting()

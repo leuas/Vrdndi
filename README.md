@@ -131,7 +131,7 @@ As you may notice, current project doesn't do anything about the original goal. 
 │   ├── database                            #Database file
 │   ├── processed           
 │   │   ├── inference                       #Where place offline encoded tensor for inference
-│   │   └── train                           #Where place offline encoded tensor for inference
+│   │   └── train                           #Where place offline encoded tensor for training
 │   └── raw                                 #Raw data(e.g. watch-history.json)
 ├── docs/                   
 ├── pyproject.toml

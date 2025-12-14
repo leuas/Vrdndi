@@ -41,7 +41,7 @@ import pandas as pd
 from unittest.mock import patch
 from datetime import datetime
 
-from src.inference.productive import HybirdProductiveModelPredicting
+from src.inference.productive import HybridProductiveModelPredicting
 from src.path import FIXTURE_PATH
 
 class Demo:
@@ -49,7 +49,7 @@ class Demo:
 
     def __init__(self) -> None:
         
-        self.model_inference=HybirdProductiveModelPredicting()
+        self.model_inference=HybridProductiveModelPredicting()
         
         self.drop_columns=['interest','tag']
 

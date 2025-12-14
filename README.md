@@ -127,11 +127,14 @@ The NiceGUI website is functional as watching video and scrolling the feed and g
 Main page would render 21 videos at once, you could press the ``LOAD MORE`` button to get more videos
 
 
+
 **Main Page**:
 ![[main page]](docs/images/Main_page.png)
 
 **Video Page**:
 ![[video page]](docs/images/Video-play_page.png)
+
+>For streamlit data labeling website, please see [Usage Guide](docs/USAGE.md)
 
 ## Backlog
 

@@ -279,6 +279,8 @@ class VrdndiDatabase:
 
     def get_feed_state(self) ->bool:
         '''Get the feed state from database'''
+        
+        self._initial_registry_table()
 
         rs=self._get_registry_value('feed_state')
 

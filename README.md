@@ -42,6 +42,7 @@ There's two type of input:
 1, **Media Data**: Textual data (Title/Description). Directly processed by the BGE-M3 embedding layer.
 
 2, **App Sequence Data**: Activity history from ActivityWatcher. Processed by a custom sequential residual block to encode the sequence into a single token.
+> Sequence data would be pre-computed before running the main model to save memory usage. (Text part would be encoded by Sentence Transformer)
 
 
 **Main Structure**: 
@@ -67,7 +68,7 @@ And there's two head as the output layer of the model: interest head and product
 
 ## Model Performance
 
-I think the performance is not bad, one of the all 5 folds could hit 0.95 f1, which is suspiciously high. But since it only had one fold hitted that, so for now I'm fine with that. And the model structure is decent enough as the test may prove.
+I think the performance is not bad, one of the all 5 folds could hit 0.95 f1, which is suspiciously high. But since it only had one fold hitted that and my dataset is quite small (200-300 for productive,1000 roughly for interest), so for now I'm fine with that. And the model structure is decent enough as the test may proved.
 
 Productive head's mean F1 performance with Standard Deviation:
 
@@ -121,6 +122,8 @@ The website is functional as watching video and scrolling the feed and giving fe
 
 - Rewrite the website 
 
+- Improve appearance of the website
+
 ## Optimizations
 
 - Write a automatic function to clean offline tensor files
@@ -130,7 +133,7 @@ The website is functional as watching video and scrolling the feed and giving fe
 
 ## Limitation
 
-As you may notice, current project doesn't do anything about the primary goal. It's more like keeping or organizing your feed as you want, even if it's not a productive way. In the future version, we may reach that goal. (Say add RL when I have more data)
+As you may notice, current state of this project doesn't do anything about the primary goal. It's more like keeping or organizing your feed as you want, even if it's not a productive way. In the future version, we may reach that goal. (Say add RL when I have more data )
 
 
 
@@ -179,6 +182,11 @@ As you may notice, current project doesn't do anything about the primary goal. I
 ```
 
 
+## Notes
+
+Since this is my very first project in code (except code practise), and I'm still new to code and ML. I may miss something completely.
+
+If you find any bug/issue or problem about the architecture (Say, the architecture cause some converage problems) or anything else. Please feel free to open an issue in Github! (or even submit a PR!)
 
 
 

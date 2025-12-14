@@ -3,8 +3,9 @@
 import os
 
 from src.utils.ops import interest_productive_data_preprocess,timestamp_data_preprocess
-from src.pipelines.productive import HybirdProductiveModelTraining
-from src.config import HybirdProductiveModelConfig,TRAIN_DATA_PATH
+from src.pipelines.productive import HybridProductiveModelTraining
+from src.config import HybridProductiveModelConfig
+from src.path import TRAIN_DATA_PATH
 
 
 if __name__=='__main__':
@@ -34,7 +35,7 @@ if __name__=='__main__':
     os.environ['WANDB_DATA_DIR'] = os.path.join(wandb_dir, 'data') # This should control artifact staging
 
 
-    config=HybirdProductiveModelConfig()
+    config=HybridProductiveModelConfig()
 
     config.train_num_workers=4
     config.eval_test_num_workers=4
@@ -45,7 +46,7 @@ if __name__=='__main__':
     config.sampler_interest_ratio=3/4
     config.productive_output_layer_dropout=0.5
     
-    test1=HybirdProductiveModelTraining(config=config)
+    test1=HybridProductiveModelTraining(config=config)
 
 
     #test1.start_train(model_name='hybird_productive_model_4BS_10E_ratio31_equal_400D_drop_noisy.pth',total_epoch=10,batch_size=4)

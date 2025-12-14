@@ -5,10 +5,14 @@ This script demonstrates the functionality of the productive model by performing
 inference on video data which is from test fixtures and a fake short app sequence. 
 It is primarily used to verify environment setup.
 
+Modes:
+    - Standard: Loads the custom LoRA adapter from `artifacts/` and runs real inference.
+    - Dry Run:  Run the pipeline without loading weights .
+
 Purpose:
+    - Verifies that the LoRA adapter loads correctly.
     - Verifies library dependencies (e.g. torch, transformers).
-    - Checks model weight integrity and loading.
-    - DOES NOT validate broader system integrations (API endpoints, Database, Website).
+    - DOES NOT validate broader system integrations (Youtube API, Database, Website).
 
 This demo includes a secondary mode, `predict_improperly`, to simulate failure 
 handling. It demonstrates cases where the offline encoded tensor is unavailable, 
@@ -19,14 +23,21 @@ Usage:
     python demo.py
 
 Notes:
-    By default, this script runs `predict_normally()`. To test the fallback 
-    mechanism, open this file and switch the function call to `predict_improperly()`.
-    
+    By default, this script runs `predict_normally()` and `mode='standard'`. To test the fallback 
+    mechanism or different mode, open this file and switch the function call to `predict_improperly()`
+    or switch the mode.
 
+Expected Output:
+    - `predict_normally()`:
+        Standard initialization logs followed by the final output DataFrame.
+
+    - `predict_improperly`:
+        Extensive warning logs regarding missing offline tensors, followed by the 
+        final output DataFrame (generated via fallback).
+    
 """
 
 import pandas as pd
-from typing import Literal
 from unittest.mock import patch
 from datetime import datetime
 

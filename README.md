@@ -101,7 +101,7 @@ python demo.py
 
 For detail or general usage, please see [Usage Guide](docs/USAGE.md)
 
-## Privacy Note
+## Privacy Notes
 All the data is processed locally. You would use the data yourself to train the model. 
 
 ## Website
@@ -109,8 +109,7 @@ The website is functional as watching video and scrolling the feed and giving fe
 
 
 
-## Roadmap
-
+## Backlog
 
 - Add youtube transcript as one of the model feature
 
@@ -124,11 +123,12 @@ The website is functional as watching video and scrolling the feed and giving fe
 
 - Improve appearance of the website
 
-## Optimizations
+- Display original video title instead of lowercase one
 
 - Write a automatic function to clean offline tensor files
 
 - Fix the productive inference test function
+
 
 
 ## Limitation

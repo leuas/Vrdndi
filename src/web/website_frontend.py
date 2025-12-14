@@ -1,4 +1,4 @@
-'''this is the frontend of the personal feed webstie'''
+'''this is the frontend of the Vrdndi webstie'''
 import pprint
 import cryptography
 import numpy as np
@@ -21,10 +21,10 @@ from nicegui import ui,app
 
 from src.inference.baseline import make_rf_prediction
 
-from src.db.database import PersonalFeedDatabase
+from src.db.database import VrdndiDatabase
 
 
-db=PersonalFeedDatabase()
+db=VrdndiDatabase()
 
 new_feed_state={
         'feed_state':db.get_feed_state()
@@ -95,7 +95,6 @@ class UpdateWebsitePage:
         
         
         with self.video_play_container:
-            ui.label('playing').classes('text-h4 text-center')
 
             #video_frame=f'''<iframe width="1120" height="630" src="https://www.youtube.com/embed/{videoid}" frameborder="0" allowfullscreen></iframe>'''
 
@@ -364,7 +363,7 @@ def website():
     
     
     with ui.header(elevated=True).style('background-color: #3874c8'):
-            ui.label('PersonalFeed')
+            ui.label('Vrdndi')
             feed_button=ui.button('New Feed Availabl!', on_click=refresh_website_for_new_feed).classes('ml-auto')\
             .bind_visibility_from(new_feed_state,'feed_state')
     

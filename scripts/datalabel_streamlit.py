@@ -6,13 +6,13 @@ import streamlit as st
 from typing import Literal
 
 
-from src.db.database import PersonalFeedDatabase
+from src.db.database import VrdndiDatabase
 
 @st.cache_resource
 def get_database():
     '''get database'''
 
-    return PersonalFeedDatabase()
+    return VrdndiDatabase()
 
 
 

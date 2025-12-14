@@ -76,8 +76,8 @@ class ProductiveData(Dataset):
         return item
     
 
-class HybirdProductiveData(ProductiveData):
-    '''Dataset for  HybirdProductive model'''
+class HybridProductiveData(ProductiveData):
+    '''Dataset for  HybridProductive model'''
 
     def __init__(self,data:pd.DataFrame,path:Path, max_length:int=8192):
         

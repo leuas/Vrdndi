@@ -22,8 +22,8 @@ The original goal of this project is not to increase your watching time in your 
 Step 1: Clone the repository
 
 ```bash
-npm install vrdndi
-cd my-project
+git clone https://github.com/leuas/Vrdndi.git
+cd vrdndi
 ```
 
 Step 2: Install the package. You may need to adjust the hyperparameter of the model, so install in editable mode

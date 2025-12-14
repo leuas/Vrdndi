@@ -35,9 +35,9 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 
 from src.models.activity_watcher_encoder import ActivityWatcherEncoder
 from src.db.database import VrdndiDatabase
-from src.config import DEVICE
+from src.config import CLIENT_SECRET_FILE
 
-from src.path import SECRET_PATH,ASSETS_PATH,RAW_DATA_PATH,PROJECT_ROOT
+from src.path import SECRET_PATH,ASSETS_PATH,RAW_DATA_PATH
 
 db=VrdndiDatabase()
 
@@ -49,7 +49,7 @@ def get_auth_ser():
 
     credentials=None
     tokenfile='token.pickle'
-    secret_file='client_secret_321501314462-d9iagau3ml3q6edkrpeel82tdqotgbr7.apps.googleusercontent.com.json'
+    secret_file=CLIENT_SECRET_FILE
 
     if os.path.exists(SECRET_PATH/tokenfile):
         with open(SECRET_PATH/tokenfile,'rb') as token :

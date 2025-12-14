@@ -72,7 +72,7 @@ And there's two head as the output layer of the model: interest head and product
 
 **Output Layer**:
 
-![[Output layer]](docs/images/output_layer.svg)
+![[Output layer]](docs/images/output_layer_big.svg)
 
 >**Why SWiGLU:** Previously the interest head can't quite converge (at least the bouncing range is larger than now), and since the sequence compressor for interest head is kinda partial functional (It won't receive a app sequence to predict interest, so the output token would just represent the duration that diffused in it). So probably adding a strong activation function in output layer would be a good idea, and I also switch the productive head to SWiGLU at that time as convenient, but seemingly it cause the overfitting problem that is faced on currently.  
 

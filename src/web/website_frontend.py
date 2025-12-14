@@ -1,4 +1,4 @@
-'''this is the frontend of the personal feed webstie'''
+'''this is the frontend of the Vrdndi webstie'''
 import pprint
 import cryptography
 import numpy as np
@@ -364,7 +364,7 @@ def website():
     
     
     with ui.header(elevated=True).style('background-color: #3874c8'):
-            ui.label('PersonalFeed')
+            ui.label('Vrdndi')
             feed_button=ui.button('New Feed Availabl!', on_click=refresh_website_for_new_feed).classes('ml-auto')\
             .bind_visibility_from(new_feed_state,'feed_state')
     

@@ -95,7 +95,6 @@ class UpdateWebsitePage:
         
         
         with self.video_play_container:
-            ui.label('playing').classes('text-h4 text-center')
 
             #video_frame=f'''<iframe width="1120" height="630" src="https://www.youtube.com/embed/{videoid}" frameborder="0" allowfullscreen></iframe>'''
 

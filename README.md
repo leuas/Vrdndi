@@ -3,9 +3,9 @@
 
 # Vrdndi
 
-Vrdndi (Verdandi) is a full stack recommendation system that process your media data (Youtube currently) to provide personal feed base on what you did previously in your computer (i.e dynamicly change the feed base on time and previous app history)
+Vrdndi (Verdandi) is a full-stack recommendation system that process your media data (Youtube currently) to provide personal feed base on what you did previously in your computer (i.e dynamicly change the feed base on time and previous app history)
 
-The original goal of this project is not to increase your watching time in your feed like other recommendation system. It's the opposite, minimize your watch time, increase your productivity but keep your interest still (Currently it won't work in such way, see Limitation section)
+The primary goal of this project is not to increase your watching time in your feed like other recommendation system. It's the opposite, minimize your watch time, increase your productivity but keep your interest still (Currently it won't work in such way, see Limitation section)
 
 
 
@@ -37,22 +37,30 @@ pip install -e .
 
 Currently Vrdndi uses fine-tuned BGE-m3 to predict the media feed. 
 
-There's two type of input, the media data data(i.e. title or description of a video) and the app sequence data from Activity Watcher. Video data would directly go into the model embedding layer, but app sequence won't, I made a custom residual block sequencial to preocess it and encode the sequence into one token. 
+There's two type of input:
 
-Main Structure: 
+1, **Media Data**: Textual data (Title/Description). Directly processed by the BGE-M3 embedding layer.
+
+2, **App Sequence Data**: Activity history from ActivityWatcher. Processed by a custom sequential residual block to encode the sequence into a single token.
+
+**Main Structure**: 
 ![[Main structure]](docs/images/Model_main_structure.svg)
 
-For the ones who may wonder, the reason I used AdaLN instead of normal LN is because the duration is a numerical value, it can't go through the BGE-M3's embedding layer, so either I need to put it as a separate token or put it as a condition to diffuse the AW data. I chose the latter.  And use SE block to "gate" each token to pick the important one. And I replace the common GLU with SiLY to be consistant with SWiGLU, since it's almost interchangable.
+>**WhyAdaLN** Duration is a numerical value, it can't go through the BGE-M3's embedding layer, so either I need to put it as a separate token or put it as a condition to diffuse the AW data. In former, seemingly it would cause distribution mismatch(?), so I use the latter.
+
+ And I also use SE block to "gate" each token to pick the important one. And I replace the common GLU with SiLU to be consistant with SWiGLU, since it's almost interchangable.
 
 
-Residual Block: 
+**Residual Block**: 
 
 ![[Residual block ]](docs/images/residual_block_small.svg)
 
-And there's two head as the output layer of the model: interest head and productive head. The interest head would use as a trainsition before you have enough productive data(i.e. The data you labelled in the website) and the productive head to predict a rate base on previous app history, time for each media data. And the reason why I used SWiGLU instead of normal ReLU is that previously the interest head can't quite converge (at least the bouncing range is larger than now), and since the sequence compressor for interest head is kinda partial functional (It won't receive a app sequence to predict interest, so the output token would just represent the duration that diffused in it). So probably adding a strong activation function in output layer would be a good idea, and I also switch the productive head to SWiGLU at that time as convient, but seemingly it cause the overfitting problem that is faced on currently.  
+And there's two head as the output layer of the model: interest head and productive head. The interest head would use as a trainsition before you have enough productive data(i.e. The data you labelled in the website) and the productive head to predict a rate base on previous app history, time for each media data. 
+
+>**WhySWiGLU** Previously the interest head can't quite converge (at least the bouncing range is larger than now), and since the sequence compressor for interest head is kinda partial functional (It won't receive a app sequence to predict interest, so the output token would just represent the duration that diffused in it). So probably adding a strong activation function in output layer would be a good idea, and I also switch the productive head to SWiGLU at that time as convenient, but seemingly it cause the overfitting problem that is faced on currently.  
 
 
-Output Layer:
+**Output Layer**:
 ![[Output layer]](docs/images/output_layer.svg)
 
 ## Model Performance
@@ -69,7 +77,7 @@ More performance detail:
 
 ## Hardware requirement
 
-I don't know the exact performance requirement of this project, but I could give your some references:
+Some references:
 
 - RTX 3060 laptop with 16 GB RAM would be perfectly fine with this project.
 - M1 Macbook Air with 16 GB RAM could run the inference, but may not be able to train the model
@@ -78,7 +86,7 @@ I don't know the exact performance requirement of this project, but I could give
 ## Usage/Examples
 
 Quick start:
-Showcase of basic model inference
+Show the basic model inference
 
 ```bash
 cd Vrdndi/scripts
@@ -89,6 +97,8 @@ python demo.py
 
 For detail or general usage, please see [Usage Guide](docs/USAGE.md)
 
+## Privacy Note
+All the data is processed locally. You would use the data yourself to train the model. 
 
 ## Website
 The website is functional as watching video and scrolling the feed and giving feedback.
@@ -110,14 +120,14 @@ The website is functional as watching video and scrolling the feed and giving fe
 
 ## Optimizations
 
-- Improve code clarity and readability
+- Write a automatic function to clean offline tensor files
 
 - Fix the productive inference test function
 
 
 ## Limitation
 
-As you may notice, current project doesn't do anything about the original goal. It's more like keeping or organizing your feed as you want, even if it's not a productive way. In the future version, we may reach that goal.
+As you may notice, current project doesn't do anything about the primary goal. It's more like keeping or organizing your feed as you want, even if it's not a productive way. In the future version, we may reach that goal. (Say add RL when I have more data)
 
 
 
@@ -126,40 +136,40 @@ As you may notice, current project doesn't do anything about the original goal. 
 
 ```
 .
-├── artifacts/                              #Where project place the model artifacts                           
+├── artifacts/                              # Model artifacts                           
 ├── data                                     
-│   ├── database                            #Database file
+│   ├── database                            # SQLite database files
 │   ├── processed           
-│   │   ├── inference                       #Where place offline encoded tensor for inference
-│   │   └── train                           #Where place offline encoded tensor for training
-│   └── raw                                 #Raw data(e.g. watch-history.json)
-├── docs/                   
+│   │   ├── inference                       # Offline encoded tensors for inference
+│   │   └── train                           # Offline encoded tensors for training
+│   └── raw                                 # Raw data(e.g. watch-history.json)
+├── docs/                                   # Documentation and images
 ├── pyproject.toml
 ├── pytest.ini
-├── scripts/
-├── secrets/
+├── scripts/                                # Demo, training and sheduler scripts
+├── secrets/                                # API token and client sercrets (put yours there)
 ├── src
-│   ├── assets/                             #The file that used 
-│   ├── config.py
+│   ├── assets/                             # Stopwords
+│   ├── config.py                           # Global configuration parameters
 │   ├── db/                                 #Database class
 │   ├── inference
 │   │   ├── baseline.py
-│   │   └── productive.py                   #Contains main model inference class
+│   │   └── productive.py                   # Main model inference class
 │   ├── model_dataset
 │   │   ├── loader.py
-│   │   └── productive.py                   #Contains dataset class of main model
-│   ├── models
-│   │   ├── activity_watcher_encoder.py     #The model that encode text from the app sequence 
-│   │   ├── components.py                   #Defines some model layers (e.g. AdaLN)
-│   │   └── productive.py                   #Main model 
-│   ├── pipelines
+│   │   └── productive.py                   # Dataset class of main model
+│   ├── model
+│   │   ├── activity_watcher_encoder.py     # The model that encode text of the app sequence 
+│   │   ├── components.py                   # Defines some model layers (e.g. AdaLN)
+│   │   └── productive.py                   # Main model class
+│   ├── pipelines                           # Training pipelines
 │   │   ├── baseline.py
-│   │   └── productive.py                   #Pipeines of main model
+│   │   └── productive.py                   # Pipelines of main model
 │   ├── utils
-│   │   ├── data_etl.py                     #Processes data from api
-│   │   └── ops.py                          #Operation of data for model training or inference
+│   │   ├── data_etl.py                     # Processes data from api
+│   │   └── ops.py                          # Data operation for model training or inference
 │   └── web
-│       └── website_frontend.py             #NiceGUI website frontend
+│       └── website_frontend.py             # NiceGUI website frontend
 └── test 
 
 ```

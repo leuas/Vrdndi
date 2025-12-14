@@ -154,12 +154,13 @@ As you may notice, current project doesn't do anything about the primary goal. I
 ├── src
 │   ├── assets/                             # Stopwords
 │   ├── config.py                           # Global configuration parameters
-│   ├── db/                                 #Database class
-│   ├── inference
+│   ├── path.py                             # Path constants
+│   ├── db/                                 # Database class
+│   ├── inference                           # Inference
 │   │   ├── baseline.py
 │   │   └── productive.py                   # Main model inference class
-│   ├── model_dataset
-│   │   ├── loader.py
+│   ├── model_dataset                       # Dataset
+│   │   ├── loader.py                       # Dataloader class
 │   │   └── productive.py                   # Dataset class of main model
 │   ├── model
 │   │   ├── activity_watcher_encoder.py     # The model that encode text of the app sequence 

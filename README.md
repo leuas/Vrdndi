@@ -126,22 +126,22 @@ As you may notice, current project doesn't do anything about the original goal. 
 
 ```
 .
-├── artifacts/                  #Where project place the model artifacts                           
+├── artifacts/                              #Where project place the model artifacts                           
 ├── data                                     
-│   ├── database                #Database file
+│   ├── database                            #Database file
 │   ├── processed           
-│   │   ├── inference           #Where place offline encoded tensor for inference
-│   │   └── train               #Where place offline encoded tensor for inference
-│   └── raw                     #Raw data(e.g. watch-history.json)
+│   │   ├── inference                       #Where place offline encoded tensor for inference
+│   │   └── train                           #Where place offline encoded tensor for inference
+│   └── raw                                 #Raw data(e.g. watch-history.json)
 ├── docs/                   
 ├── pyproject.toml
 ├── pytest.ini
 ├── scripts/
 ├── secrets/
 ├── src
-│   ├── assets/                 #The file that used 
+│   ├── assets/                             #The file that used 
 │   ├── config.py
-│   ├── db/                     #Database class
+│   ├── db/                                 #Database class
 │   ├── inference
 │   │   ├── baseline.py
 │   │   └── productive.py                   #Contains main model inference class

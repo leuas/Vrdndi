@@ -11,7 +11,6 @@ readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
     # --- Core ML & Deep Learning ---
-    "torch",                    
     "transformers",             
     "accelerate",               
     "sentence-transformers",    # For embeding the text in AW sequence data

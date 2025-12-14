@@ -2,6 +2,7 @@
 import os
 import pprint
 import pandas as pd
+from typing import Literal
 from unittest.mock import patch
 from datetime import datetime,timedelta
 
@@ -12,11 +13,19 @@ from src.inference.productive import HybirdProductiveModelPredicting
 from src.path import INFERENCE_DATA_PATH,PROCESSED_DATA_PATH,FIXTURE_PATH
 
 class Demo:
-    '''A demo for model funtional showcase'''
-
-    def __init__(self) -> None:
+    '''Initializes the demo for model functionality showcase
         
-        self.model_inference=HybirdProductiveModelPredicting()
+        Args:
+            mode: 'standard' loads the real LoRA weights from fixtures.
+                  'dry_run' skips loading to test pipeline logic only.
+    '''
+
+    def __init__(self,mode:Literal['standard','dry-run']) -> None:
+        
+        if mode is 'standard':
+            self.model_inference=HybirdProductiveModelPredicting('example_model.pth')
+        else:
+            self.model_inference=HybirdProductiveModelPredicting()
         
         self.drop_columns=['interest','tag']
 

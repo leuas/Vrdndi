@@ -17,6 +17,7 @@ dependencies = [
     "datasets",                 
     "evaluate",                 
     "peft",                     # Parameter-Efficient Fine-Tuning (LoRA)
+    "sentencepiece",
 
     # --- Data Processing & NLP ---
     "pandas",

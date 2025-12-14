@@ -9,11 +9,11 @@ The primary goal of this project is not to increase your watching time in your f
 
 
 
-![PyTorch](https://img.shields.io/badge/PyTorch-%23EE4C2C.svg?style=flat&logo=PyTorch&logoColor=white)
-![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?style=flat&logo=Streamlit&logoColor=white)
-![SQLite3](https://img.shields.io/badge/SQLite-07405E?style=flat&logo=sqlite&logoColor=white)
-![ActivityWatcher](https://img.shields.io/badge/ActivityWatcher-1D1D1D?style=flat&logo=activity&logoColor=white)
-![NiceGUI](https://img.shields.io/badge/NiceGUI-5898d4?style=flat&logoColor=white)
+![PyTorch](https://img.shields.io/badge/PyTorch-%23EE4C2C.svg?style=plastic&logo=PyTorch&logoColor=white)
+![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?style=plastic&logo=Streamlit&logoColor=white)
+![SQLite3](https://img.shields.io/badge/SQLite-07405E?style=plastic&logo=sqlite&logoColor=white)
+![ActivityWatcher](https://img.shields.io/badge/ActivityWatcher-%23ffff?style=plastic&logo=activity)
+![NiceGUI](https://img.shields.io/badge/NiceGUI-5898d4?style=plastic&logoColor=white)
 
 
 

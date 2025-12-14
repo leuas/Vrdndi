@@ -1,4 +1,30 @@
-'''contain the model class of productive predicting model'''
+"""
+ProductiveModel and HybirdProductiveModel Architecture
+
+
+This module defines the core model class, `ProductiveModel` `HybridProductiveModel`, which 
+encapsulates the forward architecture. It is designed to process video data by 
+fusing media metadata with pre-computed (offline) encoded tensors.
+
+Key Components:
+    1.  **ProductiveModel (Base):** The foundational architecture designed to process 
+        raw media data. It defines the core backbone layers.
+    2.  **HybridProductiveModel (Primary):** A specialized subclass that extends the 
+        base model. It predicts the productive rate and interest rate for media data with pre-computed
+        encoded tensors representing app sequences
+
+Usage:
+    For most inference tasks, `HybridProductiveModel` is the primary class 
+    as it incorporates the full feature set. Use `ProductiveModel` only if you 
+    intend to subclass the architecture.
+
+
+Classes:
+    - ProductiveModel: Basic model
+    - HybridProductiveModel: Child class of productive model. Using offline app sequence as feature.
+
+
+"""
 import torch
 import pprint
 import pandas as pd
@@ -17,7 +43,18 @@ from src.config import DEVICE,ProductiveModelConfig,HybirdProductiveModelConfig
 from src.models.components import ResBlock,ConditionAwareSequential,Permute,SwiGLU
 
 class ProductiveModel(nn.Module):
-    '''the productive model would predict if the given content is suit for current timing'''
+    '''
+    Base architecture for processing media metadata features.
+
+    This class serves as the backbone for the inference and training pipelines. It encodes raw 
+    media attributes (such as textual titles and numerical duration) and predicts the interest and
+    productive rate.
+
+    Args:
+        config (ProductiveModelConfig): The configuration of the model
+
+    
+    '''
 
     def __init__(self,config:ProductiveModelConfig ):
         super().__init__()
@@ -161,8 +198,27 @@ class ProductiveModel(nn.Module):
 
 
 class HybirdProductiveModel(ProductiveModel):
-    '''The productive model would predict if the given content is suit for current timing,
-      add aw data input by using sentence transformer to embed the text and concat the numerical data with aw text data'''
+    '''
+    The model class that uses offline ActivityWatcher (AW) sequences with text to
+    predict 'interest' and 'productive' scores.
+
+    This class extends the base architecture by injecting offline app sequence tensor
+    directly into the transformer's input space.
+
+    Architecture / Forward Pass:
+        1.  Three residual blocks are used to compress AW sequence into one single token.
+        2.  BGE-M3 embedding layer embed the input text (`input_ids`)
+        3.  Concatenated the compressed token (from step 1) with the text embeddings (from step 2). 
+        4.  The BGE-M3 encoder processes the sequence of tokens
+        5.  A mean pooling operation is applied to the encoder's output 
+            to derive a global feature vector.
+        6.  The pooled vector is passed through separate heads to predict 
+            the 'interest' and 'productive' scores.
+
+    Args:
+        config (HybirdProductiveModelConfig): Model configuration.
+    
+    '''
 
     def __init__(self,config:HybirdProductiveModelConfig):
 
@@ -284,7 +340,7 @@ class HybirdProductiveModel(ProductiveModel):
 
         Returns:
             Type: {dict}
-            For more details, you could see Returns string of  _output_custom_layer() in ProductiveModel class
+            For more details, you could see Returns string of _output_custom_layer() in ProductiveModel class
         '''
         
         compressed_embed,compressed_mask=self._featurize_aw_sequence(aw_tensor,aw_attention_mask,duration)

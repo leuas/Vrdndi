@@ -44,11 +44,19 @@ from src.inference.productive import HybridProductiveModelPredicting
 from src.path import FIXTURE_PATH
 
 class Demo:
-    '''demo '''
-
-    def __init__(self) -> None:
+    '''Initializes the demo for model functionality showcase
         
-        self.model_inference=HybridProductiveModelPredicting()
+        Args:
+            mode: 'standard' loads the real LoRA weights from fixtures.
+                  'dry_run' skips loading to test pipeline logic only.
+    '''
+
+    def __init__(self,mode:Literal['standard','dry-run']='standard') -> None:
+        
+        if mode == 'standard':
+            self.model_inference=HybridProductiveModelPredicting('example_model.pth')
+        else:
+            self.model_inference=HybridProductiveModelPredicting()
         
         self.drop_columns=['interest','tag']
 

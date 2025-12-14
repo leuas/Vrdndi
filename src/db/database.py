@@ -57,6 +57,8 @@ class VrdndiDatabase:
         '''save a key value pair in registry table in the database'''
 
         with sq.connect(self.dbpath) as conn:
+            self._initial_registry_table()
+
             conn.execute(
                 "INSERT OR REPLACE INTO registry (name, value) VALUES (?,?)",
                 (key,value)
@@ -64,6 +66,8 @@ class VrdndiDatabase:
 
     def _get_registry_value(self,key:str) ->int:
         with sq.connect(self.dbpath) as conn:
+
+            self._initial_registry_table()
 
             cursor=conn.execute("SELECT value FROM registry WHERE name = ?",(key,))
 
@@ -272,15 +276,12 @@ class VrdndiDatabase:
     def update_feed_state(self,value:Literal[0,1]) ->None:
         '''Update feed state to either 0 or 1 '''
 
-        self._initial_registry_table()
-
         self._set_registry_value('feed_state',value=value)
 
 
     def get_feed_state(self) ->bool:
         '''Get the feed state from database'''
         
-        self._initial_registry_table()
 
         rs=self._get_registry_value('feed_state')
 

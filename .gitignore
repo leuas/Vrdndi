@@ -14,7 +14,7 @@ __pycache__/
 .vscode/
 *.egg-info/
 .tmp.driveupload
-
+.VScodeCounter
 
 
 /data

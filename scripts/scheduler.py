@@ -4,17 +4,17 @@ import requests
 from datetime import datetime
 from apscheduler.schedulers.blocking import BlockingScheduler
 from apscheduler.triggers.cron import CronTrigger
-from src.inference.productive import HybirdProductiveModelPredicting
-from src.config import HybirdProductiveModelConfig
+from src.inference.productive import HybridProductiveModelPredicting
+from src.config import HybridProductiveModelConfig
 
 os.environ['no_proxy'] = '100.100.6.64'
 
 def feed_update() ->None:
     '''use model to predict feed and update the feed in the website'''
     
-    config=HybirdProductiveModelConfig()
+    config=HybridProductiveModelConfig()
     config.eval_test_num_workers=4
-    model=HybirdProductiveModelPredicting('hybird_productive_model_4BS_10E_EMA_save_loss_weighted.pth',config=config)
+    model=HybridProductiveModelPredicting('hybird_productive_model_4BS_10E_EMA_save_loss_weighted.pth',config=config)
     model.predict(time_range=300)
 
     

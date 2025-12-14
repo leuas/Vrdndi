@@ -56,8 +56,8 @@ class ProductiveModelConfig:
     
 
 @dataclass
-class HybirdProductiveModelConfig(ProductiveModelConfig):
-    '''The config of HybirdProductiveModel '''
+class HybridProductiveModelConfig(ProductiveModelConfig):
+    '''The config of HybridProductiveModel '''
 
 
     num_in_feature:int =3 #duration,time_sin,time_cos

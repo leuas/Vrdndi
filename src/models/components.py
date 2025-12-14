@@ -154,7 +154,7 @@ def adaln_modulation(input_tensor:torch.Tensor,gamma:torch.Tensor,beta:torch.Ten
 
 class AdaLN(nn.Module):
     '''Adaptive Layer Normalization with Zero-Initialization for adjusing the token from 
-        sequence_compressor in HybirdProductiveModel
+        sequence_compressor in HybridProductiveModel
     
         This layer modulates the normalized input using scale (gamma) and shift (beta)
         values predicted from a condition vector (e.g., duration or time embedding).

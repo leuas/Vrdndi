@@ -1,5 +1,5 @@
 """
-ProductiveModel and HybirdProductiveModel Architecture
+ProductiveModel and HybridProductiveModel Architecture
 
 
 This module defines the core model class, `ProductiveModel` `HybridProductiveModel`, which 
@@ -38,7 +38,7 @@ from sentence_transformers import SentenceTransformer
 from peft import LoraConfig,get_peft_model
 
 from src.utils.ops import pad_aw_sequence
-from src.config import DEVICE,ProductiveModelConfig,HybirdProductiveModelConfig
+from src.config import DEVICE,ProductiveModelConfig,HybridProductiveModelConfig
 
 from src.models.components import ResBlock,ConditionAwareSequential,Permute,SwiGLU
 
@@ -197,16 +197,16 @@ class ProductiveModel(nn.Module):
 
 
 
-class HybirdProductiveModel(ProductiveModel):
+class HybridProductiveModel(ProductiveModel):
     '''
-    The model class that uses offline ActivityWatcher (AW) sequences with text to
+    Model class that uses offline ActivityWatcher (AW) sequences with text to
     predict 'interest' and 'productive' scores.
 
     This class extends the base architecture by injecting offline app sequence tensor
     directly into the transformer's input space.
 
     Architecture / Forward Pass:
-        1.  Three residual blocks are used to compress AW sequence into one single token.
+        1.  Three residual blocks compress AW sequence into one single token.
         2.  BGE-M3 embedding layer embed the input text (`input_ids`)
         3.  Concatenated the compressed token (from step 1) with the text embeddings (from step 2). 
         4.  The BGE-M3 encoder processes the sequence of tokens
@@ -216,11 +216,11 @@ class HybirdProductiveModel(ProductiveModel):
             the 'interest' and 'productive' scores.
 
     Args:
-        config (HybirdProductiveModelConfig): Model configuration.
+        config (HybridProductiveModelConfig): Model configuration.
     
     '''
 
-    def __init__(self,config:HybirdProductiveModelConfig):
+    def __init__(self,config:HybridProductiveModelConfig):
 
         self.config=config
     

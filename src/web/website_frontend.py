@@ -21,10 +21,10 @@ from nicegui import ui,app
 
 from src.inference.baseline import make_rf_prediction
 
-from src.db.database import PersonalFeedDatabase
+from src.db.database import VrdndiDatabase
 
 
-db=PersonalFeedDatabase()
+db=VrdndiDatabase()
 
 new_feed_state={
         'feed_state':db.get_feed_state()

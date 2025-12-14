@@ -5,39 +5,39 @@ import pandas as pd
 
 from datetime  import datetime
 from src.db.database import VrdndiDatabase
-from src.pipelines.productive import HybirdProductiveModelTraining
-from src.models.productive import HybirdProductiveModel
+from src.pipelines.productive import HybridProductiveModelTraining
+from src.models.productive import HybridProductiveModel
 
 from torch.utils.data import DataLoader
 
 from src.utils.ops import duration_transform,text_col_fillna,convert_timestamp_to_pt_file,if_load_model,iso_duration_transform
-from src.model_dataset.loader import HybirdProductiveLoader
+from src.model_dataset.loader import HybridProductiveLoader
 
 
-from src.config import DEVICE,HybirdProductiveModelConfig
+from src.config import DEVICE,HybridProductiveModelConfig
 from src.path import INFERENCE_DATA_PATH
 
 
-class HybirdProductiveModelPredicting:
+class HybridProductiveModelPredicting:
     '''the class that contain the process of using HyvirdProductiveModel to predict value'''
-    def __init__(self,model_name:str|None =None,config:HybirdProductiveModelConfig|None=None) -> None:
+    def __init__(self,model_name:str|None =None,config:HybridProductiveModelConfig|None=None) -> None:
 
         if config is None:
-            self.config = HybirdProductiveModelConfig()
-            print('HybirdProductiveModel is using default config')
+            self.config = HybridProductiveModelConfig()
+            print('HybridProductiveModel is using default config')
 
         else:
             self.config=config
 
         if model_name is None:
-            self.model= HybirdProductiveModel(self.config).to(DEVICE)
+            self.model= HybridProductiveModel(self.config).to(DEVICE)
         else:
-            self.model= HybirdProductiveModel(self.config).to(DEVICE)
+            self.model= HybridProductiveModel(self.config).to(DEVICE)
             self.model=torch.compile(self.model,mode='reduce-overhead')
             self.model = if_load_model(self.model,model_name,lora=self.model.config.use_lora)
 
         
-        self.loader = HybirdProductiveLoader(self.config)
+        self.loader = HybridProductiveLoader(self.config)
 
         self.db=VrdndiDatabase()
 

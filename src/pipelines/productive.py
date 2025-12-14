@@ -28,13 +28,13 @@ from sklearn.model_selection import KFold
 
 from src.utils.ops import print_parameter_state,data_split,set_random_seed,if_load_model,FocalLoss
 from src.utils.data_etl import iso_duration_transform
-from src.models.productive import ProductiveModel,HybirdProductiveModel
+from src.models.productive import ProductiveModel,HybridProductiveModel
 
-from src.model_dataset.productive import ProductiveData,HybirdProductiveData
-from src.model_dataset.loader import ProductiveLoader,HybirdProductiveLoader
+from src.model_dataset.productive import ProductiveData,HybridProductiveData
+from src.model_dataset.loader import ProductiveLoader,HybridProductiveLoader
 
 from src.db.database import VrdndiDatabase
-from src.config import DEVICE,ProductiveModelConfig,HybirdProductiveModelConfig
+from src.config import DEVICE,ProductiveModelConfig,HybridProductiveModelConfig
 
 from src.path import ARTIFACTS_PATH
 
@@ -629,15 +629,15 @@ class ProductiveModelTraining(Generic[ConfigType]):
 
 
 
-class HybirdProductiveModelTraining(ProductiveModelTraining[HybirdProductiveModelConfig]):
+class HybridProductiveModelTraining(ProductiveModelTraining[HybridProductiveModelConfig]):
     '''add aw data input and the sentence transformer as its encoder,
         the aw data vector would bypass the main model's embeding layer'''
 
-    def __init__(self,config:HybirdProductiveModelConfig|None = None):
+    def __init__(self,config:HybridProductiveModelConfig|None = None):
 
         self.config=self._setup_config(config)
 
-        model= HybirdProductiveModel(config=self.config).to(DEVICE)
+        model= HybridProductiveModel(config=self.config).to(DEVICE)
 
 
         super().__init__(model=model,config=self.config)
@@ -646,14 +646,14 @@ class HybirdProductiveModelTraining(ProductiveModelTraining[HybirdProductiveMode
         self.scaler=GradScaler()
 
 
-        self.loader=HybirdProductiveLoader(self.config)
+        self.loader=HybridProductiveLoader(self.config)
 
-    def _setup_config(self,config:HybirdProductiveModelConfig|None):
+    def _setup_config(self,config:HybridProductiveModelConfig|None):
         '''Initial training config'''
 
         if config is None:
-            print('HybirdProductiveModel is using default config')
-            return HybirdProductiveModelConfig()
+            print('HybridProductiveModel is using default config')
+            return HybridProductiveModelConfig()
             
 
         return config
@@ -767,7 +767,7 @@ class HybirdProductiveModelTraining(ProductiveModelTraining[HybirdProductiveMode
 
             wandb.watch(self.model,log='all',log_freq=10)
             
-            self.model=HybirdProductiveModel(self.config).to(DEVICE)
+            self.model=HybridProductiveModel(self.config).to(DEVICE)
 
             self.optimizer=torch.optim.AdamW(self.model.parameters(),lr=5e-5)#reset the optimizer
 

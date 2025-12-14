@@ -7,13 +7,13 @@ import random
 from pathlib import Path
 from torch.utils.data import DataLoader,WeightedRandomSampler
 
-from src.model_dataset.productive import ProductiveData,HybirdProductiveData
+from src.model_dataset.productive import ProductiveData,HybridProductiveData
 
 from transformers import AutoTokenizer
 from transformers import DataCollatorWithPadding
 
 from src.utils.ops import split_xy
-from src.config import HybirdProductiveModelConfig
+from src.config import HybridProductiveModelConfig
 
 from src.path import TRAIN_DATA_PATH,INFERENCE_DATA_PATH
 
@@ -61,10 +61,10 @@ class ProductiveLoader:
         return self.dataloader(train_set,batch_size,shuffle)
 
 
-class HybirdProductiveLoader:
+class HybridProductiveLoader:
     '''Data loader part for Hyvird Productive Model'''
 
-    def __init__(self,config:HybirdProductiveModelConfig,seed:int=42) -> None:
+    def __init__(self,config:HybridProductiveModelConfig,seed:int=42) -> None:
 
 
         self.g=torch.Generator().manual_seed(seed)
@@ -75,7 +75,7 @@ class HybirdProductiveLoader:
 
 
 
-    def hybird_data_collator(self,dataset:list) ->dict:
+    def hybrid_data_collator(self,dataset:list) ->dict:
         '''combine the aw data collator with other feature's DataCollatorWithPadding
         Args:
             dataset(list): including input ids, attention mask, duration and timestamp and ground truth(if have any)
@@ -169,14 +169,14 @@ class HybirdProductiveLoader:
 
         sampler=self.get_weighted_random_sampler(y=y)
 
-        data=HybirdProductiveData(train_set,path=TRAIN_DATA_PATH,max_length=self.config.max_length)
+        data=HybridProductiveData(train_set,path=TRAIN_DATA_PATH,max_length=self.config.max_length)
         
 
         dataloader=DataLoader(
             data,
             batch_size = batch_size,
             shuffle=shuffle,
-            collate_fn=self.hybird_data_collator,
+            collate_fn=self.hybrid_data_collator,
             num_workers = self.config.train_num_workers,
             generator=self.g,
             sampler=sampler,
@@ -202,14 +202,14 @@ class HybirdProductiveLoader:
             path=TRAIN_DATA_PATH
             print('Warning: Argument path is not specified. Defaulting to TRAIN_DATA_PATH  ')
 
-        dataset=HybirdProductiveData(data,path=path,max_length=self.config.max_length)
+        dataset=HybridProductiveData(data,path=path,max_length=self.config.max_length)
 
 
         dataloader=DataLoader(
             dataset,
             batch_size = batch_size,
             shuffle=shuffle,
-            collate_fn=self.hybird_data_collator,
+            collate_fn=self.hybrid_data_collator,
             num_workers = self.config.eval_test_num_workers,
             generator=self.g,
             worker_init_fn=seed_worker

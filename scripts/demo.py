@@ -1,28 +1,60 @@
-'''Model demo'''
-import os
-import pprint
+"""
+Basic Inference Demo for productive model
+
+This script demonstrates the functionality of the productive model by performing 
+inference on video data which is from test fixtures and a fake short app sequence. 
+It is primarily used to verify environment setup.
+
+Modes:
+    - Standard: Loads the LoRA layers from `artifacts/` and runs the inference.
+    - Dry Run:  Run the inference directly.
+
+Purpose:
+    - Verifies library dependencies (e.g. torch, transformers).
+    - DOES NOT validate broader system integrations (Youtube API, Database, Website).
+
+
+This demo has a secondary mode, `predict_improperly`, to simulate failure 
+handling. It demonstrates cases where the offline encoded tensor is unavailable, 
+triggering a warning for each missing file (in this case, all files) and replacing 
+the missing data with a zero-tensor as fallback.
+
+Usage:
+    python demo.py
+
+Notes:
+    By default, this script runs `predict_normally()` and `mode='standard'`. To test the fallback 
+    mechanism or different mode, open this file and switch the function call to `predict_improperly()` or switch the mode.
+
+Expected Output:
+    - `predict_normally()`:
+    Initialization logs followed by the final output DataFrame.
+
+    - `predict_improperly`:
+        A LOT of warning logs regarding missing offline tensors, followed by the 
+        final output DataFrame .
+        
+"""
+
 import pandas as pd
 from unittest.mock import patch
-from datetime import datetime,timedelta
+from datetime import datetime
 
-from src.utils.ops import productive_data_preprocess,convert_timestamp_to_pt_file
-
-from src.db.database import VrdndiDatabase
-from src.inference.productive import HybirdProductiveModelPredicting
-from src.path import INFERENCE_DATA_PATH,PROCESSED_DATA_PATH,FIXTURE_PATH
+from src.inference.productive import HybridProductiveModelPredicting
+from src.path import FIXTURE_PATH
 
 class Demo:
-    '''A demo for model funtional showcase'''
+    '''demo '''
 
     def __init__(self) -> None:
         
-        self.model_inference=HybirdProductiveModelPredicting()
+        self.model_inference=HybridProductiveModelPredicting()
         
         self.drop_columns=['interest','tag']
 
 
     def predict_normally(self) ->None:
-        '''Predict fake vide data with offline encoded app sequence'''
+        '''Predict fake video data with offline encoded app sequence'''
 
         with patch('src.utils.data_etl.ActivityWatchClient.query') as mock_aw_sequence:
             
@@ -35,7 +67,7 @@ class Demo:
 
             self.model_inference.predict(inference_data=inference_data,update_db=False)
 
-    def predict_unproperly(self) ->None:
+    def predict_improperly(self) ->None:
         '''Predict fake video data without offline encoded app sequence '''
 
         with patch('src.utils.data_etl.ActivityWatchClient.query') as mock_aw_sequence:
@@ -45,6 +77,8 @@ class Demo:
             video_data=pd.read_csv(FIXTURE_PATH/'fake_video_data.csv').drop(columns=self.drop_columns)
             video_data['timestamp']=datetime.now().isoformat()
             self.model_inference.predict(inference_data=video_data,update_db=False)
+
+
 
 #The fake app seuqence data that is fetched from Activity Watcher
 fake_aw_sequence=[[{'data': {'$category': ['Productivity', 'Gemini'],
@@ -69,6 +103,9 @@ fake_aw_sequence=[[{'data': {'$category': ['Productivity', 'Gemini'],
             'duration': 82.302,
             'id': 186159,
             'timestamp': '2025-12-12T14:23:38.769500Z'}]]
+
+
+
 
 if __name__=='__main__':
     demo=Demo()

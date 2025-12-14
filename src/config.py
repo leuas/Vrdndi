@@ -11,6 +11,8 @@ from typing import TypeVar
 
 DEVICE=torch.device('mps' if torch.mps.is_available() else 'cuda' )
 
+CLIENT_SECRET_FILE='client_secret_321501314462-d9iagau3ml3q6edkrpeel82tdqotgbr7.apps.googleusercontent.com.json'
+
 HOSTNAME='leuasMacBook-Air.local'
 HOST='100.100.6.64'
 PORT=5600

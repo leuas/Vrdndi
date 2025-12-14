@@ -39,6 +39,11 @@ class VrdndiDatabase:
 
         self.engine=sqlalchemy.create_engine(f'sqlite:///{self.dbpath}')
 
+        self._initial_registry_table()
+        self._initial_streamlit_schema()
+        self._initial_video_table()
+        
+
 
     def _initial_registry_table(self) ->None:
         '''initial regisry table before saving data intot it'''
@@ -57,6 +62,7 @@ class VrdndiDatabase:
         '''save a key value pair in registry table in the database'''
 
         with sq.connect(self.dbpath) as conn:
+
             conn.execute(
                 "INSERT OR REPLACE INTO registry (name, value) VALUES (?,?)",
                 (key,value)
@@ -64,6 +70,7 @@ class VrdndiDatabase:
 
     def _get_registry_value(self,key:str) ->int:
         with sq.connect(self.dbpath) as conn:
+
 
             cursor=conn.execute("SELECT value FROM registry WHERE name = ?",(key,))
 
@@ -272,13 +279,12 @@ class VrdndiDatabase:
     def update_feed_state(self,value:Literal[0,1]) ->None:
         '''Update feed state to either 0 or 1 '''
 
-        self._initial_registry_table()
-
         self._set_registry_value('feed_state',value=value)
 
 
     def get_feed_state(self) ->bool:
         '''Get the feed state from database'''
+        
 
         rs=self._get_registry_value('feed_state')
 
@@ -315,7 +321,6 @@ class VrdndiDatabase:
         '''Save the streamlit labeled data to database'''
         pprint.pprint(data)
 
-        self._initial_streamlit_schema()
 
 
         data.to_sql('streamlit_data',con=self.engine,if_exists='append',index=False,method=self._insert_if_not_exits)
@@ -328,7 +333,6 @@ class VrdndiDatabase:
     def update_streamlit_index(self,index:int) ->None:
         '''Save the index of last datapoint into database'''
 
-        self._initial_registry_table()
 
         self._set_registry_value('streamlit_index',index)
 

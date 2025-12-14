@@ -71,7 +71,7 @@ class HybirdProductiveLoader:
 
         self.config=config
 
-        self.tokenizer=AutoTokenizer.from_pretrained('BAAI/bge-m3',local_files_only=True)
+        self.tokenizer=AutoTokenizer.from_pretrained('BAAI/bge-m3')
 
 
 

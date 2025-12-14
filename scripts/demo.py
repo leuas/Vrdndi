@@ -6,35 +6,34 @@ inference on video data which is from test fixtures and a fake short app sequenc
 It is primarily used to verify environment setup.
 
 Modes:
-    - Standard: Loads the custom LoRA adapter from `artifacts/` and runs real inference.
-    - Dry Run:  Run the pipeline without loading weights .
+    - Standard: Loads the LoRA layers from `artifacts/` and runs the inference.
+    - Dry Run:  Run the inference directly.
 
 Purpose:
-    - Verifies that the LoRA adapter loads correctly.
     - Verifies library dependencies (e.g. torch, transformers).
     - DOES NOT validate broader system integrations (Youtube API, Database, Website).
 
-This demo includes a secondary mode, `predict_improperly`, to simulate failure 
+
+This demo has a secondary mode, `predict_improperly`, to simulate failure 
 handling. It demonstrates cases where the offline encoded tensor is unavailable, 
 triggering a warning for each missing file (in this case, all files) and replacing 
-the missing data with a zero-tensor fallback.
+the missing data with a zero-tensor as fallback.
 
 Usage:
     python demo.py
 
 Notes:
     By default, this script runs `predict_normally()` and `mode='standard'`. To test the fallback 
-    mechanism or different mode, open this file and switch the function call to `predict_improperly()`
-    or switch the mode.
+    mechanism or different mode, open this file and switch the function call to `predict_improperly()` or switch the mode.
 
 Expected Output:
     - `predict_normally()`:
-        Standard initialization logs followed by the final output DataFrame.
+    Initialization logs followed by the final output DataFrame.
 
     - `predict_improperly`:
-        Extensive warning logs regarding missing offline tensors, followed by the 
-        final output DataFrame (generated via fallback).
-    
+        A LOT of warning logs regarding missing offline tensors, followed by the 
+        final output DataFrame .
+        
 """
 
 import pandas as pd

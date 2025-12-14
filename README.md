@@ -126,49 +126,40 @@ As you may notice, current project doesn't do anything about the original goal. 
 
 ```
 .
-├── artifacts/              #Where project place the model artifacts                           
+├── artifacts/                  #Where project place the model artifacts                           
 ├── data                                     
-│   ├── database            #Database file
+│   ├── database                #Database file
 │   ├── processed           
-│   │   ├── inference       #Where place offline encoded tensor for inference
-│   │   └── train           #Where place offline encoded tensor for inference
-│   └── raw                 #Raw data(e.g. watch-history.json)
-├── docs/
+│   │   ├── inference           #Where place offline encoded tensor for inference
+│   │   └── train               #Where place offline encoded tensor for inference
+│   └── raw                     #Raw data(e.g. watch-history.json)
+├── docs/                   
 ├── pyproject.toml
 ├── pytest.ini
 ├── scripts/
 ├── secrets/
 ├── src
-│   ├── __init__.py
-│   ├── assets/
+│   ├── assets/                 #The file that used 
 │   ├── config.py
-│   ├── db
-│   │   ├── __init__.py
-│   │   └── database.py
+│   ├── db/                     #Database class
 │   ├── inference
-│   │   ├── __init__.py
 │   │   ├── baseline.py
-│   │   └── productive.py
+│   │   └── productive.py                   #Contains main model inference class
 │   ├── model_dataset
-│   │   ├── __init__.py
 │   │   ├── loader.py
-│   │   └── productive.py
+│   │   └── productive.py                   #Contains dataset class of main model
 │   ├── models
-│   │   ├── __init__.py
-│   │   ├── activity_watcher_encoder.py
-│   │   ├── components.py
-│   │   └── productive.py
+│   │   ├── activity_watcher_encoder.py     #The model that encode text from the app sequence 
+│   │   ├── components.py                   #Defines some model layers (e.g. AdaLN)
+│   │   └── productive.py                   #Main model 
 │   ├── pipelines
-│   │   ├── __init__.py
 │   │   ├── baseline.py
-│   │   └── productive.py
+│   │   └── productive.py                   #Pipeines of main model
 │   ├── utils
-│   │   ├── __init__.py
-│   │   ├── data_etl.py
-│   │   └── ops.py
+│   │   ├── data_etl.py                     #Processes data from api
+│   │   └── ops.py                          #Operation of data for model training or inference
 │   └── web
-│       ├── __init__.py
-│       └── website_frontend.py
+│       └── website_frontend.py             #NiceGUI website frontend
 └── test 
 
 ```

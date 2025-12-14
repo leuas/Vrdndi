@@ -43,7 +43,6 @@ There's two type of input:
 
 2, **App Sequence Data**: Activity history from ActivityWatcher. Processed by a custom sequential residual block to encode the sequence into a single token.
 
-And I also add SE block to "gate" each token to pick the important one and replace the common GLU with SiLU to be consistant with SWiGLU, since it's almost interchangable.
 
 **Main Structure**: 
 ![[Main structure]](docs/images/Model_main_structure.svg)
@@ -59,12 +58,12 @@ And I also add SE block to "gate" each token to pick the important one and repla
 
 And there's two head as the output layer of the model: interest head and productive head. The interest head would use as a trainsition before you have enough productive data(i.e. The data you labelled in the website) and the productive head to predict a rate base on previous app history, time for each media data. 
 
->**WhySWiGLU** Previously the interest head can't quite converge (at least the bouncing range is larger than now), and since the sequence compressor for interest head is kinda partial functional (It won't receive a app sequence to predict interest, so the output token would just represent the duration that diffused in it). So probably adding a strong activation function in output layer would be a good idea, and I also switch the productive head to SWiGLU at that time as convenient, but seemingly it cause the overfitting problem that is faced on currently.  
-
 
 **Output Layer**:
 
 ![[Output layer]](docs/images/output_layer.svg)
+
+>**WhySWiGLU** Previously the interest head can't quite converge (at least the bouncing range is larger than now), and since the sequence compressor for interest head is kinda partial functional (It won't receive a app sequence to predict interest, so the output token would just represent the duration that diffused in it). So probably adding a strong activation function in output layer would be a good idea, and I also switch the productive head to SWiGLU at that time as convenient, but seemingly it cause the overfitting problem that is faced on currently.  
 
 ## Model Performance
 
@@ -89,7 +88,8 @@ Some references:
 ## Usage/Examples
 
 Quick start:
-Show the basic model inference
+
+Show the basic model inference. For detail adjustment of demo, please see the docstring in ``demo.py``
 
 ```bash
 cd Vrdndi/scripts

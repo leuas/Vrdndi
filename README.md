@@ -61,7 +61,7 @@ There's two type of input:
 >**Why AdaLN:** Duration is a numerical value, it can't go through the BGE-M3's embedding layer, so either I need to put it as a separate token or put it as a condition to diffuse the AW data. In former, seemingly it would cause distribution mismatch(?), so I use the latter.
 
 
-
+And I used pre-activation structure instead of post-activiation one for the Residual block. (As we know, to let the gradient to flow back more easily) I also added SE block to "gate" each token to pick the important one and replaced the common GLU with SiLU to be consistant with SWiGLU, since it's almost interchangable.
 
 **Residual Block**: 
 

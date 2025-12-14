@@ -32,6 +32,15 @@ Step 2: Install the package. You may need to adjust the hyperparameter of the mo
 pip install -e . 
 ```
 
+## System Architecture
+
+Current system Architecture as the picture shown would fetch the data from Youtube API and your ActivityWatcher to predict output feed and save it into database. Website would fetch the feed from database to render videos.
+
+**End-to-End Pipelines**:
+
+![[system_architecture]](docs/images/System_Architecture.svg)
+
+
 
 ## Model Structure
 
@@ -46,9 +55,10 @@ There's two type of input:
 
 
 **Main Structure**: 
+
 ![[Main structure]](docs/images/Model_main_structure.svg)
 
->**WhyAdaLN** Duration is a numerical value, it can't go through the BGE-M3's embedding layer, so either I need to put it as a separate token or put it as a condition to diffuse the AW data. In former, seemingly it would cause distribution mismatch(?), so I use the latter.
+>**Why AdaLN:** Duration is a numerical value, it can't go through the BGE-M3's embedding layer, so either I need to put it as a separate token or put it as a condition to diffuse the AW data. In former, seemingly it would cause distribution mismatch(?), so I use the latter.
 
 
 
@@ -64,7 +74,7 @@ And there's two head as the output layer of the model: interest head and product
 
 ![[Output layer]](docs/images/output_layer.svg)
 
->**WhySWiGLU** Previously the interest head can't quite converge (at least the bouncing range is larger than now), and since the sequence compressor for interest head is kinda partial functional (It won't receive a app sequence to predict interest, so the output token would just represent the duration that diffused in it). So probably adding a strong activation function in output layer would be a good idea, and I also switch the productive head to SWiGLU at that time as convenient, but seemingly it cause the overfitting problem that is faced on currently.  
+>**Why SWiGLU:** Previously the interest head can't quite converge (at least the bouncing range is larger than now), and since the sequence compressor for interest head is kinda partial functional (It won't receive a app sequence to predict interest, so the output token would just represent the duration that diffused in it). So probably adding a strong activation function in output layer would be a good idea, and I also switch the productive head to SWiGLU at that time as convenient, but seemingly it cause the overfitting problem that is faced on currently.  
 
 ## Model Performance
 
@@ -96,16 +106,23 @@ Show the basic model inference. For detail adjustment of demo, please see the do
 cd Vrdndi/scripts
 
 python demo.py
-
 ```
 
 For detail or general usage, please see [Usage Guide](docs/USAGE.md)
 
 ## Privacy Notes
-All the data is processed locally. You would use the data yourself to train the model. 
+**Data Privacy**
+
+All data that's used in this project is processed locally. It's in the ``data/`` folder. You have full control over it.
+
+**Internet Requirement**
+* **Pipelines**: If you download the base BGE-M3 model, Sentence Transformer and its tokenizers, you could run it without Internet.
+
+* **Website**: The local website need to access to Internet to render Youtube video. 
+
 
 ## Website
-The website is functional as watching video and scrolling the feed and giving feedback.
+The NiceGUI website is functional as watching video and scrolling the feed and giving feedback.
 
 Main page would render 21 videos at once, you could press the ``LOAD MORE`` button to get more videos
 
@@ -140,10 +157,9 @@ Main page would render 21 videos at once, you could press the ``LOAD MORE`` butt
 
 ## Limitation
 
-As you may notice, current state of this project doesn't do anything about the primary goal. It's more like keeping or organizing your feed as you want, even if it's not a productive way. In the future version, we may reach that goal. (Say add RL when I have more data )
+As you may notice, current state of this project doesn't do anything about the primary goal. It's more like keeping or organizing your feed as you want, even if it's not in a productive way. In the future version, we may reach that goal. (Say add RL when I have more data )
 
-
-
+Also I'm skpetical about whether the current pipelines and model architecture would really previde a good quality of feed, while at some point the performance at small dataset is not bad. Probably we may know that when I have more data.
 
 ## File Strcuture
 
@@ -191,7 +207,7 @@ As you may notice, current state of this project doesn't do anything about the p
 
 ## Notes
 
-Since this is my very first project in code (except code practise), and I'm still new to code and ML. I may miss something completely.
+Since this is my very first project in code (except code practise), and I'm still new to programming and ML. I may miss something completely.
 
 If you find any bug/issue or problem about the architecture (Say, the architecture cause some converage problems) or anything else. Please feel free to open an issue in Github! (or even submit a PR!)
 

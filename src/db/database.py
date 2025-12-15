@@ -229,7 +229,8 @@ class VrdndiDatabase:
 
     def get_feed(self,order:Literal['interest','productive']='productive') ->pd.DataFrame:
         '''
-        Get the feed data from database and order by decreasing productive_rate (Highest on the top)
+        Get the feed data from database and order by decreasing productive_rate or interest
+        depend on `order` argument (Highest on the top)
         
         Args:
             order: The order of feed

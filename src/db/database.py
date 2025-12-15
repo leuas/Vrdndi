@@ -227,11 +227,23 @@ class VrdndiDatabase:
         print('\n Feed data updated successfully')
 
 
-    def get_feed(self) ->pd.DataFrame:
-        '''Get the feed data from database and order by decreasing productive_rate (Highest on the top)'''
+    def get_feed(self,order:Literal['interest','productive']='productive') ->pd.DataFrame:
+        '''
+        Get the feed data from database and order by decreasing productive_rate (Highest on the top)
+        
+        Args:
+            order: The order of feed
+                - interest: Get the feed sorted by interest rate descent
+                - productive: Get the feed sorted by productive rate descent
+        
+        '''
 
         with sq.connect(self.dbpath) as conn:
-            feed=pd.read_sql_query("SELECT * FROM feed ORDER BY productive_rate DESC",conn)
+
+            if order =='productive':
+                feed=pd.read_sql_query("SELECT * FROM feed ORDER BY productive_rate DESC",conn)
+            else:
+                feed=pd.read_sql_query("SELECT * FROM feed ORDER BY interest DESC",conn)
 
             
 

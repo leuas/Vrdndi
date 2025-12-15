@@ -6,16 +6,15 @@
 Vrdndi (Verdandi) is a full-stack recommendation system that process your media data (Youtube currently) to provide personal feed base on what you did previously in your computer (i.e dynamicly change the feed base on time and previous app history)
 
 The primary goal of this project is not to increase your watching time in your feed like other recommendation system. It's the opposite, minimize your watch time, increase your productivity but keep your interest still 
->Currently it won't work in such way, see [ Limitation section](#limitation)
+>For current constraints, see [ Limitation section](#limitation)
 
-
+> ⚠️ **Note:** Vrdndi is currently in **Alpha**. The core features are functional, but the main model training pipeline is still being tested on different device.
 
 ![PyTorch](https://img.shields.io/badge/PyTorch-%23EE4C2C.svg?style=plastic&logo=PyTorch&logoColor=white)
 ![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?style=plastic&logo=Streamlit&logoColor=white)
 ![SQLite3](https://img.shields.io/badge/SQLite-07405E?style=plastic&logo=sqlite&logoColor=white)
 ![ActivityWatcher](https://img.shields.io/badge/ActivityWatcher-%23ffff?style=plastic&logo=activity)
 ![NiceGUI](https://img.shields.io/badge/NiceGUI-5898d4?style=plastic&logoColor=white)
-
 
 
 ## Installation
@@ -168,7 +167,7 @@ Main page would render 21 videos at once, you could press the ``LOAD MORE`` butt
 
 - error handling for ``get_classes`` 
 
-- Check if_table_exist function in *interest data* preprocess
+- Write a check-if-table-exist function in *interest data* preprocess
 
 ## Limitation
 Technically speaking, it *can* aim for productivity if your have enough data and its quality is really good. But it's really hard to reach that since current state of the project doesn't do anything to explicitly form the feed in a way to achieve the primary goal.

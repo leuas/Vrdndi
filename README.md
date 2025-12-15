@@ -166,7 +166,9 @@ Main page would render 21 videos at once, you could press the ``LOAD MORE`` butt
 
 - Organise configuration class
 
-- More but haven't listed 
+- error handling for ``get_classes`` 
+
+- Check if_table_exist function in *interest data* preprocess
 
 ## Limitation
 Technically speaking, it *can* aim for productivity if your have enough data and its quality is really good. But it's really hard to reach that since current state of the project doesn't do anything to explicitly form the feed in a way to achieve the primary goal.

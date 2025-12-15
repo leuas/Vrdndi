@@ -81,11 +81,13 @@ For clarity and simplicity , I would call the data from your like,dislike playli
 
 **Save interest data**
 
-Open ``data_saving.py``, change the function to ``like_dislike_streamlit_data_preprocess()`` and run the file. It would save intereset data to database.
+Open ``data_saving.py``, change the function to ``like_dislike_streamlit_data_preprocess()`` and run the file. It would combine all these three data and save it into ``interest_data`` table in database.
+
+>**Note**: As the name goes, you may need to label some data in streamlit before running this function, otherwise
 
 **Save training data**
 
->If you followed the above step, and this is first time to use this project, **skip** this part. You can't save it now, because you haven't have productive data, yet. 
+>**Note**: If you followed the above step, and this is first time to use this project, **skip** this part. You can't save it now, because you haven't have productive data, yet. 
 
 Open ``data_saving.py``, change the function to ``interest_productive_data_preprocess()`` and run the file. It would use the videoId in your feeback to fetch data from Youtube API and save it to database.
 
@@ -238,6 +240,34 @@ inference_data=model.prepare_predicting_data()
 
 model.predict(inference_data=inference_data) 
 ```
+
+>Note: I haven't add a function to automatically clean the encoded tensor file, so you may delete these manually. (But added to backlog)
+
+
+## NiceGUI Website
+
+You could run the website in the **terminal**.
+
+Example:
+```bash
+cd vrdndi/src/web
+python website_frontend.py
+```
+
+>**Note**: You should run the inference to get the feed in the database before running the website.
+
+
+## Scheduler
+
+You could run the ``sheduler.py`` in the ``scripts/`` to update your feed regularly.
+
+
+
+## About Baseline
+
+Just don't touch it for now. I haven't connect it to database yet. So you could say in current version, it's unusable.
+
+
 
 ## Remote Connect (Optional)
 

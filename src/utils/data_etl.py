@@ -610,8 +610,8 @@ def get_and_clean_liked_data(dislike:bool=False,rm_stopwords:bool=True) ->list:
     return clean_liked_video(get_liked_video(get_auth_ser(),dislike),rm_stopwords=rm_stopwords)
 
 
-def get_and_save_liked_disliked_data_for_database():
-    '''export the liked and disliked data'''
+def get_and_save_liked_disliked_data_for_database()->None:
+    '''save the liked and disliked data from youtube to your database '''
     liked_data=get_and_clean_liked_data(rm_stopwords=False)
 
     disliked_data=get_and_clean_liked_data(dislike=True,rm_stopwords=False)
@@ -626,9 +626,10 @@ def get_and_save_liked_disliked_data_for_database():
 
 
 def get_and_save_his_data_for_database(video_n:int|None=None, shorts:bool=True) ->None:
-    ''' Randomly fetch the video in history, remove shorts, return history data
+    ''' Randomly fetch the video in history, remove shorts, save to database
         Args:
-            video_n (int,optional): Check te args part in function load_history_data.
+            video_n (int,optional): The number of vide that fetch from history.
+                For detail, check te args part in function load_history_data.
             shorts (bool,optional): Whether remove the shorts video (less than 60 seconds) from the history data. Default to True
             
             '''

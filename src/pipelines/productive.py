@@ -213,7 +213,7 @@ class ProductiveModelTraining(Generic[ConfigType]):
 
 
 
-    def _calc_model_loss(self,outputs:dict,batch:BatchEncoding, if_wandb:bool=True) ->torch.Tensor :
+    def _calc_model_loss(self,outputs:dict,batch:BatchEncoding,batch_idx:int, if_wandb:bool=True) ->torch.Tensor :
         '''calculate the model head loss and return the total loss'''
 
         pred_productive = outputs['productive_rate']
@@ -234,7 +234,10 @@ class ProductiveModelTraining(Generic[ConfigType]):
         interest_weight=self.config.interest_loss_weight
         total_loss=interest_loss*interest_weight+productive_loss+productive_weight
 
-        logging.info(f' productive loss: {productive_loss} intereset loss: {interest_loss}')
+        if batch_idx%10 == 0:
+            logging.info(f'Current batch index: {batch_idx}')
+
+            logging.info(f' productive loss: {productive_loss} ; intereset loss: {interest_loss} ')
 
         if if_wandb:
             wandb.log({'productive_loss':productive_loss,'interest_loss':interest_loss,'train_loss':total_loss})
@@ -263,13 +266,13 @@ class ProductiveModelTraining(Generic[ConfigType]):
         full_batch_loss=0
         batch_num_count=0
 
-        for batch in data:
+        for batch_idx,batch in enumerate(data):
 
             outputs=self.model.predict_step(batch)
 
             self._update_train_metrics(batch,outputs)
 
-            total_loss=self._calc_model_loss(outputs,batch,if_wandb=if_wandb)
+            total_loss=self._calc_model_loss(outputs,batch,batch_idx=batch_idx,if_wandb=if_wandb)
 
             total_loss.backward()
 
@@ -281,7 +284,8 @@ class ProductiveModelTraining(Generic[ConfigType]):
             full_batch_loss+=total_loss.item()
             batch_num_count+=1
 
-        logging.info('aver full batch loss:',full_batch_loss/batch_num_count)
+        average_full_batch_loss=full_batch_loss/batch_num_count
+        logging.info(f'aver full batch loss: {average_full_batch_loss}')
 
     
 
@@ -301,8 +305,8 @@ class ProductiveModelTraining(Generic[ConfigType]):
         logging.info(f'interest_f1: {interest_f1}')
 
         logging.info('')
-        logging.info(f' productive accuracy: {productive_accuracy}')
-        logging.info(f'productive f1: {productive_f1}')
+        logging.info(f' productive accuracy: {productive_accuracy} ')
+        logging.info(f'productive f1: {productive_f1} ')
 
         return interest_f1,productive_f1
 

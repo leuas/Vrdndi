@@ -235,9 +235,8 @@ class ProductiveModelTraining(Generic[ConfigType]):
         total_loss=interest_loss*interest_weight+productive_loss+productive_weight
 
         if batch_idx%10 == 0:
-            logging.info(f'Current batch index: {batch_idx}')
 
-            logging.info(f' productive loss: {productive_loss} ; intereset loss: {interest_loss} ')
+            logging.info(f'Current batch index: {batch_idx}; productive loss: {productive_loss} ; intereset loss: {interest_loss} ')
 
         if if_wandb:
             wandb.log({'productive_loss':productive_loss,'interest_loss':interest_loss,'train_loss':total_loss})
@@ -724,7 +723,7 @@ class HybridProductiveModelTraining(ProductiveModelTraining[HybridProductiveMode
             full_batch_loss+=total_loss.item()
             batch_num_count=i
 
-        logging.info('aver full batch loss:',full_batch_loss/batch_num_count)
+        logging.info(f'aver full batch loss: {full_batch_loss/batch_num_count}')
 
     
     def _clac_f1_mean_and_std(self,f1_dict:dict) ->None:

@@ -114,7 +114,7 @@ def calc_bce_posweigt(target_column:pd.DataFrame|pd.Series)->float :
 
     pos_weight=neg_counts / max(1,pos_counts)
 
-    logging.info('pos_weight',type(pos_weight))
+    logging.info(f'pos_weight{type(pos_weight)}')
 
     return pos_weight
 

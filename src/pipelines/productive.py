@@ -429,6 +429,9 @@ class ProductiveModelTraining(Generic[ConfigType]):
         interest_val=self.interest_val_metrics.compute()
         productive_val=self.productive_val_metrics.compute()
 
+        logging.info(interest_val)
+        logging.info(productive_val)
+
         wandb.log({
             'epoch':epoch,
             'interest_train_f1':interest_train['f1'],

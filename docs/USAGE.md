@@ -235,10 +235,9 @@ test.kfold_start()
 
 **Note**
 
-The model saving part would override model file that saved in previous epoch, if its EMA f1 is lower than the model in current epoch.
+The model saving part would override model file that saved in previous epoch, if its EMA f1 is lower than the model in current epoch. And if you forgot to change the model saving name, it's fine, there's a check function before running the actual training process.
 
-If you forgot to change the model saving name, it's fine, there's a check function before running the actual training process.
-
+Also If you saw the warning `` Argument path is not specified. Defaulting to TRAIN_DATA_PATH ``, yes, it's ecptected output
 ## Inference
 
 

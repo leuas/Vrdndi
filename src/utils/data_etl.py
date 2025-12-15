@@ -741,9 +741,9 @@ def delete_aw_priavte():
     def delete(e):
         resp =  requests.delete(f'http://localhost:5600/api/0/buckets/{bucket}/events/{e["id"]}')
         if resp.status_code != 200:
-            logging.error("failed to delete event", e['data']['title'])
+            logging.error(f"failed to delete event  { e['data']['title']}")
         else:
-            logging.info("deleted event", e['data']['title'])
+            logging.info(f"deleted event {e['data']['title']}" )
 
 
     for e in events:

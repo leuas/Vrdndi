@@ -25,6 +25,7 @@ Classes:
 
 
 """
+import logging
 import torch
 import pprint
 import pandas as pd
@@ -104,7 +105,7 @@ class ProductiveModel(nn.Module):
 
         self.model=lora_model
 
-        print('lora enabled!')
+        logging.info('lora enabled!')
         
     def _mean_pool(self,last_hidden_state:torch.Tensor,attention_mask:torch.Tensor):
         '''apply mean pool on the model output'''

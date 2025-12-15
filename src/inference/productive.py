@@ -1,6 +1,6 @@
 '''Contain the function that used productive model to make prediction'''
+import logging
 import torch
-import pprint
 import pandas as pd
 
 from datetime  import datetime
@@ -24,7 +24,7 @@ class HybridProductiveModelPredicting:
 
         if config is None:
             self.config = HybridProductiveModelConfig()
-            print('HybridProductiveModel is using default config')
+            logging.info('HybridProductiveModel is using default config')
 
         else:
             self.config=config
@@ -125,6 +125,8 @@ class HybridProductiveModelPredicting:
                 outputs['productive_rate'].append(productive_s) #As above
                 outputs['videoId'].append(batch['videoId_series'])
 
+                logging.debug(batch['videoId_series'])
+
 
                 
         interest_series=pd.concat(outputs['interest'])
@@ -136,7 +138,7 @@ class HybridProductiveModelPredicting:
         
         predicts_data=predicts_data.rename(columns={0:'videoId',1:'interest',2:'productive_rate'})
             
-        pprint.pprint(predicts_data)
+        logging.info(predicts_data)
 
         contain_predic_data=inference_data.merge(
             predicts_data,

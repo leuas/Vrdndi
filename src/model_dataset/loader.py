@@ -1,5 +1,6 @@
 '''conta dataloader function or other functin for loading data'''
 
+import logging
 import pandas as pd
 import torch
 import numpy as np
@@ -120,7 +121,7 @@ class HybridProductiveLoader:
         
 
         count_dict=productive_class_couts.to_dict()
-        print(count_dict)
+        logging.info(count_dict)
 
         total_count=sum(count_dict.values())
 
@@ -131,7 +132,7 @@ class HybridProductiveLoader:
         interest_sample_weight=interest_ratio*total_count/count_dict[-100]
         productive_sample_weight=productive_ratio*total_count/(count_dict[0]+count_dict[1])
 
-        print(f'Productive_sample weight: {productive_sample_weight} ;Interest_sample_weight: {interest_sample_weight}')
+        logging.info(f'Productive_sample weight: {productive_sample_weight} ;Interest_sample_weight: {interest_sample_weight}')
 
         weight_map={
             -100:interest_sample_weight,
@@ -153,7 +154,7 @@ class HybridProductiveLoader:
             replacement=True,
         )
 
-        print('WeightRandomSampler created')
+        logging.info('WeightRandomSampler created')
 
         return sampler
     
@@ -200,7 +201,7 @@ class HybridProductiveLoader:
 
         if path is None:
             path=TRAIN_DATA_PATH
-            print('Warning: Argument path is not specified. Defaulting to TRAIN_DATA_PATH  ')
+            logging.warning('WARNING: Argument path is not specified. Defaulting to TRAIN_DATA_PATH  ')
 
         dataset=HybridProductiveData(data,path=path,max_length=self.config.max_length)
 

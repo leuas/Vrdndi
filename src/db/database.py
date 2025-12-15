@@ -1,5 +1,5 @@
 '''Contain the database class for whole project'''
-
+import logging
 import pprint
 import sqlite3 as sq
 import pandas as pd
@@ -101,7 +101,6 @@ class VrdndiDatabase:
 
             ''')
 
-        print('Created/ Connected to vrdndi database')
 
     def _insert_if_not_exits(self,table:Any,conn:sqlalchemy.engine.Connection,keys:list,data_iter:Iterable) ->int:
         '''Insert new data into target table '''
@@ -140,7 +139,7 @@ class VrdndiDatabase:
 
         self.conn.close()
 
-        print('\n Video Data inserted from DataFrame successfully')
+        logging.info('\n Video Data inserted from DataFrame successfully')
 
     def update_video_data(self,videodata:pd.DataFrame) ->None:
         '''Save the video data to personal_feed database'''
@@ -175,7 +174,7 @@ class VrdndiDatabase:
 
         self.conn.close()
 
-        print('\n Video Data inserted from DataFrame successfully')
+        logging.info('\n Video Data inserted from DataFrame successfully')
 
     def _get_column_name(self) ->list:
         '''Get the table column name'''
@@ -224,7 +223,7 @@ class VrdndiDatabase:
 
         self.conn.close()
 
-        print('\n Feed data updated successfully')
+        logging.info('\n Feed data updated successfully')
 
 
     def get_feed(self) ->pd.DataFrame:
@@ -250,7 +249,7 @@ class VrdndiDatabase:
             )
 
 
-        print('\n Feedback data updated successfully')
+        logging.info('\n Feedback data updated successfully')
 
     def get_feedback(self) ->pd.DataFrame:
         '''Get the feedback data from database'''
@@ -274,7 +273,7 @@ class VrdndiDatabase:
                 index=False
 
             )
-        print('\n Train data updated successfully')
+        logging.info('\n Train data updated successfully')
 
     def update_feed_state(self,value:Literal[0,1]) ->None:
         '''Update feed state to either 0 or 1 '''
@@ -311,7 +310,7 @@ class VrdndiDatabase:
 
             )
 
-        print('History data saved into database!')
+        logging.info('History data saved into database!')
 
 
 
@@ -319,14 +318,14 @@ class VrdndiDatabase:
 
     def save_streamlit_data(self,data:pd.DataFrame) ->None:
         '''Save the streamlit labeled data to database'''
-        pprint.pprint(data)
+        logging.debug(data)
 
 
 
         data.to_sql('streamlit_data',con=self.engine,if_exists='append',index=False,method=self._insert_if_not_exits)
 
 
-        print('Sucessfully saved streamlit data to database')
+        logging.info('Sucessfully saved streamlit data to database')
 
     
 
@@ -336,7 +335,7 @@ class VrdndiDatabase:
 
         self._set_registry_value('streamlit_index',index)
 
-        print(f'Set streamlit index to {index} ')
+        logging.info(f'Set streamlit index to {index} ')
 
 
     def get_streamlit_index(self) ->int:

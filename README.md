@@ -5,7 +5,8 @@
 
 Vrdndi (Verdandi) is a full-stack recommendation system that process your media data (Youtube currently) to provide personal feed base on what you did previously in your computer (i.e dynamicly change the feed base on time and previous app history)
 
-The primary goal of this project is not to increase your watching time in your feed like other recommendation system. It's the opposite, minimize your watch time, increase your productivity but keep your interest still (Currently it won't work in such way, see Limitation section)
+The primary goal of this project is not to increase your watching time in your feed like other recommendation system. It's the opposite, minimize your watch time, increase your productivity but keep your interest still 
+>Currently it won't work in such way, see [ Limitation section](#limitation)
 
 
 
@@ -155,8 +156,6 @@ Main page would render 21 videos at once, you could press the ``LOAD MORE`` butt
 
 - Refine the feed displaying method (i.e. not just display the highest rated items)
 
-- Rewrite the website 
-
 - Improve appearance of the website
 
 - Display original video title instead of lowercase one
@@ -165,13 +164,16 @@ Main page would render 21 videos at once, you could press the ``LOAD MORE`` butt
 
 - Fix the productive inference test function
 
+- More but haven't listed 
+
 
 
 ## Limitation
+Technically speaking, it *can* aim for productivity if your have enough data and its quality is really good. But it's really hard to reach that since current state of the project doesn't do anything to explicitly form the feed in a way to achieve the primary goal.
 
-As you may notice, current state of this project doesn't do anything about the primary goal. It's more like keeping or organizing your feed as you want, even if it's not in a productive way. In the future version, we may reach that goal. (Say add RL when I have more data )
+It's more like keeping or organizing your feed as you want, even if it's not in a productive way. In the future version, we may reach that goal. (Say add RL?)
 
-Also I'm skpetical about whether the current pipelines and model architecture would really previde a good quality of feed, while at some point the performance at small dataset is not bad. Probably we may know that when I have more data.
+Also I'm skpetical about whether the current pipelines and model architecture would really previde a good quality of feed, while at some point the performance at small dataset is not bad. Probably we may know that when more data are collected.
 
 ## File Strcuture
 

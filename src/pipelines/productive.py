@@ -2,6 +2,7 @@
 import ast
 import argparse
 import copy
+import logging
 import os
 import pprint
 import wandb
@@ -100,7 +101,7 @@ class ProductiveModelTraining(Generic[ConfigType]):
         '''Initial training config'''
 
         if config is None:
-            print('ProductiveModel is using default config')
+            logging.info('ProductiveModel is using default config')
             return ProductiveModelConfig()
             
 
@@ -132,8 +133,8 @@ class ProductiveModelTraining(Generic[ConfigType]):
         weight=self._calc_weight(interest)
         self.config.wandb_config['interest_posweight']=weight
 
-        print("interest weight: ")
-        print(weight)
+        logging.info("interest weight: ")
+        logging.info(weight)
 
         return torch.tensor(weight,dtype=torch.float32,device=DEVICE)
     
@@ -143,8 +144,8 @@ class ProductiveModelTraining(Generic[ConfigType]):
         weight=self._calc_weight(productive)
 
         self.config.wandb_config['productive_posweight']=weight
-        print("productive weight: ")
-        print(weight)
+        logging.info("productive weight: ")
+        logging.info(weight)
 
         return torch.tensor(weight,dtype=torch.float32,device=DEVICE)
     
@@ -181,7 +182,7 @@ class ProductiveModelTraining(Generic[ConfigType]):
         self.config.wandb_config['productive_loss_fn']=self.productive_loss_fn
 
 
-        print('loss function loaded...')
+        logging.info('loss function loaded...')
 
 
 
@@ -212,7 +213,7 @@ class ProductiveModelTraining(Generic[ConfigType]):
 
 
 
-    def _calc_model_loss(self,outputs:dict,batch:BatchEncoding, if_wandb:bool=True) ->torch.Tensor :
+    def _calc_model_loss(self,outputs:dict,batch:BatchEncoding,batch_idx:int, if_wandb:bool=True) ->torch.Tensor :
         '''calculate the model head loss and return the total loss'''
 
         pred_productive = outputs['productive_rate']
@@ -233,7 +234,9 @@ class ProductiveModelTraining(Generic[ConfigType]):
         interest_weight=self.config.interest_loss_weight
         total_loss=interest_loss*interest_weight+productive_loss+productive_weight
 
-        print(f' productive loss: {productive_loss} intereset loss: {interest_loss}')
+        if batch_idx%10 == 0:
+
+            logging.info(f'Current batch index: {batch_idx}; productive loss: {productive_loss} ; intereset loss: {interest_loss} ')
 
         if if_wandb:
             wandb.log({'productive_loss':productive_loss,'interest_loss':interest_loss,'train_loss':total_loss})
@@ -262,13 +265,13 @@ class ProductiveModelTraining(Generic[ConfigType]):
         full_batch_loss=0
         batch_num_count=0
 
-        for batch in data:
+        for batch_idx,batch in enumerate(data):
 
             outputs=self.model.predict_step(batch)
 
             self._update_train_metrics(batch,outputs)
 
-            total_loss=self._calc_model_loss(outputs,batch,if_wandb=if_wandb)
+            total_loss=self._calc_model_loss(outputs,batch,batch_idx=batch_idx,if_wandb=if_wandb)
 
             total_loss.backward()
 
@@ -280,12 +283,13 @@ class ProductiveModelTraining(Generic[ConfigType]):
             full_batch_loss+=total_loss.item()
             batch_num_count+=1
 
-        print('aver full batch loss:',full_batch_loss/batch_num_count)
+        average_full_batch_loss=full_batch_loss/batch_num_count
+        logging.info(f'aver full batch loss: {average_full_batch_loss}')
 
     
 
     def _calculate_eval_metrics(self,all_outputs:dict) ->tuple[float,float]:
-        '''print the accuracy and f1 scores of the model'''
+        '''log the accuracy and f1 scores of the model'''
 
         interest_accuracy=accuracy_score(all_outputs['actual_interest'],all_outputs['preds_interest'])
 
@@ -296,12 +300,12 @@ class ProductiveModelTraining(Generic[ConfigType]):
         productive_f1=f1_score(all_outputs['actual_productive'],all_outputs['preds_productive'])
 
         
-        print(f'interest accuracy: {interest_accuracy}')
-        print(f'interest_f1: {interest_f1}')
+        logging.info(f'interest accuracy: {interest_accuracy}')
+        logging.info(f'interest_f1: {interest_f1}')
 
-        print('')
-        print(f' productive accuracy: {productive_accuracy}')
-        print(f'productive f1: {productive_f1}')
+        logging.info('')
+        logging.info(f' productive accuracy: {productive_accuracy} ')
+        logging.info(f'productive f1: {productive_f1} ')
 
         return interest_f1,productive_f1
 
@@ -369,7 +373,7 @@ class ProductiveModelTraining(Generic[ConfigType]):
         if load_model is not None:
 
             self.model=if_load_model(self.model,load_model,lora=self.model.config.use_lora)
-            print('load model...')
+            logging.info('load model...')
 
             
         self.model.eval()
@@ -395,7 +399,7 @@ class ProductiveModelTraining(Generic[ConfigType]):
 
                 best_ema=curr_ema
 
-                print('best_ema_f1 updated | model saved')
+                logging.info('best_ema_f1 updated | model saved')
 
 
     def _calc_curr_ema_f1(self,epoch_num:int,interest_f1,productive_f1) ->float:
@@ -424,6 +428,10 @@ class ProductiveModelTraining(Generic[ConfigType]):
 
         interest_val=self.interest_val_metrics.compute()
         productive_val=self.productive_val_metrics.compute()
+        logging.info('Interest validation f1')
+        logging.info(interest_val)
+        logging.info('productive validation f1')
+        logging.info(productive_val)
 
         wandb.log({
             'epoch':epoch,
@@ -473,10 +481,9 @@ class ProductiveModelTraining(Generic[ConfigType]):
         best_ema_f1=0.
         curr_ema_f1=0.
 
-        print_parameter_state(self.model)
 
         for epoch in range(total_epoch):
-            print(f'current epoch: {epoch+1}/ {total_epoch}')
+            logging.info(f'current epoch: {epoch+1}/ {total_epoch}')
             self.train_model(train_data)
 
             self.evaluate_model(val_data)
@@ -491,7 +498,7 @@ class ProductiveModelTraining(Generic[ConfigType]):
 
             f1_dict['interest'].append(interest_val_f1)
             f1_dict['productive_rate'].append(productive_val_f1)
-            print(f'current_ema_f1: {curr_ema_f1} | best_ema_f1 : {best_ema_f1}')
+            logging.info(f'current_ema_f1: {curr_ema_f1} | best_ema_f1 : {best_ema_f1}')
 
 
 
@@ -506,16 +513,16 @@ class ProductiveModelTraining(Generic[ConfigType]):
 
             if answer =='y':
                     
-                print("Training process continue!")
+                logging.info("Training process continue!")
 
                 return True
 
             elif answer =='n':
-                print('training process stop! process stopped!')
+                logging.info('training process stop! process stopped!')
 
                 return False
             else:
-                print('invalid answer, process stopped!')
+                logging.info('invalid answer, process stopped!')
 
                 return False
 
@@ -579,7 +586,7 @@ class ProductiveModelTraining(Generic[ConfigType]):
             
                     
         else:
-            print(f'error: the model_or_dict input is either Module nor state dict, unknown type:{type(state_dict)}')
+            logging.error(f'Error: the model_or_dict input is either Module nor state dict, unknown type:{type(state_dict)}')
 
     def _save_lora(self,state_dict:dict,lora_path:str) -> None:
         '''save only lora adapters'''
@@ -619,7 +626,7 @@ class ProductiveModelTraining(Generic[ConfigType]):
         
 
         self._save_model_dict(model_dict,model_name)
-        print(f"{model_name} model saved!")
+        logging.info(f"{model_name} model saved!")
 
         
 
@@ -652,7 +659,7 @@ class HybridProductiveModelTraining(ProductiveModelTraining[HybridProductiveMode
         '''Initial training config'''
 
         if config is None:
-            print('HybridProductiveModel is using default config')
+            logging.info('HybridProductiveModel is using default config')
             return HybridProductiveModelConfig()
             
 
@@ -696,7 +703,7 @@ class HybridProductiveModelTraining(ProductiveModelTraining[HybridProductiveMode
             
                 outputs=self.model.predict_step(batch)
 
-                total_loss=self._calc_model_loss(outputs,batch,if_wandb=if_wandb)
+                total_loss=self._calc_model_loss(outputs,batch,i,if_wandb=if_wandb)
 
                 total_loss=total_loss/accumulation_steps
             
@@ -720,7 +727,7 @@ class HybridProductiveModelTraining(ProductiveModelTraining[HybridProductiveMode
             full_batch_loss+=total_loss.item()
             batch_num_count=i
 
-        print('aver full batch loss:',full_batch_loss/batch_num_count)
+        logging.info(f'aver full batch loss: {full_batch_loss/batch_num_count}')
 
     
     def _clac_f1_mean_and_std(self,f1_dict:dict) ->None:
@@ -734,12 +741,12 @@ class HybridProductiveModelTraining(ProductiveModelTraining[HybridProductiveMode
         productive_f1_std=np.std(f1_dict['productive_rate'])
 
         
-        print(f'interest f1 mean: {interest_f1_mean} ')
-        print(f'interest f1 std: {interest_f1_std}')
-        print('')
+        logging.info(f'interest f1 mean: {interest_f1_mean} ')
+        logging.info(f'interest f1 std: {interest_f1_std}')
+        logging.info('')
 
-        print(f'productive f1 mean: {productive_f1_mean}')
-        print(f'productive f1 std:{productive_f1_std}')
+        logging.info(f'productive f1 mean: {productive_f1_mean}')
+        logging.info(f'productive f1 std:{productive_f1_std}')
        
 
 
@@ -755,7 +762,7 @@ class HybridProductiveModelTraining(ProductiveModelTraining[HybridProductiveMode
 
 
         for fold,(train_id,val_id) in enumerate(kfold.split(dataset)):
-            print(f'Fold {fold+1} / 5')
+            logging.info(f'Fold {fold+1} / 5')
     
             wandb.init(
                 project='personal_feed',

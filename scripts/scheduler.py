@@ -1,4 +1,5 @@
 '''the script run constantly to update website feed'''
+import logging
 import os
 import requests
 from datetime import datetime
@@ -19,7 +20,7 @@ def feed_update() ->None:
 
     
     requests.post('http://127.0.0.1:8080/trigger-update')
-    print('website_notified')
+    logging.info('website_notified')
 
   
 

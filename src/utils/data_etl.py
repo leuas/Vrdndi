@@ -1,4 +1,5 @@
 '''this file contain the data fetching and cleaning part'''
+import logging
 import re
 import os
 import pickle
@@ -574,16 +575,16 @@ def get_and_clean_yt_video_data(sub_video_num:int =10 ,rm_stopwords:bool = True)
 
     credential=get_auth_ser()
 
-    print('Fetching subscribed youtuber...')
+    logging.info('Fetching subscribed youtuber...')
     sub_data=fetch_sub_youtuber(credential)
 
-    print('Cleaning youtuber data....')
+    logging.info('Cleaning youtuber data....')
     cleaned_sub_data=clean_sub_data(sub_data)
 
-    print('Fetching video from your subscribed youtuber.....')
+    logging.info('Fetching video from your subscribed youtuber.....')
     video_data=get_sub_video(cleaned_sub_data,credential,sub_video_num)
 
-    print('Cleaning video data.....')
+    logging.info('Cleaning video data.....')
     cleaned_video_data=clean_sub_video_data(video_data,rm_stopwords)
 
     #NOTE you may wanna return the sub data lately
@@ -657,7 +658,7 @@ def get_and_save_his_data_for_database(video_n:int|None=None, shorts:bool=True) 
 def get_and_save_yt_video_for_database() ->None:
     '''get the youtube subscription video data'''
 
-    print('Fetching Video (It may take a long time) ....')
+    logging.info('Fetching Video (It may take a long time) ....')
 
     #Use a really large sub_video_num to fetch as many as possible from each subscribed youtuber
     
@@ -740,16 +741,16 @@ def delete_aw_priavte():
     def delete(e):
         resp =  requests.delete(f'http://localhost:5600/api/0/buckets/{bucket}/events/{e["id"]}')
         if resp.status_code != 200:
-            print("failed to delete event", e['data']['title'])
+            logging.error(f"failed to delete event  { e['data']['title']}")
         else:
-            print("deleted event", e['data']['title'])
+            logging.info(f"deleted event {e['data']['title']}" )
 
 
     for e in events:
         
         if contains in e['data']['title']:
 
-            print(e['data']['title'])
+            logging.info(e['data']['title'])
 
             pool.submit(delete,e)
 
@@ -839,5 +840,5 @@ def prepare_mt_pred_data(sub_video_num:int = 10) -> None:
 
         current_time=datetime.now()
         df_data.to_csv(f'MTmodel_feed_{current_time}.csv',index=False)
-        print('feed data is exported!')
+        logging.info('feed data is exported!')
 

@@ -1,5 +1,4 @@
 '''this is the frontend of the Vrdndi webstie'''
-import pprint
 import cryptography
 import numpy as np
 import pandas as pd
@@ -61,7 +60,7 @@ class UpdateWebsitePage:
             app.storage.general['feed_scroll_pos']=scroll_y
 
         except Exception as e:
-            print(f'Could not get scroll position: {e}')
+            logging.error(f'Could not get scroll position: {e}')
 
         watch_state={
         'start_time':None,
@@ -90,7 +89,7 @@ class UpdateWebsitePage:
 
                 watch_state['duration'].append(duration.total_seconds())
 
-                print(f'add duration:{duration}, curr duration:{watch_state["duration"]}')
+                logging.info(f'add duration:{duration}, curr duration:{watch_state["duration"]}')
 
         
         
@@ -132,7 +131,7 @@ def refresh_website_for_new_feed():
         new_feed_state['feed_state']=False
 
         db.update_feed_state(0) #reset the feed_state value
-        print(db.get_feed_state())
+        logging.info(db.get_feed_state())
         render_feed.refresh()
 
     else:
@@ -140,7 +139,7 @@ def refresh_website_for_new_feed():
         new_feed_state['feed_state']=False
         db.update_feed_state(0) #reset the feed_state value
     
-        print(db.get_feed_state())
+        logging.info(db.get_feed_state())
 
 @app.post('/trigger-update')
 def webhook():
@@ -152,7 +151,7 @@ def new_feed_arrive():
     '''Have new feed in the database'''
     db.update_feed_state(1)
 
-    print('feed arrived')
+    logging.info('feed arrived')
 
 
 
@@ -217,7 +216,7 @@ def duration_log_config() -> None:
 
     app.storage.general['start_time']=None
     app.storage.general['curr_time']=None
-    print('log loaded!')
+    logging.info('log loaded!')
 
 def save_log_csv(start_time,end_time,duration,content_id):
     '''save the content duration to csv'''
@@ -242,7 +241,7 @@ def save_log_csv(start_time,end_time,duration,content_id):
 
     new_logfile.to_csv(log_pth,index=False)
 
-    print('log save!')
+    logging.info('log save!')
     
     
 
@@ -280,7 +279,7 @@ def log_duration(item_id:str) ->None:
 
             
             logging.info('user, videoid: %s, start_time: %s, end_time: %s, duration: %s',item_id,start_time,end_time,duration)
-            print(f'content: {videoid}, duartion:{duration},start_time:{start_time},end_time{end_time}')
+            logging.info(f'content: {videoid}, duartion:{duration},start_time:{start_time},end_time{end_time}')
         return wrapper
 
     return decorator

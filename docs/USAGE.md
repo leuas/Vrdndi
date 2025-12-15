@@ -1,3 +1,33 @@
+## Prerequisites
+
+* **Installed** project via the guide in ``README.md``
+
+* **Sign in** to Wandb. You could suspend to do so before you run the training pipelines. Currently we use Wandb to log your training metrics and since we just save the LoRA layers (20 MB roughly) of the models, so the 5 GB free storage is enough. 
+>I am considering switch to ``mlflow`` later, but for now, sorry for introducing third party serivce.
+
+
+
+## Setup Activity Watcher (AW)
+
+**Step 1**: Install [ Activity Watcher](https://github.com/ActivityWatch/activitywatch) 
+
+**Step 2**: Just wonder around or watch some videos when the Activity Watcher is running.
+
+**Step 3**:Go to its dashboard. Click ``Settings``, scroll down, find [Category Builder ](http://localhost:5600/#/settings/category-builder) (or clickk it) Setup some category for what you did.
+
+>**Why:** The function that fetch data from AW (``get_aw_raw_data``) use the ``get_classes`` function from ``aw_client.classes`` and sometimes if you didn't setup the category, the fallback of ``get_classes`` to use default class won't work correctly somehow. (It's possible that it's because I used that function in a wrong way)
+>
+>So it's better that you just setup the category first to avoid that error. 
+>
+>I already added that to backlog, may investigate and add an error handling to that in later version.
+
+**Step4**: Change the ``HOSTNAME`` in ``src/config.py`` to your actual hostname. You could saw that in the AW dashboard.
+
+Example:
+```python
+HOSTNAME='randompersonMacBook.local'
+```
+
 
 
 ## Add API Key
@@ -207,5 +237,18 @@ model=HybirdProductiveModelPredicting('example.pth',config=config)
 inference_data=model.prepare_predicting_data()
 
 model.predict(inference_data=inference_data) 
+```
+
+## Remote Connect (Optional)
+
+If you want to train your model in the computer you are not usually used. You could use Tailscale
+
+Example:
+Say, I usually use Macbook, but I want to train it in a windows computer, you could use Tailscale to give your two computer a specific ip to connect each other.
+
+Set ``HOST`` to the ip of the computer you usually use ( the one you run Activity Watcher )
+
+```python
+HOST='100.100.66.42'
 ```
 

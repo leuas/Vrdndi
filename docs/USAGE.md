@@ -21,7 +21,7 @@ And you could check the database to see if the data is enough for training, say 
 
 If you suspect the amount of data isn't enough, you could run the ``datalabel_streamlit.py`` to collect more data from your history
 
-**At first**. Go to Google Takeout and export your youtube history data. It should be named as ``watch-history.json``, if it's not, please rename to that. And move it inside ``data/raw`` folder
+**At first**, go to Google Takeout and export your youtube history data. It should be named as ``watch-history.json``, if it's not, please rename to that. And move it inside ``data/raw`` folder
 
 **Second**, go back to ``scripts/data_saving.py``, remove the function you just called, call ``get_and_clean_his_video_data()`` function (It should be already imported). The function would clean your history data and save it to database.
 
@@ -47,25 +47,17 @@ streamlit run datalabel_streamlit.py
 
 
 ## Data Preprocess
+For clarity and simplicity , I would call the data from your like,dislike playlist and streamlit as *interest data*; the feedback data from NiceGUI website as *productive data* in later part of this document.
 
+**Save interest data**
 
+Open ``data_saving.py``, change the function to ``like_dislike_streamlit_data_preprocess()`` and run the file. It would save intereset data to database.
 
-**Step 2**: 
-Run the train.py to train the model, you could adjust the name of the model, etc. 
+**Save training data**
 
-```bash
-python train.py 
-```
+>If you followed the above step, and this is first time to use this project, **skip** this part. You can't save it now, because you haven't have productive data, yet. 
 
-**Step 3**:
-Run the scheduler to setup the website and update the feed in the range of time
-
-```bash
-python scheduler.py
-```
-
-
-**Optional**: Model would use your like and dislike video list as its training data to train the interest head, and probably it won't be enough of data. And you may use the streamlit script in the scripts folder to label the data by yourself. The script would use your youtube history data as its source and you could review your history video and label if it's interesting. Personally, the lableing process is quite fun, so probably you would like it too.
+Open ``data_saving.py``, change the function to ``interest_productive_data_preprocess()`` and run the file. It would use the videoId in your feeback to fetch data from Youtube API and save it to database.
 
 
 ## Configuration

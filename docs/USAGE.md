@@ -284,6 +284,9 @@ And the feedback you gave in the website would save to ``feedback`` table in dat
 
 You could run the ``sheduler.py`` in the ``scripts/`` to update your feed regularly.
 
+The updated feed would save to database, reload the website you could see the new feed.
+
+
 
 
 ## About Baseline

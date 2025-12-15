@@ -428,8 +428,9 @@ class ProductiveModelTraining(Generic[ConfigType]):
 
         interest_val=self.interest_val_metrics.compute()
         productive_val=self.productive_val_metrics.compute()
-
+        logging.info('Interest validation f1')
         logging.info(interest_val)
+        logging.info('productive validation f1')
         logging.info(productive_val)
 
         wandb.log({

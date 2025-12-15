@@ -700,7 +700,7 @@ class HybridProductiveModelTraining(ProductiveModelTraining[HybridProductiveMode
             
                 outputs=self.model.predict_step(batch)
 
-                total_loss=self._calc_model_loss(outputs,batch,if_wandb=if_wandb)
+                total_loss=self._calc_model_loss(outputs,batch,i,if_wandb=if_wandb)
 
                 total_loss=total_loss/accumulation_steps
             

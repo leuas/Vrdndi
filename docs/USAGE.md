@@ -1,3 +1,24 @@
+## Contents
+1. [Prerequisites](#prerequisites)
+
+2. [Setup Activity Watcher (AW)](#setup-activity-watcher-aw)
+3. [Add API Key](#add-api-key)
+4. [Save Your Data To Database](#save-your-data-to-database)
+5. [Streamlit Data Labelling](#streamlit-data-labelling)
+6. [Data Preprocess](#data-preprocess)
+7. [Configuration](#configuration)
+    - [Base Productive Model](#base-productive-model)
+    - [Hybrid Productive Model](#hybrid-productive-model)
+    - [Usage Example](#usage-example)
+8. [Training](#training)
+9. [Inference](#inference)
+10. [NiceGUI Website](#nicegui-website)
+11. [Scheduler](#scheduler)
+12. [Remote Connect (Optional)](#remote-connect-optional)
+13. [Data Transfer (Optional)](#data-transfer-optional)
+
+
+
 ## Prerequisites
 
 * **Installed** project via the guide in ``README.md``
@@ -94,7 +115,7 @@ Open ``data_saving.py``, change the function to ``interest_productive_data_prepr
 
 ## Configuration
 
-**Base Productive Model**
+### Base Productive Model
 
 The Basic configuration
 
@@ -147,7 +168,7 @@ For Loss & EMA:
 |`ema_productive_weight`|`float`|`0.65`|Specific weight factor applied during EMA calculations.|
 |||||
 
-**Hybrid Productive Model**
+### Hybrid Productive Model
 
 >**Note**: It's the child class of ``ProductiveModel``, so it inherit all the configuration (above) from base model.
 
@@ -170,7 +191,7 @@ For Training & Sampling
 |`productive_label_smooth`|`float`|`0`|Label smoothing factor for the Productive loss function.|
 
 
-**Usage Example**
+### Usage Example
 
 Currently all type of hyperparameters is mixing in two classs: ``ProductiveModelConfig`` and ``HybirdProductiveModelConfig``. May organize them in future.
 

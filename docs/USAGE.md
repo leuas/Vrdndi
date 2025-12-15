@@ -249,6 +249,9 @@ Say, I usually use Macbook, but I want to train it in a windows computer, you co
 Set ``HOST`` to the ip of the computer you usually use ( the one you run Activity Watcher )
 
 ```python
-HOST='100.100.66.42'
+HOST='100.100.666.42'
 ```
 
+## Data Transfer (Optional)
+
+If you want to move your training data to another computer, I recommend you to use DVC. BUt copy-paste in Teamviewer or whatever other method is totally fine.

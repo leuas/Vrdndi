@@ -40,7 +40,6 @@ class VrdndiDatabase:
         self.engine=sqlalchemy.create_engine(f'sqlite:///{self.dbpath}')
 
         self._initial_registry_table()
-        self._initial_streamlit_schema()
         self._initial_video_table()
         
 
@@ -324,7 +323,8 @@ class VrdndiDatabase:
 
 
         data.to_sql('streamlit_data',con=self.engine,if_exists='append',index=False,method=self._insert_if_not_exits)
-
+        
+        self._initial_streamlit_schema()
 
         print('Sucessfully saved streamlit data to database')
 

@@ -21,7 +21,7 @@ And you could check the database to see if the data is enough for training, say 
 
 If you suspect the amount of data isn't enough, you could run the ``datalabel_streamlit.py`` to collect more data from your history
 
-**At first**. Go to Google Takeout and export your youtube history data. It should be named as ``watch-history.json``, if it's not, please rename to that.
+**At first**. Go to Google Takeout and export your youtube history data. It should be named as ``watch-history.json``, if it's not, please rename to that. And move it inside ``data/raw`` folder
 
 **Second**, go back to ``scripts/data_saving.py``, remove the function you just called, call ``get_and_clean_his_video_data()`` function (It should be already imported). The function would clean your history data and save it to database.
 
@@ -31,8 +31,23 @@ For example:
 
 ```bash
 cd vrdndi/scripts
-python datalabel_streamlit.py
+streamlit run datalabel_streamlit.py
 ```
+**Screenshot**:
+![[streamlit screenshot]](images/streamlit_screenshot.png)
+
+**Usage Explain**
+* **Skip**: Skip current video to next video
+* **Save**: Save current progress. It woud save current video index and labelled data to database
+* **Previous**: Move back to previous video.
+* **Undo**: Remove last video you labelled.
+* **Load data**: Load your progress from database.
+* **interest**: Label current video as interesting.
+* **uninterest**: Label current video as uninteresting.
+
+
+## Data Preprocess
+
 
 
 **Step 2**: 

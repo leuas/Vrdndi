@@ -29,7 +29,7 @@ cd vrdndi
 
 **Step 2**: Install pytorch for your GPU
 
-Go to [Pytorch Get Started](https://pytorch.org/get-started/locally/) and pick the version that suit your computer.
+Go to [Pytorch Get Started](https://pytorch.org/get-started/locally/), pick the version that suit your computer and install it.
 
 For example:
 ```bash
@@ -110,7 +110,7 @@ Some references:
 
 Quick start:
 
-Show the basic model inference. For detail adjustment of demo, please see the docstring in ``demo.py``
+Show the basic model inference. For detail adjustment of the demo, please see the docstring in ``demo.py``
 
 ```bash
 cd Vrdndi/scripts
@@ -126,7 +126,7 @@ For detail or general usage, please see [Usage Guide](docs/USAGE.md)
 All data that's used in this project is processed locally. It's in the ``data/`` folder. You have full control over it.
 
 **Internet Requirement**
-* **Pipelines**: If you download the base BGE-M3 model, Sentence Transformer and its tokenizers, you could run it without Internet.
+* **Pipelines**: If you download the base BGE-M3 model, Sentence Transformer, its tokenizers and training data, you could run it without network.
 
 * **Website**: The local website need to access to Internet to render Youtube video. 
 
@@ -164,9 +164,9 @@ Main page would render 21 videos at once, you could press the ``LOAD MORE`` butt
 
 - Fix the productive inference test function
 
+- Organise configuration class
+
 - More but haven't listed 
-
-
 
 ## Limitation
 Technically speaking, it *can* aim for productivity if your have enough data and its quality is really good. But it's really hard to reach that since current state of the project doesn't do anything to explicitly form the feed in a way to achieve the primary goal.

@@ -62,6 +62,150 @@ Open ``data_saving.py``, change the function to ``interest_productive_data_prepr
 
 ## Configuration
 
+**Base Productive Model**
+
+The Basic configuration
+
+| Parameter   | Type    | Default     | Description                                                 |
+| --------------- | ----------- | --------------- | --------------------------------------------------------------- |
+| `model_name`    | `str`       | `'BAAI/bge-m3'` | The base pre-trained model. Usually you won't change it |
+| `seed`          | `int`       | `42`            | Random seed  |
+| `compile_model` | `bool`      | `True`          | Whether to use `torch.compile` for faster inference/training.   |
+| `batch_size`    | `int`       | `4`             | Number of samples processed per training step.                  |
+| `total_epoch`   | `int`       | `10`            | Total number of training epochs.                                |
+| `g`             | `Generator` | `None`          | Placeholder, it would be updated in the pipelines        |
+|||||
+
+The other configuration of ``ProductiveModelTraining``
+|||||                  
+| --------------------------------- | -------- | ----------- | ----------------------------------------------------------
+| `lr`           | `float`  | `5e-5`      | Learning rate for the optimizer.                                    |
+| `weight_decay` | `float`  | `1e-3`      | L2 penalty applied to weights to prevent overfitting.               |
+| `ignore_index` | `int`    | `-100`      | Label index to ignore when calculating loss and weight. |
+| `wandb_config` | `dict`   | _{lr}_      | Dictionary configuration for Weights & Biases logging.              |
+|||||
+
+The Configuration of ``ProductiveModel``
+
+|||||                  
+| --------------------------------- | -------- | ----------- | ---------------------------------------------------------- |
+| `productive_out_feature`          | `int`    | `2`         | Output dimension for the productive classification head. |
+| `interest_out_feature`            | `int`    | `2`         | Output dimension for the interest classification head.   |
+| `productive_output_layer_dropout` | `float`  | `0.1`       | Dropout rate applied to the productive head.               |
+| `interest_output_layer_dropout`   | `float`  | `0.1`       | Dropout rate applied to the interest head.                 |
+|||||
+
+THe LoRA part of ``ProductiveModel``
+
+|||||
+|---|---|---|---|
+|`use_lora`|`bool`|`True`|Enable parameter-efficient fine-tuning using LoRA.|
+|`lora_rank`|`int`|`8`|The dimension (r) of the low-rank matrices.|
+|`lora_alpha`|`int`|`16`|Scaling factor for LoRA weights.|
+|`lora_target_modules`|`str`|`'all-linear'`|Which modules to apply LoRA to (e.g., `q_proj`, `v_proj`).|
+|||||
+
+For Loss & EMA:
+
+|||||
+|---|---|---|---|
+|`productive_loss_weight`|`float`|`1`|Weight multiplier for the productive head loss.|
+|`interest_loss_weight`|`float`|`1`|Weight multiplier for the interest head loss.|
+|`ema_alpha`|`float`|`0.6`|Smoothing factor for Exponential Moving Average.|
+|`ema_productive_weight`|`float`|`0.65`|Specific weight factor applied during EMA calculations.|
+|||||
+
+**Hybrid Productive Model**
+
+>**Note**: It's the child class of ``ProductiveModel``, so it inherit all the configuration (above) from base model.
+
+
+| Parameter     | Type | Default | Description                                                     |
+| ----------------- | -------- | ----------- | ------------------------------------------------------------------- |
+| `num_in_feature`  | `int`    | `3`         | Number of additional input features (Duration, Time Sin, Time Cos). |
+| `num_out_feature` | `int`    | `384`       | Number of dimension in projected output tensor. In Default, it's same with encoded textual tensor by Sentence Transformer                        |
+| `cond_dim`        | `int`    | `1`         | Dimension size for the conditional input (Duration for now).                |
+| `max_length`      | `int`    | `8094`      | Maximum sequence length (tokens) allowed for input. I set it to the maximum of BGE-M3. In most case, it won't hit that                |
+|                   |          |             |                                                                     |
+
+For Training & Sampling
+|                   |          |             |                                                                     |
+|---|---|---|---|
+|`accumulation_steps`|`int`|`4`|Number of steps to accumulate gradients before updating weights.|
+|`sampler_interest_ratio`|`float`|`0.5`|Ratio of "Interest" samples in a training batch.|
+|`sampler_productive_ratio`|`float`|`0.5`|Ratio of "Productive" samples (Calculated as `1 - interest_ratio`).|
+|`interest_label_smooth`|`float`|`0`|Label smoothing factor for the Interest loss function.|
+|`productive_label_smooth`|`float`|`0`|Label smoothing factor for the Productive loss function.|
+
+
+**Usage Example**
+
+Currently all type of hyperparameters is mixing in two classs: ``ProductiveModelConfig`` and ``HybirdProductiveModelConfig``. May organize them in future.
+
+
+```python
+from src.pipelines.productive import HybirdProductiveModelTraining
+from src.config import HybirdProductiveModelConfig
+
+config=HybirdProductiveModelConfig()
+
+config.train_num_workers=4
+config.eval_test_num_workers=4
+config.accumulation_steps=4
+
+config.interest_loss_weight=0.33
+
+config.sampler_interest_ratio=3/4
+config.productive_output_layer_dropout=0.5
+
+test=HybirdProductiveModelTraining(config=config)
+
+```
+
+
 ## Training
 
+
+After you have the training data, just adjust the config parameter and run it.
+
+**Example (Follow with previous example)**:
+
+```python
+test.start_train(model_name='example.pth')
+```
+
+If you want to test model performance, you could also use K-Fold training, but currently it won't save the model.
+
+```python
+test.kfold_start()
+```
+
+**Note**
+
+The model saving part would override model file that saved in previous epoch, if its EMA f1 is lower than the model in current epoch.
+
+If you forgot to change the model saving name, it's fine, there's a check function before running the actual training process.
+
 ## Inference
+
+
+``prepare_predicting_data()`` would fetch the video data in a time range from now, say last 7 days in video data you saved from database and encode the app history sequence and save it to ``data/processed/inference``.
+
+
+``predict()`` would predict the data it receive and save it to database.
+
+**Example**
+```python
+from src.inference.productive import HybirdProductiveModelPredicting
+from src.config import HybirdProductiveModelConfig
+
+config=HybirdProductiveModelConfig()
+config.eval_test_num_workers=8
+
+model=HybirdProductiveModelPredicting('example.pth',config=config)
+
+inference_data=model.prepare_predicting_data()
+
+model.predict(inference_data=inference_data) 
+```
+

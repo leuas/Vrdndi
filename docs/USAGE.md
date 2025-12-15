@@ -32,9 +32,9 @@
 
 **Step 1**: Install [ Activity Watcher](https://github.com/ActivityWatch/activitywatch) 
 
-**Step 2**: Just wonder around or watch some videos when the Activity Watcher is running.
+**Step 2**: Just wonder around or watch some videos in your computer when the Activity Watcher is running.
 
-**Step 3**:Go to its dashboard. Click ``Settings``, scroll down, find [Category Builder ](http://localhost:5600/#/settings/category-builder) (or clickk it) Setup some category for what you did.
+**Step 3**: Go to its dashboard. Click ``Settings``, scroll down, find [Category Builder ](http://localhost:5600/#/settings/category-builder) (or click this) Setup some category for what you did.
 
 >**Why:** The function that fetch data from AW (``get_aw_raw_data``) use the ``get_classes`` function from ``aw_client.classes`` and sometimes if you didn't setup the category, the fallback of ``get_classes`` to use default class won't work correctly somehow. (It's possible that it's because I used that function in a wrong way)
 >
@@ -262,7 +262,7 @@ inference_data=model.prepare_predicting_data()
 model.predict(inference_data=inference_data) 
 ```
 
->Note: I haven't add a function to automatically clean the encoded tensor file, so you may delete these manually. (But added to backlog)
+>Note: I haven't add a function to automatically clean the encoded tensor file (but added to backlog), so you may delete these manually. 
 
 
 ## NiceGUI Website
@@ -274,6 +274,8 @@ Example:
 cd vrdndi/src/web
 python website_frontend.py
 ```
+
+And the feedback you gave in the website would save to ``feedback`` table in database.
 
 >**Note**: You should run the inference to get the feed in the database before running the website.
 
@@ -295,7 +297,7 @@ Just don't touch it for now. I haven't connect it to database yet. So you could 
 If you want to train your model in the computer you are not usually used. You could use Tailscale
 
 Example:
-Say, I usually use Macbook, but I want to train it in a windows computer, you could use Tailscale to give your two computer a specific ip to connect each other.
+Say, I usually use Macbook, but I want to train it in a windows computer, you could use Tailscale to give your two computer a specific IP address to connect each other.
 
 Set ``HOST`` to the ip of the computer you usually use ( the one you run Activity Watcher )
 

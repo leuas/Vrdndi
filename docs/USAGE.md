@@ -17,7 +17,7 @@ Open ``scripts/data_saving.py`` and run the file. It would save your like,dislik
 And you could check the database to see if the data is enough for training, say total datapoints are larger than 500 (The least playlist data should be larger than 100 to get a better starting point)
 
 
-## Streamlit Data Labeling
+## Streamlit Data Labelling
 
 If you suspect the amount of data isn't enough, you could run the ``datalabel_streamlit.py`` to collect more data from your history
 

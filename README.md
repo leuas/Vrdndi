@@ -19,14 +19,23 @@ The primary goal of this project is not to increase your watching time in your f
 
 ## Installation
 
-Step 1: Clone the repository
+**Step 1**: Clone the repository
 
 ```bash
 git clone https://github.com/leuas/Vrdndi.git
 cd vrdndi
 ```
 
-Step 2: Install the package. You may need to adjust the hyperparameter of the model, so install in editable mode
+**Step 2**: Install pytorch for your GPU
+
+Go to [Pytorch Get Started](https://pytorch.org/get-started/locally/) and pick the version that suit your computer.
+
+For example:
+```bash
+pip3 install torch torchvision --index-url https://download.pytorch.org/whl/cu128
+```
+
+**Step 3**: Install the package. You may need to adjust the hyperparameter of the model, so install in editable mode.
 
 ```bash
 pip install -e . 

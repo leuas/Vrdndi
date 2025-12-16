@@ -113,7 +113,7 @@ The performance is fairly good, one of the 5 folds could reach 0.95 f1, which is
 Some references:
 
 - RTX 3060 laptop with 16 GB RAM works well for this project.
-- M1 Macbook Air with 16 GB RAM can run the inference, but likely cannot train the model
+- M1 Macbook Air with 16 GB RAM can run the inference and might be able to run training pipelines with `batch_size = 1`(with GA), but end-to-end training has't been tested.
 
 
 ## Usage/Examples

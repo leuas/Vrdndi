@@ -751,7 +751,7 @@ class HybridProductiveModelTraining(ProductiveModelTraining[HybridProductiveMode
 
 
 
-    def kfold_train(self):
+    def kfold_train(self,group_name):
         '''train the model by using K Fold to test model performance '''
 
 
@@ -767,9 +767,9 @@ class HybridProductiveModelTraining(ProductiveModelTraining[HybridProductiveMode
             wandb.init(
                 project='personal_feed',
                 config=self.config.wandb_config,
-                name=f'kfold_train_8Dec_{fold}',
+                name=f'{group_name}_{fold}',
                 reinit=True,
-                group='kfold_train_8Dec',
+                group=group_name,
                 job_type='kfold_train')
 
             wandb.watch(self.model,log='all',log_freq=10)
@@ -798,13 +798,13 @@ class HybridProductiveModelTraining(ProductiveModelTraining[HybridProductiveMode
         
         
 
-    def kfold_start(self) ->None:
+    def kfold_start(self,group_name:str='default_group') ->None:
         '''start the kfold training '''
 
         self._set_seed()
 
 
-        self.kfold_train()
+        self.kfold_train(group_name=group_name)
 
 
 

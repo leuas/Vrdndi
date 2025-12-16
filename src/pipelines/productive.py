@@ -72,7 +72,7 @@ class ProductiveModelTraining(Generic[ConfigType]):
         
 
     def _get_metrics_bundle(self) ->MetricCollection:
-        '''get a metrciscollection from torchmetrics'''
+        '''get a metrics collection from torchmetrics'''
 
         return MetricCollection({
             'precision':Precision(task='binary'),
@@ -127,7 +127,7 @@ class ProductiveModelTraining(Generic[ConfigType]):
 
 
     def _calculate_interest_weight(self,interest:pd.Series) ->torch.Tensor:
-        '''calculate the interest posweight '''
+        '''calculate the interest weight '''
 
         
         weight=self._calc_weight(interest)
@@ -139,7 +139,7 @@ class ProductiveModelTraining(Generic[ConfigType]):
         return torch.tensor(weight,dtype=torch.float32,device=DEVICE)
     
     def _calculate_productive_weight(self,productive:pd.Series) ->torch.Tensor:
-        '''calculate the interest posweight '''
+        '''calculate the productive weight '''
 
         weight=self._calc_weight(productive)
 
@@ -150,7 +150,7 @@ class ProductiveModelTraining(Generic[ConfigType]):
         return torch.tensor(weight,dtype=torch.float32,device=DEVICE)
     
     def _calc_head_loss(self,data:pd.DataFrame) ->tuple[torch.Tensor,torch.Tensor]:
-        '''Helper function, calculate the loss for both head (interest and productive_rate)'''
+        '''Helper function: calculate the loss for both head (interest and productive_rate)'''
 
         interest=data['interest']
         productive_rate=data['productive_rate']
@@ -188,8 +188,10 @@ class ProductiveModelTraining(Generic[ConfigType]):
 
 
     def load_data(self, batch_size: int = 16) -> tuple[DataLoader,DataLoader,DataLoader]:
-        '''load the data for the multi task model,
-        return in order of: train, validation, test set '''
+        '''load the data
+
+            Returns:
+                Three DataLoader objects in order of: train, validation, test set '''
         self.config.wandb_config['batch_size']=batch_size
 
         data = self.db.get_data(table_name='train_data')
@@ -258,7 +260,7 @@ class ProductiveModelTraining(Generic[ConfigType]):
             self.productive_train_metrics.update(masked_pred_productive,masked_productive)
 
     def train_model(self,data:DataLoader, if_wandb:bool=True) ->None:
-        '''the training loop of the multi head model'''
+        '''the training loop of the productive model'''
 
         self.model.train()
 
@@ -532,19 +534,27 @@ class ProductiveModelTraining(Generic[ConfigType]):
 
     def start_train(
             self,
-            model_name:str='interest_productive_model_lora.pth',
-            name:str|None=None,
+            model_name:str='new_model',
+            run_name:str|None=None,
             check_file_exist:bool=True
             ) ->None :
-        '''start training with epoch training loop'''
+        '''
+        start training with epoch training loop
+        
+        Args:
+            model_name (str): The name of artifacts file. Default to `new_model`
+            run_name(str): The run name in Wandb. Default to model name
+            check_file_exist(bool): Whether check artifacts file name already exists. Default to enable.
+        
+        '''
         
         self._set_seed()
 
         train_set,val_set,test_set=self.load_data(batch_size=self.config.batch_size)
 
         #set the run name to model name if there's no name provided
-        if name is None:
-            name=model_name
+        if run_name is None:
+            run_name=model_name
 
         if check_file_exist:
             if_train=self._check_if_name_exsit(name=model_name)
@@ -555,7 +565,7 @@ class ProductiveModelTraining(Generic[ConfigType]):
 
             wandb.init(
             project='personal_feed',
-            name=name,
+            name=run_name,
             config=self.config.wandb_config)
 
             wandb.watch(self.model,log='all',log_freq=10)
@@ -688,7 +698,7 @@ class HybridProductiveModelTraining(ProductiveModelTraining[HybridProductiveMode
     
 
     def train_model(self,data:DataLoader, if_wandb:bool=True) ->None:
-        '''the training loop of the multi head model'''
+        '''the training loop of the hybrid productive model'''
 
         self.model.train()
 
@@ -731,7 +741,7 @@ class HybridProductiveModelTraining(ProductiveModelTraining[HybridProductiveMode
 
     
     def _clac_f1_mean_and_std(self,f1_dict:dict) ->None:
-        '''calcualte the mean and standard deviation of f1 score in every epoch'''
+        '''calculate the mean and standard deviation of f1 score in every epoch'''
 
         interest_f1_mean=np.mean(f1_dict['interest'])
         interest_f1_std=np.std(f1_dict['interest'])

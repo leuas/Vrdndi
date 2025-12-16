@@ -217,23 +217,25 @@ The updated feed will be saved to database. Reload the website to see the new fe
 
 ## About Baseline
 
-Just don't touch it for now. I haven't connect it to database yet. So you could say in current version, it's unusable.
+Just don't touch it for now. Baseline model haven't been connected to database yet. In current version, it's unusable.
 
 
 
 ## Remote Connect (Optional)
 
-If you want to train your model in the computer you are not usually used. You could use Tailscale
+If you want to train your model in the computer you don't usually used. You can use Tailscale
 
-Example:
-Say, I usually use Macbook, but I want to train it in a windows computer, you could use Tailscale to give your two computer a specific IP address to connect each other.
+**Example:**
 
-Set ``HOST`` to the ip of the computer you usually use ( the one you run Activity Watcher )
+A person who usually uses Macbook, but want to train it on a windows computer, can use Tailscale to give both computers a specific IP address to connect to each other.
+
+Set ``HOST``,``PORT`` to the ip of the computer you usually use ( the one running Activity Watcher )
 
 ```python
 HOST='100.100.666.42'
+PORT=5600 #common port
 ```
 
 ## Data Transfer (Optional)
 
-If you want to move your training data to another computer, I recommend you to use DVC. BUt copy-paste in Teamviewer or whatever other method is totally fine.
+If you want to move your training data to another computer, DVC is recommended, though manual transfer (e.g. TeamViewer/USB) works fine too.

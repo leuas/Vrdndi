@@ -1,9 +1,9 @@
 """
 Basic Inference Demo for hybrid productive model
 
-This script show the functionality of the hybrid productive model by performing 
-inference on video data which is from `test/fixture` and a fake short app sequence. 
-It is primarily used as a really quick start.
+This script shows the functionality of the hybrid productive model by performing 
+inference on video data which is from `test/fixture` and a fake short app sequence
+from AW local server. It is primarily used as a really quick start.
 
 Modes:
     - Standard: Loads the LoRA layers from `artifacts/` and runs the inference.
@@ -11,27 +11,27 @@ Modes:
 
 Purpose:
     - Verifies **some** library dependencies (e.g. torch, transformers).
-    - DOES NOT validate Youtube API, Database, Website, main training pipelines,etc
+    - DOES NOT validate Youtube API, Database, Website, main training pipelines, etc
 
 
 This demo has a secondary function, `predict_improperly`, to simulate failure 
 handling. It shows the cases where the offline encoded tensor is unavailable, 
 triggering a warning for each missing file (in this case, all files) and replacing 
-the missing data with a zero-tensor as fallback.
+the missing data with a zero tensor as fallback.
 
 Usage:
     python demo.py
 
 Notes:
     By default, this script runs `predict_normally()` and `mode='standard'`. To test the fallback 
-    mechanism or different mode, open this file and switch the function call to `predict_improperly()` or switch the mode.
+    mechanism or a different mode, open this file and switch the function call to `predict_improperly()` or switch the mode.
 
 Expected Output:
     - `predict_normally()`:
     Initialization logs followed by the final output DataFrame.
 
     - `predict_improperly`:
-        A LOT of warning logs regarding missing offline tensors, followed by the 
+        Extensive warning logs regarding missing offline tensors, followed by the 
         final output DataFrame .
         
 """

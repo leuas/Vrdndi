@@ -97,7 +97,8 @@ The output layer has two heads: an *interest* head and a *productive* head. The 
 
 The performance is fairly good, one of the 5 folds could reach 0.95 f1, which is suspiciously high. However, since only one fold reached that and my dataset is quite small (200-300 for productive,roughly 1000 for interest), so that's acceptable. And the model structure is decent enough, as the test may have shown.
 
->**Note**: The productive loss plateau you see in the diagram is likely caused by 0.5 output layer dropout.
+>**Note**:The productive loss plateau you see in the diagram is likely caused by `0.5` output layer dropout.
+> And the instability of the interest head is likely caused by my configuration (`0.75` interest sampling rate, but `0.33` interest loss weight), only later did I realize.
 
 **Productive head's mean F1 performance with Standard Deviation**:
 

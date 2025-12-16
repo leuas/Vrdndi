@@ -39,7 +39,6 @@ The Basic configuration
 | `num_out_feature` | `int`    | `384`       | Number of dimension in projected output tensor. In Default, it's same with encoded textual tensor by Sentence Transformer                        |
 | `cond_dim`        | `int`    | `1`         | Dimension size for the conditional input (Duration for now).                |
 | `max_length`      | `int`    | `8094`      | Maximum sequence length (tokens) allowed for input. I set it to the maximum of BGE-M3. In most case, it won't hit that                
-|
 |`accumulation_steps`|`int`|`4`|Number of steps to accumulate gradients before updating weights.|
 |`sampler_interest_ratio`|`float`|`0.5`|Ratio of "Interest" samples in a training batch.|
 |`sampler_productive_ratio`|`float`|`0.5`|Ratio of "Productive" samples (Calculated as `1 - interest_ratio`).|

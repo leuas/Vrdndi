@@ -55,6 +55,8 @@ Current system Architecture as the picture shown would fetch the data from Youtu
 
 Currently Vrdndi uses fine-tuned BGE-m3 to predict the media feed. 
 
+### Main Structure: 
+
 There's two type of input:
 
 1, **Media Data**: Textual data (Title/Description). Directly processed by the BGE-M3 embedding layer.
@@ -63,23 +65,28 @@ There's two type of input:
 > Sequence data would be pre-computed before running the main model to save memory usage. (Text part would be encoded by Sentence Transformer)
 
 
-**Main Structure**: 
+
 
 ![[Main structure]](docs/images/Model_main_structure.svg)
+
+
+
+
+### Residual Block: 
+
+And I used pre-activation structure instead of post-activiation one for the Residual block. (As we know, to let the gradient to flow back more easily) I also added SE block to "gate" each token to pick the important one and replaced the common GLU with SiLU to be consistant with SWiGLU, since it's almost interchangable.
+
+
+![[Residual block ]](docs/images/Residual_block_structure.svg)
 
 >**Why AdaLN:** Duration is a numerical value, it can't go through the BGE-M3's embedding layer, so either I need to put it as a separate token or put it as a condition to diffuse the AW data. In former, seemingly it would cause distribution mismatch(?), so I use the latter.
 
 
-And I used pre-activation structure instead of post-activiation one for the Residual block. (As we know, to let the gradient to flow back more easily) I also added SE block to "gate" each token to pick the important one and replaced the common GLU with SiLU to be consistant with SWiGLU, since it's almost interchangable.
 
-**Residual Block**: 
-
-![[Residual block ]](docs/images/Residual_block_structure.svg)
+### Output Layer:
 
 And there's two head as the output layer of the model: interest head and productive head. The interest head would use as a trainsition before you have enough productive data(i.e. The data you labelled in the website) and the productive head to predict a rate base on previous app history, time for each media data. 
 
-
-**Output Layer**:
 
 ![[Output layer]](docs/images/output_layer_big.svg)
 
@@ -171,6 +178,7 @@ Main page would render 21 videos at once, you could press the ``LOAD MORE`` butt
 
 ## Limitation
 Technically speaking, it *can* aim for productivity if your have enough data and its quality is really good. But it's really hard to reach that since current state of the project doesn't do anything to explicitly form the feed in a way to achieve the primary goal.
+
 
 It's more like keeping or organizing your feed as you want, even if it's not in a productive way. In the future version, we may reach that goal. (Say add RL?)
 

@@ -115,11 +115,12 @@ Open ``data_saving.py``, change the function to ``interest_productive_data_prepr
 
 ## Configuration
 
-For reference, see [Configuration](CONFIGURATION.md).
+### Reference
+See [Configuration](CONFIGURATION.md).
 
 ### Usage Example
 
-Currently all type of hyperparameters are mixed in two classes: ``ProductiveModelConfig`` and ``HybirdProductiveModelConfig``. I may organize them in future.
+Currently all type of hyperparameters are mixed in two classes: ``ProductiveModelConfig`` and ``HybirdProductiveModelConfig``. Current stucture is tentative and might change.
 
 
 ```python
@@ -145,15 +146,15 @@ test=HybridProductiveModelTraining(config=config)
 ## Training
 
 
-After you have the training data, just adjust the config parameter and run it.
+After you have the training data, just adjust the config parameterd and run it.
 
-**Example (Follow with previous example)**:
+**Example (Continued from above)**:
 
 ```python
 test.start_train(model_name='example.pth')
 ```
 
-If you want to test model performance, you could also use K-Fold training, but currently it won't save the model.
+If you want to test model performance, you can also use K-Fold training, though currently, it won't save the model.
 
 ```python
 test.kfold_start()
@@ -161,16 +162,16 @@ test.kfold_start()
 
 **Note**
 
-The model saving part would override model file that saved in previous epoch, if its EMA f1 is lower than the model in current epoch. And if you forgot to change the model saving name, it's fine, there's a check function before running the actual training process.
+- **Model Saving**: Current pipeline will overwrite model file saved from previous epoch, if current EMA f1 is higher than the previous one.
+- **Safety Check**: If you forgot to change the model saving name, there's a check function that runs before the actual training process.
 
-Also If you saw the warning `` Argument path is not specified. Defaulting to TRAIN_DATA_PATH ``, yes, it's ecptected output
+- **Warning**: If you see the warning `` Argument path is not specified. Defaulting to TRAIN_DATA_PATH ``, yes, that's ecptected output
 ## Inference
 
+- ``prepare_predicting_data()`` : Fetches the video data in a specific time range from now(e.g. the last 7 days) from database and encodes the app history sequence and saves it to ``data/processed/inference``.
 
-``prepare_predicting_data()`` would fetch the video data in a time range from now, say last 7 days in video data you saved from database and encode the app history sequence and save it to ``data/processed/inference``.
 
-
-``predict()`` would predict the data it receive and save it to database.
+- ``predict()``: Predicts the data it receives and save the output to database.
 
 **Example**
 ```python
@@ -187,12 +188,12 @@ inference_data=model.prepare_predicting_data()
 model.predict(inference_data=inference_data) 
 ```
 
->Note: I haven't add a function to automatically clean the encoded tensor file (but added to backlog), so you may delete these manually. 
+>Note: I haven't added a function to automatically clean the encoded tensor file yet (but it's on the backlog), so you may delete these manually. 
 
 
 ## NiceGUI Website
 
-You could run the website in the **terminal**.
+You can run the website in the **terminal**.
 
 Example:
 ```bash
@@ -200,16 +201,16 @@ cd vrdndi/src/web
 python website_frontend.py
 ```
 
-And the feedback you gave in the website would save to ``feedback`` table in database.
+And the feedback you provide on the website would be saved to ``feedback`` table in database.
 
->**Note**: You should run the inference to get the feed in the database before running the website.
+>**Note**: You should run the inference step to get the feed in the database before running the website.
 
 
 ## Scheduler
 
-You could run the ``sheduler.py`` in the ``scripts/`` to update your feed regularly.
+You can run the ``scheduler.py`` in the ``scripts/`` to update your feed regularly.
 
-The updated feed would save to database, reload the website you could see the new feed.
+The updated feed will be saved to database, reload the website you could see the new feed.
 
 
 

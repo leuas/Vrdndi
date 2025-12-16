@@ -3,12 +3,11 @@
 
 # Vrdndi
 
-Vrdndi (Verdandi) is a full-stack recommendation system that process your media data (Youtube currently) to provide personal feed base on what you did previously in your computer (i.e dynamicly change the feed base on time and previous app history)
+Vrdndi (Verdandi) is a full-stack recommendation system that processes your media data (currently YouTube) to provide a personal feed based on what you did previously in your computer (i.e dynamically changing the feed based on time and previous app history)
 
-The primary goal of this project is not to increase your watching time in your feed like other recommendation system. It's the opposite, minimize your watch time, increase your productivity but keep your interest still 
->For current constraints, see [ Limitation section](#limitation)
+The primary goal of this project is not to increase your watch time in your feed like other recommendation systems. It's the opposite: minimize your watch time and increase your productivity, but keep you interested 
 
-> ⚠️ **Note:** Vrdndi is currently in **Alpha**. The core features are functional, but the main model training pipeline is still being tested on different device.
+> ⚠️ **Note:** Vrdndi is currently in **Alpha**. The core features are functional, but the model architecture is still experimental. Real-world performance is unverified due to lack of data. For more detail, see [Limitation](#limitation)
 
 ![PyTorch](https://img.shields.io/badge/PyTorch-%23EE4C2C.svg?style=plastic&logo=PyTorch&logoColor=white)
 ![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?style=plastic&logo=Streamlit&logoColor=white)
@@ -28,14 +27,14 @@ cd vrdndi
 
 **Step 2**: Install pytorch for your GPU
 
-Go to [Pytorch Get Started](https://pytorch.org/get-started/locally/), pick the version that suit your computer and install it.
+Go to [Pytorch Get Started](https://pytorch.org/get-started/locally/), selelct the version that matches your hardware, and install it.
 
 For example:
 ```bash
 pip3 install torch torchvision --index-url https://download.pytorch.org/whl/cu128
 ```
 
-**Step 3**: Install the package. You may need to adjust the hyperparameter of the model, so install in editable mode.
+**Step 3**: Install the package. Since you may need to adjust model hyperparameters , we recommend installing it in editbale mode.
 
 ```bash
 pip install -e . 
@@ -43,7 +42,7 @@ pip install -e .
 
 ## System Architecture
 
-Current system Architecture as the picture shown would fetch the data from Youtube API and your ActivityWatcher to predict output feed and save it into database. Website would fetch the feed from database to render videos.
+As shown in the picture below, the system fetches data from YouTube API and your local ActivityWatcher server. It uses this data to predict your feed and uses database to transfer feed to website.
 
 **End-to-End Pipelines**:
 
@@ -57,12 +56,12 @@ Currently Vrdndi uses fine-tuned BGE-m3 to predict the media feed.
 
 ### Main Structure: 
 
-There's two type of input:
+There are two types of inputs:
 
-1, **Media Data**: Textual data (Title/Description). Directly processed by the BGE-M3 embedding layer.
+1. **Media Data**: Textual data (Title/Description). Directly processed by the BGE-M3 embedding layer.
 
-2, **App Sequence Data**: Activity history from ActivityWatcher. Processed by a custom sequential residual block to encode the sequence into a single token.
-> Sequence data would be pre-computed before running the main model to save memory usage. (Text part would be encoded by Sentence Transformer)
+2. **App Sequence Data**: Activity history from ActivityWatcher. Processed by a custom sequential residual block to encode the sequence into a single token.
+    > Sequence data is pre-computed before running the main model to save memory usage. (Text part would be encoded by Sentence Transformer)
 
 
 
@@ -74,33 +73,37 @@ There's two type of input:
 
 ### Residual Block: 
 
-And I used pre-activation structure instead of post-activiation one for the Residual block. (As we know, to let the gradient to flow back more easily) I also added SE block to "gate" each token to pick the important one and replaced the common GLU with SiLU to be consistant with SWiGLU, since it's almost interchangable.
+I used a pre-activation structure instead of post-activation for the Residual block; added an SE block to "gate" each token to pick out the important one;  and replaced the common GLU with SiLU to keep consistency with SWiGLU, since they are almost interchangeable.
 
 
 ![[Residual block ]](docs/images/Residual_block_structure.svg)
 
->**Why AdaLN:** Duration is a numerical value, it can't go through the BGE-M3's embedding layer, so either I need to put it as a separate token or put it as a condition to diffuse the AW data. In former, seemingly it would cause distribution mismatch(?), so I use the latter.
+>**Why AdaLN:** Duration is a numerical value, it can't go through the BGE-M3's embedding layer, so either I need to put it as a separate token or put it as a condition to diffuse the AW data. The former, seemingly it caused distribution mismatch(?) when I tried to implement it, so I used the latter approach.
 
 
 
 ### Output Layer:
 
-And there's two head as the output layer of the model: interest head and productive head. The interest head would use as a trainsition before you have enough productive data(i.e. The data you labelled in the website) and the productive head to predict a rate base on previous app history, time for each media data. 
+The output layer has two heads: an *interest* head and a *productive* head. The interest head acts as a transition before you have enough *productive* data(i.e. The data you labelled on the website).  The *productive* head predicts a rate based on previous app history, current time for each media data. 
 
 
 ![[Output layer]](docs/images/output_layer_big.svg)
 
->**Why SWiGLU:** Previously the interest head can't quite converge (at least the bouncing range is larger than now), and since the sequence compressor for interest head is kinda partial functional (It won't receive a app sequence to predict interest, so the output token would just represent the duration that diffused in it). So probably adding a strong activation function in output layer would be a good idea, and I also switch the productive head to SWiGLU at that time as convenient, but seemingly it cause the overfitting problem that is faced on currently.  
+>**Why SWiGLU:** Previously the interest head couldn't quite converge (at least the fluctuation was larger than now), and since the sequence compressor for interest head is partially functional (It won't receive an app sequence to predict interest, so the output token just represents the duration that diffused in it). So probably adding a strong activation function in output layer would be a good idea
+>
+>I also switched the productive head to SWiGLU at that time as convenient, but it seems to have caused the overfitting problem Vrdndi is facing currently.  
 
 ## Model Performance
 
-I think the performance is not bad, one of the all 5 folds could hit 0.95 f1, which is suspiciously high. But since it only had one fold hitted that and my dataset is quite small (200-300 for productive,1000 roughly for interest), so for now I'm fine with that. And the model structure is decent enough as the test may proved.
+The performance is fairly good, one of the 5 folds could reach 0.95 f1, which is suspiciously high. However, since only one fold reached that and my dataset is quite small (200-300 for productive,roughly 1000 for interest), so that's acceptable. And the model structure is decent enough, as the test may have shown.
 
-Productive head's mean F1 performance with Standard Deviation:
+>**Note**: The productive loss plateau you see in the diagram is likely caused by 0.5 output layer dropout.
+
+**Productive head's mean F1 performance with Standard Deviation**:
 
 ![[Prodcuctive head's performance]](docs/images/productive_val_f1_with_std.svg)
 
-More performance detail:
+**More performance detail**:
 
 ![[detail performance chart]](docs/images/overall_model_performance_chart.png)
 
@@ -108,15 +111,15 @@ More performance detail:
 
 Some references:
 
-- RTX 3060 laptop with 16 GB RAM would be perfectly fine with this project.
-- M1 Macbook Air with 16 GB RAM could run the inference, but may not be able to train the model
+- RTX 3060 laptop with 16 GB RAM works well for this project.
+- M1 Macbook Air with 16 GB RAM can run the inference, but likely cannot train the model
 
 
 ## Usage/Examples
 
 Quick start:
 
-Show the basic model inference. For detail adjustment of the demo, please see the docstring in ``demo.py``
+Show the basic model inference. For detailed adjustments of the demo, please see the docstring in ``demo.py``
 
 ```bash
 cd Vrdndi/scripts
@@ -124,23 +127,23 @@ cd Vrdndi/scripts
 python demo.py
 ```
 
-For detail or general usage, please see [Usage Guide](docs/USAGE.md)
+For general usage, please see [Usage Guide](docs/USAGE.md)
 
-## Privacy Notes
+## About Privacy
 **Data Privacy**
 
-All data that's used in this project is processed locally. It's in the ``data/`` folder. You have full control over it.
+All data that's used in this project is processed locally and stores in the ``data/`` folder. You have full control over it.
 
 **Internet Requirement**
-* **Pipelines**: If you download the base BGE-M3 model, Sentence Transformer, its tokenizers and training data, you could run it without network.
+* **Pipelines**: Once you download the base BGE-M3 model, Sentence Transformer, its tokenizers and training data, you can run it offline.
 
-* **Website**: The local website need to access to Internet to render Youtube video. 
+* **Website**: The local website needs Internet access to render YouTube video. 
 
 
 ## Website
-The NiceGUI website is functional as watching video and scrolling the feed and giving feedback.
+The NiceGUI website is functional, allowing you to watch videos, scroll the feed and give feedback.
 
-Main page would render 21 videos at once, you could press the ``LOAD MORE`` button to get more videos
+Main page would render 21 videos at once. Press ``LOAD MORE`` button to get more videos.
 
 
 
@@ -150,39 +153,40 @@ Main page would render 21 videos at once, you could press the ``LOAD MORE`` butt
 **Video Page**:
 ![[video page]](docs/images/Video-play_page.png)
 
->For streamlit data labeling website, please see [Usage Guide](docs/USAGE.md)
+>For streamlit data labelling website, please see [Usage Guide](docs/USAGE.md)
 
 ## Backlog
 
-- Add youtube transcript as one of the model feature
+- Add YouTube transcripts as one of the model feature
 
 - Add video upload time as the condition of AdaLN
 
-- Add more media data (e.g. Email, RSS feed,etc) 
+- Add more media sources (e.g. Email, RSS feed,etc) 
 
-- Refine the feed displaying method (i.e. not just display the highest rated items)
+- Refine the feed display method (i.e. not just display the highest rated items)
 
-- Improve appearance of the website
+- Improve website's appearance
 
-- Display original video title instead of lowercase one
+- Display original video titles instead of lowercase ones
 
-- Write a automatic function to clean offline tensor files
+- Write an automatic function to clean offline tensor files
 
 - Fix the productive inference test function
 
 - Organise configuration class
 
-- error handling for ``get_classes`` 
+- Error handling for ``get_classes`` 
 
-- Write a check-if-table-exist function in *interest data* preprocess
+- Write a `check_if_table_exist` function in *interest data* preprocess
+
 
 ## Limitation
-Technically speaking, it *can* aim for productivity if your have enough data and its quality is really good. But it's really hard to reach that since current state of the project doesn't do anything to explicitly form the feed in a way to achieve the primary goal.
+Technically, the model *can* aim for productivity if you have enough high-quality data. **But** it's really difficult to reach since current state of the project doesn't do anything to explicitly form the feed in a way to achieve the primary goal.
 
 
-It's more like keeping or organizing your feed as you want, even if it's not in a productive way. In the future version, we may reach that goal. (Say add RL?)
+It's more like keeping or organizing your feed as you want, even if it's not in a *productive* way. In the future version, we may reach that goal. (Say add RL?)
 
-Also I'm skpetical about whether the current pipelines and model architecture would really previde a good quality of feed, while at some point the performance at small dataset is not bad. Probably we may know that when more data are collected.
+Again current architecture is expermental; likely more data is required for further improvement
 
 ## File Strcuture
 
@@ -198,8 +202,8 @@ Also I'm skpetical about whether the current pipelines and model architecture wo
 ├── docs/                                   # Documentation and images
 ├── pyproject.toml
 ├── pytest.ini
-├── scripts/                                # Demo, training and sheduler scripts
-├── secrets/                                # API token and client sercrets (put yours there)
+├── scripts/                                # Demo, training and scheduler scripts
+├── secrets/                                # API token and client secrets (put yours there)
 ├── src
 │   ├── assets/                             # Stopwords
 │   ├── config.py                           # Global configuration parameters
@@ -212,14 +216,14 @@ Also I'm skpetical about whether the current pipelines and model architecture wo
 │   │   ├── loader.py                       # Dataloader class
 │   │   └── productive.py                   # Dataset class of main model
 │   ├── model
-│   │   ├── activity_watcher_encoder.py     # The model that encode text of the app sequence 
+│   │   ├── activity_watcher_encoder.py     # The model that encodes the text of the app sequence 
 │   │   ├── components.py                   # Defines some model layers (e.g. AdaLN)
 │   │   └── productive.py                   # Main model class
 │   ├── pipelines                           # Training pipelines
 │   │   ├── baseline.py
 │   │   └── productive.py                   # Pipelines of main model
 │   ├── utils
-│   │   ├── data_etl.py                     # Processes data from api
+│   │   ├── data_etl.py                     # Processes data from API
 │   │   └── ops.py                          # Data operation for model training or inference
 │   └── web
 │       └── website_frontend.py             # NiceGUI website frontend
@@ -232,7 +236,18 @@ Also I'm skpetical about whether the current pipelines and model architecture wo
 
 Since this is my very first project in code (except code practise), and I'm still new to programming and ML. I may miss something completely.
 
-If you find any bug/issue or problem about the architecture (Say, the architecture cause some converage problems) or anything else. Please feel free to open an issue in Github! (or even submit a PR!)
+If you find any bug/issue or problem about the architecture (Say, the architecture cause some converagence problems) or anything else. Please feel free to open an issue in Github! (or even submit a PR!)
+
+Thank you for reading down here. If you could give a star for this project, it would be really helpful.
+
+
+## Related
+
+- [ActivityWatcher](https://activitywatch.net/)
+- [NiceGUI](https://nicegui.io/)
+- [Streamlit](https://streamlit.io/)
+- [Pytorch](https://pytorch.org/)
+- [SQLite](https://sqlite.org/)
 
 
 

@@ -210,7 +210,7 @@ And the feedback you provide on the website would be saved to ``feedback`` table
 
 You can run the ``scheduler.py`` in the ``scripts/`` to update your feed regularly.
 
-The updated feed will be saved to database, reload the website you could see the new feed.
+The updated feed will be saved to database. Reload the website to see the new feed.
 
 
 

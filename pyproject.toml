@@ -43,6 +43,7 @@ dependencies = [
     "mlflow",                   # May switch to mlflow in future 
     "aw-client",                # ActivityWatcher Client 
     "persist-queue[extra]",     # aw_client's dependency
+    "aiosqlite",
     "python-dotenv",            
     "torchmetrics",             # Calculate the metrics
 

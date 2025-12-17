@@ -37,6 +37,7 @@ Expected Output:
 """
 
 import pandas as pd
+from typing import Literal
 from unittest.mock import patch
 from datetime import datetime
 

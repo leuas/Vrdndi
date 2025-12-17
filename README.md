@@ -48,7 +48,7 @@ pip3 install torch torchvision --index-url https://download.pytorch.org/whl/cu12
 ```bash
 pip install -e . 
 ```
->**Note**: This installs the core library for running the Demo. To set up the full system (w/ ActivityWatcher & Database), please see the [Usage Guide](docs/USAGE.md)
+>**Note**: This installs the core library for running the Demo. To set up the full system (i.e. ActivityWatcher & Database), please see the [Usage Guide](docs/USAGE.md)
 
 ## Usage/Examples
 
@@ -101,7 +101,7 @@ There are two types of inputs:
 
 ### Residual Block: 
 
-Used a pre-activation structure instead of post-activation for the Residual block; added an SE block to "gate" each token to pick out the important one;  and replaced the common GLU with SiLU to keep consistency with SWiGLU, since they are almost interchangeable.
+Used a pre-activation structure instead of post-activation for the Residual block; added an SE block to "gate" each token to pick out the important one;  and replaced the common GELU with SiLU to keep consistency with SWiGLU, since they are almost interchangeable.
 
 
 ![[Residual block ]](docs/images/Residual_block_structure.svg)

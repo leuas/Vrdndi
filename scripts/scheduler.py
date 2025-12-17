@@ -15,12 +15,13 @@ def feed_update() ->None:
     
     config=HybridProductiveModelConfig()
     config.eval_test_num_workers=4
-    model=HybridProductiveModelPredicting('hybird_productive_model_4BS_10E_EMA_save_loss_weighted.pth',config=config)
-    model.predict(time_range=300)
+    model=HybridProductiveModelPredicting(config=config)
+    data=model.prepare_predicting_data(time_range=300)
+    model.predict(inference_data=data)
 
     #experimental feature, if you didn't enable, then it does nothing.
     requests.post('http://127.0.0.1:8080/trigger-update')
-    logging.info('website_notified')
+
 
   
 

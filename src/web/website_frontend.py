@@ -16,9 +16,7 @@ from zoneinfo import ZoneInfo
 from pathlib import Path
 from datetime import datetime,timezone
 from nicegui import ui,app
-
-
-from src.inference.baseline import make_rf_prediction
+from src.config import ENABLE_EXPERIMENTAL_FEATURES,WEBSITE_HOST
 
 from src.db.database import VrdndiDatabase
 
@@ -68,29 +66,6 @@ class UpdateWebsitePage:
         'videoid':videoid
         }
 
-        #Haven't implement ,yet!!!
-        def player_start() ->datetime:
-            '''return the start time '''
-
-            watch_state['start_time']=datetime.now()
-
-
-        def player_pause():
-
-            start=watch_state['start_time']
-
-            if start:
-            
-                curr_time=datetime.now()
-
-                duration=curr_time-start
-
-                watch_state['start_time']=None #reset the start time
-
-                watch_state['duration'].append(duration.total_seconds())
-
-                logging.info(f'add duration:{duration}, curr duration:{watch_state["duration"]}')
-
         
         
         with self.video_play_container:
@@ -104,12 +79,12 @@ class UpdateWebsitePage:
             
             with ui.row().classes('mx-auto'):
                 with ui.button_group():
-                    ui.button('interest',on_click=lambda:get_feedback(videoid,'interesting',1))
-                    ui.button('uninterest',on_click=lambda:get_feedback(videoid,'interesting',0))
+                    ui.button('interest',on_click=lambda:save_feedback(videoid,'interesting',1))
+                    ui.button('uninterest',on_click=lambda:save_feedback(videoid,'interesting',0))
                 
                 with ui.button_group():
-                    ui.button('correct timing',on_click=lambda:get_feedback(videoid,'productive_rate',1))
-                    ui.button('not now',on_click=lambda:get_feedback(videoid,'productive_rate',0))
+                    ui.button('correct timing',on_click=lambda:save_feedback(videoid,'productive_rate',1))
+                    ui.button('not now',on_click=lambda:save_feedback(videoid,'productive_rate',0))
 
 
             ui.button('Back to feed').classes('text-left block mt-4').on_click(self.show_feed)
@@ -155,22 +130,6 @@ def new_feed_arrive():
 
 
 
-def get_entertain_video():
-    '''get the entertain video'''
-
-    data=make_rf_prediction()
-    
-    entertain_mask=data['category']=='Explore Hobby'
-
-    entertain_data=data[entertain_mask]
-
-    video_id=entertain_data['videoId']
-
-    title=entertain_data['title']
-
-
-    return video_id,title
-
 
 def save_single_feedback(value:int,key:str,videoid:str) ->pd.DataFrame:
     '''save the feedback'''
@@ -198,8 +157,8 @@ def save_single_feedback(value:int,key:str,videoid:str) ->pd.DataFrame:
 
 
 
-def get_feedback(videoid,key,feedback_value) -> None:
-    '''get like feddback'''
+def save_feedback(videoid,key,feedback_value) -> None:
+    '''Save feedback to database'''
     
     new_feedback=save_single_feedback(feedback_value,key,videoid)
         
@@ -208,88 +167,10 @@ def get_feedback(videoid,key,feedback_value) -> None:
     ui.notification('feedback saved!')
 
 
-def duration_log_config() -> None:
-    '''initial the duration log'''
-    logging.basicConfig(filename='duration_log.log',
-                        level=logging.INFO,
-                        format='%(asctime)s,%(message)s')
-
-    app.storage.general['start_time']=None
-    app.storage.general['curr_time']=None
-    logging.info('log loaded!')
-
-def save_log_csv(start_time,end_time,duration,content_id):
-    '''save the content duration to csv'''
-
-    log_data={
-                'starttime':start_time.isoformat(),
-                'endtime':end_time.isoformat(),
-                'video_id':content_id,
-                'duration':duration
-            }
-    
-    pd_data=pd.DataFrame([log_data])
-            
-    log_pth='website_user_interaction_log.csv'
-
-    if not os.path.exists(log_pth):
-        log=pd.DataFrame()
-    else:
-        log=pd.read_csv(log_pth)
-    
-    new_logfile=pd.concat([pd_data,log],ignore_index=True)
-
-    new_logfile.to_csv(log_pth,index=False)
-
-    logging.info('log save!')
-    
-    
-
-
-
-def log_duration(item_id:str) ->None:
-    '''log current content's duration'''
-    #NOTE It can't work properly,yet
-    #It would only log the time of excecuing the function, not the video time user watched
-
-    def decorator(original_fc):
-        sig=inspect.signature(original_fc)
-
-        @functools.wraps(original_fc)
-        async def wrapper(*args,**kwargs):
-            
-            start_time=datetime.now().astimezone()
-            
-
-            await original_fc(*args,**kwargs)
-
-            end_time=datetime.now().astimezone()
-            duration=end_time-start_time
-            duration_in_second=duration.total_seconds()
-
-            try:
-                bound_args=sig.bind(*args,**kwargs).arguments
-
-                videoid=bound_args.get(item_id)
-            except TypeError:
-                videoid='arg_bind_error'
-
-            save_log_csv(start_time,end_time,duration_in_second,videoid)
-            
-
-            
-            logging.info('user, videoid: %s, start_time: %s, end_time: %s, duration: %s',item_id,start_time,end_time,duration)
-            logging.info(f'content: {videoid}, duartion:{duration},start_time:{start_time},end_time{end_time}')
-        return wrapper
-
-    return decorator
-
-def log_content_duration(videoid):
-    '''log the duration'''
 
 
 @ui.refreshable
-def render_feed(updatefeed:UpdateWebsitePage,video_per_load):
+def render_feed(update_page:UpdateWebsitePage,video_per_load):
     '''load the feed to display'''
     data=db.get_feed()
 
@@ -328,7 +209,7 @@ def render_feed(updatefeed:UpdateWebsitePage,video_per_load):
                     with ui.card_section():
                         ui.label(title).classes('text-h6 font-medium')
                     
-                card.on('click',partial(updatefeed.show_video_player,vid))
+                card.on('click',partial(update_page.show_video_player,vid))
 
                     
 
@@ -357,24 +238,20 @@ def website():
     feed_container=ui.column().classes('w-full')
 
     
-    feedupdate=UpdateWebsitePage(video_play_container,feed_container)
+    page_update=UpdateWebsitePage(video_play_container,feed_container)
 
     
     
     with ui.header(elevated=True).style('background-color: #3874c8'):
             ui.label('Vrdndi')
-            feed_button=ui.button('New Feed Availabl!', on_click=refresh_website_for_new_feed).classes('ml-auto')\
-            .bind_visibility_from(new_feed_state,'feed_state')
-    
-    def check_feed_state():
-        '''check if new feed is arrvied'''
-        feed_button.visible=db.get_feed_state()
 
-    #ui.timer(1.0,check_feed_state)
-    #print('website_pid',os.getppid())
+            if ENABLE_EXPERIMENTAL_FEATURES:
+                feed_button=ui.button('New Feed Availabl!', on_click=refresh_website_for_new_feed).classes('ml-auto')\
+                .bind_visibility_from(new_feed_state,'feed_state')
+    
 
     with feed_container:
-        render_feed(updatefeed=feedupdate,video_per_load=video_per_load)
+        render_feed(update_page=page_update,video_per_load=video_per_load)
 
 
     
@@ -382,7 +259,7 @@ def website():
 if __name__ in {"__main__", "__mp_main__"}:
 
     ui.run(
-        host='0.0.0.0',
+        host=WEBSITE_HOST,
         port=8080,
         reload=False,
         storage_secret='idkwhatever',

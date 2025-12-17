@@ -68,19 +68,19 @@ And you can check the database to see if the data is enough for training. For ex
 
 ## Streamlit Data Labelling
 
-If you suspect the amount of data isn't enough, you can run the ``datalabel_streamlit.py`` to collect more data from your YouTube history
+If you suspect the amount of data isn't enough, you can run the ``data_labelling.py`` to collect more data from your YouTube history
 
 **First**, go to Google Takeout and export your YouTube history data. The file should be named `watch-history.json` (Please rename it if it differs) And move it inside ``data/raw`` folder.
 
 **Second**, go back to ``scripts/data_saving.py``. Remove the function you just called, and call ``get_and_clean_his_video_data()`` function (It should already be imported). The function cleans your history data and save it to database. (If it successed, you could delete your history file freely)
 
-**Now**, you can run ``datalabel_streamlit.py`` in your **Terminal**.
+**Now**, you can run ``data_labelling.py`` in your **Terminal**.
 
 For example:
 
 ```bash
 cd vrdndi/scripts
-streamlit run datalabel_streamlit.py
+streamlit run data_labelling.py
 ```
 **Screenshot**:
 ![[streamlit screenshot]](images/streamlit_screenshot.png)

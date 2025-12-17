@@ -5,7 +5,8 @@
 
 Vrdndi (Verdandi) is a full-stack recommendation system that processes your media data (currently YouTube) to provide a personal feed based on what you did previously in your computer (i.e dynamically changing the feed based on time and previous app history)
 
-The primary goal of this project is not to increase your watch time in your feed like other recommendation systems. It's the opposite: minimize your watch time and increase your productivity, but keep you interested 
+The primary goal of this project is not to increase your watch time in your feed like other recommendation systems. It's the opposite: minimize your watch time and increase your productivity, but keep you interested.
+At least, that's the plan.
 
 > ⚠️ **Note:** Vrdndi is currently in **Alpha**. The core features are functional, but the model architecture is still experimental. Real-world performance is unverified. For more detail, see [Limitation](#limitation)
 
@@ -15,8 +16,16 @@ The primary goal of this project is not to increase your watch time in your feed
 ![ActivityWatcher](https://img.shields.io/badge/ActivityWatcher-%23ffff?style=plastic&logo=activity)
 ![NiceGUI](https://img.shields.io/badge/NiceGUI-5898d4?style=plastic&logoColor=white)
 
+## Hardware requirement
 
-## Installation
+Some references:
+
+- RTX 3060 laptop with 16 GB RAM works well for this project.
+- M1 Macbook Air with 16 GB RAM can run the inference and might be able to run training pipelines with `batch_size = 1`(with GA), but end-to-end training hasn't been tested.
+
+
+
+## Installation (Quick Start)
 
 **Step 1**: Clone the repository
 
@@ -39,6 +48,25 @@ pip3 install torch torchvision --index-url https://download.pytorch.org/whl/cu12
 ```bash
 pip install -e . 
 ```
+>**Note**: This installs the core library for running the Demo. To set up the full system (w/ ActivityWatcher & Database), please see the [Usage Guide](docs/USAGE.md)
+
+## Usage/Examples
+
+**Quick start:**
+
+Show the basic model inference. For detailed adjustments of the demo, please see the docstring in ``demo.py``
+
+```bash
+cd Vrdndi/scripts
+
+python demo.py
+```
+
+For general usage, please see the [Usage Guide](docs/USAGE.md)
+
+
+
+
 
 ## System Architecture
 
@@ -108,37 +136,8 @@ The performance is fairly good, one of the 5 folds could reach 0.95 f1, which is
 
 ![[detail performance chart]](docs/images/overall_model_performance_chart.png)
 
-## Hardware requirement
-
-Some references:
-
-- RTX 3060 laptop with 16 GB RAM works well for this project.
-- M1 Macbook Air with 16 GB RAM can run the inference and might be able to run training pipelines with `batch_size = 1`(with GA), but end-to-end training hasn't been tested.
 
 
-## Usage/Examples
-
-Quick start:
-
-Show the basic model inference. For detailed adjustments of the demo, please see the docstring in ``demo.py``
-
-```bash
-cd Vrdndi/scripts
-
-python demo.py
-```
-
-For general usage, please see [Usage Guide](docs/USAGE.md)
-
-## About Privacy
-**Data Privacy**
-
-All data that's used in this project is processed locally and stores in the ``data/`` folder. You have full control over it.
-
-**Internet Requirement**
-* **Pipelines**: Once you download the base BGE-M3 model, Sentence Transformer, its tokenizers and training data, you can run it offline.
-
-* **Website**: The local website needs Internet access to render YouTube video. 
 
 
 ## Website
@@ -156,29 +155,17 @@ Main page would render 21 videos at once. Press ``LOAD MORE`` button to get more
 
 >For streamlit data labelling website, please see [Usage Guide](docs/USAGE.md)
 
-## Backlog
 
-- Add YouTube transcripts as one of the model feature
+## Privacy
+**Data Privacy**
 
-- Add video upload time as the condition of AdaLN
+All data that's used in this project is processed locally and stores in the ``data/`` folder. You have full control over it.
 
-- Add more media sources (e.g. Email, RSS feed,etc) 
+**Internet Requirement**
+* **Pipelines**: Once you download the base BGE-M3 model, Sentence Transformer, its tokenizers and training data, you can run it offline.
 
-- Refine the feed display method (i.e. not just display the highest rated items)
+* **Website**: The local website needs Internet access to render YouTube video. 
 
-- Improve website's appearance
-
-- Display original video titles instead of lowercase ones
-
-- Write an automatic function to clean offline tensor files
-
-- Fix the productive inference test function
-
-- Organise configuration class
-
-- Error handling for ``get_classes`` 
-
-- Write a `check_if_table_exist` function in *interest data* preprocess
 
 
 ## Limitation
@@ -188,6 +175,8 @@ Technically, the model *can* aim for productivity if you have enough high-qualit
 It's more like keeping or organizing your feed as you want, even if it's not in a *productive* way. In the future version, we may reach that goal. (Say add RL?)
 
 Again current architecture is experimental; likely more data (more time) is required for further improvement
+
+
 
 ## File Strcuture
 
@@ -231,6 +220,31 @@ Again current architecture is experimental; likely more data (more time) is requ
 └── test 
 
 ```
+
+
+## Backlog
+
+- Add YouTube transcripts as one of the model feature
+
+- Add video upload time as the condition of AdaLN
+
+- Add more media sources (e.g. Email, RSS feed,etc) 
+
+- Refine the feed display method (i.e. not just display the highest rated items)
+
+- Improve website's appearance
+
+- Display original video titles instead of lowercase ones
+
+- Write an automatic function to clean offline tensor files
+
+- Fix the productive inference test function
+
+- Organise configuration class
+
+- Error handling for ``get_classes`` 
+
+- Write a `check_if_table_exist` function in *interest data* preprocess
 
 
 ## Notes

@@ -1,4 +1,5 @@
 '''this file contain the helper function for model training '''
+import logging
 import os
 import random
 import pandas as pd
@@ -113,7 +114,7 @@ def calc_bce_posweigt(target_column:pd.DataFrame|pd.Series)->float :
 
     pos_weight=neg_counts / max(1,pos_counts)
 
-    print('pos_weight',type(pos_weight))
+    logging.info(f'pos_weight{type(pos_weight)}')
 
     return pos_weight
 
@@ -149,14 +150,14 @@ def print_parameter_state(model:torch.nn.Module) ->None:
     total_params=sum(p.numel() for p in model.parameters())
     trainable_parames=sum(p.numel() for p in model.parameters() if p.requires_grad)
 
-    print(f'total params: {total_params}')
-    print(f'trainable_params: {trainable_parames}')
+    logging.info(f'total params: {total_params}')
+    logging.info(f'trainable_params: {trainable_parames}')
 
     if total_params == trainable_parames:
-        print('full model training! ')
+        logging.info('full model training! ')
 
     else:
-        print("there's frozen layer")
+        logging.info("there's frozen layer")
 
 def if_load_model(model:torch.nn.Module,model_name:str,path=ARTIFACTS_PATH,lora:bool=False) ->torch.nn.Module :
     '''load the model '''
@@ -169,23 +170,23 @@ def if_load_model(model:torch.nn.Module,model_name:str,path=ARTIFACTS_PATH,lora:
 
     if not lora:
         model.load_state_dict(state_dict)
-        print(f'{model_name} model loaded successfully')
+        logging.info(f'{model_name} model loaded successfully')
 
     else:
         missing,unexpected_key=model.load_state_dict(state_dict,strict=False)
 
         if len(unexpected_key)>0:
-            print(f'WARNING: The following keys were in the file, but ignored by the model:{unexpected_key}')
+            logging.warning(f'WARNING: The following keys were in the file, but ignored by the model:{unexpected_key}')
 
         else:
-            print('All the keys which are in the file are in the model')
+            logging.info('All the keys which are in the file are in the model')
 
         lora_missing=[k for k in missing if 'lora ' in k]
 
         if len(lora_missing)>0:
-            print(f"WARNING: Model expected these LORA weights, but the file didn't have them: {lora_missing}")
+            logging.warning(f"WARNING: Model expected these LORA weights, but the file didn't have them: {lora_missing}")
         else:
-            print('All the LORA layers were updated')
+            logging.info('All the LORA layers were updated')
 
     return model
 
@@ -322,7 +323,7 @@ def converted_aw_timestamp(timestamp:pd.DataFrame|pd.Series) -> pd.DataFrame:
 
 
 
-def prepare_aw_events_data(end_time:datetime|None=None) ->pd.DataFrame:
+def prepare_aw_events_data(end_time:datetime|None=None) ->pd.DataFrame|int:
     '''get aw  event data and preprocess it , return a dataframe
         Args:
             end_time: the end time of fetching event
@@ -335,6 +336,8 @@ def prepare_aw_events_data(end_time:datetime|None=None) ->pd.DataFrame:
                  'time_sin'(float):aw timestamp data after cyclical encoding
                  'time_cos'(float): another aw timestamp data after cyclical encoding
                  'duration'(float):aw duration data in seconds
+            
+            or -100 as fallback to ignore this event data
                 
             '''
 
@@ -362,7 +365,7 @@ def prepare_aw_events_data(end_time:datetime|None=None) ->pd.DataFrame:
 
         return df
     
-    print(f"WARNING: AW data doesn't exist at end_time: {end_time}. Returned -100 as fallback")
+    logging.warning(f"WARNING: AW data doesn't exist at end_time: {end_time}. Returned -100 as fallback")
 
     return -100
     
@@ -498,14 +501,14 @@ def convert_timestamp_to_tensor_series(timestamp:pd.Series) ->pd.Series:
 
     converted_timestamp=timestamp.apply(lambda onetime:convert_timezone(onetime) if onetime!=-100 and onetime!='-100' else -100)
 
-    print('preparing AW events data...')
+    logging.info('preparing AW events data...')
     #a pd.Series contain either dataframe or -100
     aw_data=converted_timestamp.apply(lambda onetime:prepare_aw_events_data(end_time=onetime) if onetime !=-100 else -100)
 
-    print("Encoding AW events data..")
+    logging.info("Encoding AW events data..")
     aw_encode_data=aw_data.apply(lambda onedata:encode_aw_data(aw_data=onedata) if isinstance(onedata,pd.DataFrame) else -100)
 
-    print("Data encoded!")
+    logging.info("Data encoded!")
     return aw_encode_data
 
 
@@ -686,7 +689,7 @@ def like_dislike_streamlit_data_preprocess() ->None:
 
     db.save_data('interest_data',total_df)
 
-    print('saved!')
+    logging.info('saved!')
 
 def productive_data_preprocess()->pd.DataFrame:
     '''preprocess productive data'''
@@ -699,12 +702,14 @@ def productive_data_preprocess()->pd.DataFrame:
 
     productive_df=get_video_data(productive_videoid,rm_stopwrords=False)
 
-    print(productive_df)
+    logging.debug(productive_df)
     productive_df['interest']=-100
     productive_df['productive_rate']=productive_data['productive_rate'].fillna(-100)
     productive_df['timestamp']=productive_data['timestamp']
 
-    print(productive_df)
+    logging.debug(productive_df)
+
+    logging.info('processed productive data')
 
     return productive_df
 
@@ -722,15 +727,15 @@ def interest_productive_data_preprocess()->None:
     interest['productive_rate']=-100
     interest['timestamp']=-100
     interest=interest.rename(columns={'date':'upload_time'})
-    print(interest)
+    logging.debug(interest)
 
     whole_data=pd.concat([interest,productive_df],ignore_index=True)
 
     #productive_df.to_csv(PROJECT_ROOT/'productive_data.csv')
 
     db.save_train_data(whole_data)
-    print(whole_data)
-    print('saved!')
+    logging.debug(whole_data)
+    logging.info('interest productive data saved to database!')
 
 
 def convert_timestamp_to_pt_file(timestamp:datetime|pd.Series,path:Path) ->None:
@@ -741,7 +746,7 @@ def convert_timestamp_to_pt_file(timestamp:datetime|pd.Series,path:Path) ->None:
 
     tensor_series=convert_timestamp_to_tensor_series(timestamp)
 
-    print('tensor_series generated!')
+    logging.debug('tensor_series generated!')
 
     manifest_data={}
 
@@ -752,14 +757,14 @@ def convert_timestamp_to_pt_file(timestamp:datetime|pd.Series,path:Path) ->None:
 
 
         torch.save(tensor_dict,path/tensor_file_name)
-        print(f'{tensor_file_name} saved!')
+        logging.info(f'{tensor_file_name} saved!')
 
         manifest_data[f'{time}']=tensor_file_name
 
     with open(path/'manifest.json','w',encoding='utf-8') as f:
         json.dump(manifest_data,f,indent=4) 
 
-    print('Manifest saved!')
+    logging.info('Manifest saved!')
 
 
 
@@ -775,7 +780,7 @@ def timestamp_data_preprocess(path:Path) -> None:
     convert_timestamp_to_pt_file(timestamp,path)
 
 
-    print('Converting timestamp to Tensor Series... ')
+    logging.info('Converted timestamp to Tensor file... ')
 
     
 
@@ -801,7 +806,7 @@ def manifest_process(path:Path) -> None:
     with open(path/'manifest.json','w',encoding='utf-8') as f:
         json.dump(manifest_data,f,indent=4) 
 
-    print('Manifest saved!')
+    logging.info('Manifest saved!')
 
     
     

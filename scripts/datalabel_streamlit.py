@@ -1,6 +1,6 @@
 '''this file contain the streamlit function for labeling data'''
 
-
+import logging
 import pandas as pd
 import streamlit as st
 from typing import Literal
@@ -82,14 +82,14 @@ class StreamlitDataLabel:
 
         st.session_state.video_index+=1
 
-        print(f'labeled video {videoid}')
+        logging.info(f'labeled video {videoid}')
 
 
     def _skip_video(self,videoid:str) ->None:
         '''skip current video, move on to next video'''
 
         st.session_state.video_index+=1
-        print(f'Skiped video: {videoid} !')
+        logging.info(f'Skiped video: {videoid} !')
 
 
 
@@ -101,7 +101,7 @@ class StreamlitDataLabel:
         self.db.save_streamlit_data(df_labeled_data)
         self.db.update_streamlit_index(st.session_state.video_index)
 
-        print('Saved labeled data to database!')
+        logging.info('Saved labeled data to database!')
 
     def _move_to_previous_video(self) ->None:
         '''move back to previous video'''

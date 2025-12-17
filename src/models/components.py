@@ -1,5 +1,5 @@
 '''Custom layer or block that used in Productive model'''
-
+import logging
 import torch
 
 import torch.nn as nn
@@ -176,7 +176,7 @@ class AdaLN(nn.Module):
 
         if cond_dim is None:
             self.if_cond=False
-            print("Warning: cond_dim is None. The condition adapter is disabled;" \
+            logging.warning("WARNING: cond_dim is None. The condition adapter is disabled;" \
             " AdaLN will function as standard LayerNorm")
         
         else:

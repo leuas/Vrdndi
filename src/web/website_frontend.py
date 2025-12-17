@@ -1,5 +1,4 @@
 '''this is the frontend of the Vrdndi webstie'''
-import pprint
 import cryptography
 import numpy as np
 import pandas as pd
@@ -59,7 +58,7 @@ class UpdateWebsitePage:
             app.storage.general['feed_scroll_pos']=scroll_y
 
         except Exception as e:
-            print(f'Could not get scroll position: {e}')
+            logging.error(f'Could not get scroll position: {e}')
 
         watch_state={
         'start_time':None,
@@ -107,7 +106,7 @@ def refresh_website_for_new_feed():
         new_feed_state['feed_state']=False
 
         db.update_feed_state(0) #reset the feed_state value
-        print(db.get_feed_state())
+        logging.info(db.get_feed_state())
         render_feed.refresh()
 
     else:
@@ -115,7 +114,7 @@ def refresh_website_for_new_feed():
         new_feed_state['feed_state']=False
         db.update_feed_state(0) #reset the feed_state value
     
-        print(db.get_feed_state())
+        logging.info(db.get_feed_state())
 
 @app.post('/trigger-update')
 def webhook():
@@ -127,7 +126,7 @@ def new_feed_arrive():
     '''Have new feed in the database'''
     db.update_feed_state(1)
 
-    print('feed arrived')
+    logging.info('feed arrived')
 
 
 

@@ -1,4 +1,5 @@
 
+import logging
 import json
 import pandas as pd
 
@@ -118,10 +119,10 @@ class HybridProductiveData(ProductiveData):
                 num_tensor=-100#in case it can't find the key in the manifest
 
                 if isinstance(e, KeyError):
-                    print(f"WARNING: Expected {timestamp} has a relate file, but its key doesn't exist in manifest. Set tensor to -100(ignore) as fallback")
+                    logging.warning(f"WARNING: Expected {timestamp} has a relate file, but its key doesn't exist in manifest. Set tensor to -100(ignore) as fallback")
 
                 else:
-                    print(f"WARNING: Expected torch.Tensor in aw tensor file of {timestamp}, get {type(tensor_dict)} instead.\
+                    logging.warning(f"WARNING: Expected torch.Tensor in aw tensor file of {timestamp}, get {type(tensor_dict)} instead.\
                            Set tensor to -100 (ignore) as fallback. Consider delete this record in database to improve model performance  ") 
 
             

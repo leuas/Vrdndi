@@ -7,7 +7,7 @@ Vrdndi (Verdandi) is a full-stack recommendation system that processes your medi
 
 The primary goal of this project is not to increase your watch time in your feed like other recommendation systems. It's the opposite: minimize your watch time and increase your productivity, but keep you interested 
 
-> ⚠️ **Note:** Vrdndi is currently in **Alpha**. The core features are functional, but the model architecture is still experimental. Real-world performance is unverified due to lack of data. For more detail, see [Limitation](#limitation)
+> ⚠️ **Note:** Vrdndi is currently in **Alpha**. The core features are functional, but the model architecture is still experimental. Real-world performance is unverified. For more detail, see [Limitation](#limitation)
 
 ![PyTorch](https://img.shields.io/badge/PyTorch-%23EE4C2C.svg?style=plastic&logo=PyTorch&logoColor=white)
 ![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?style=plastic&logo=Streamlit&logoColor=white)
@@ -27,14 +27,14 @@ cd vrdndi
 
 **Step 2**: Install pytorch for your GPU
 
-Go to [Pytorch Get Started](https://pytorch.org/get-started/locally/), selelct the version that matches your hardware, and install it.
+Go to [Pytorch Get Started](https://pytorch.org/get-started/locally/), select the version that matches your hardware, and install it.
 
 For example:
 ```bash
 pip3 install torch torchvision --index-url https://download.pytorch.org/whl/cu128
 ```
 
-**Step 3**: Install the package. Since you may need to adjust model hyperparameters , we recommend installing it in editbale mode.
+**Step 3**: Install the package. Since you may need to adjust model hyperparameters , we recommend installing it in editable mode.
 
 ```bash
 pip install -e . 
@@ -73,12 +73,12 @@ There are two types of inputs:
 
 ### Residual Block: 
 
-I used a pre-activation structure instead of post-activation for the Residual block; added an SE block to "gate" each token to pick out the important one;  and replaced the common GLU with SiLU to keep consistency with SWiGLU, since they are almost interchangeable.
+Used a pre-activation structure instead of post-activation for the Residual block; added an SE block to "gate" each token to pick out the important one;  and replaced the common GLU with SiLU to keep consistency with SWiGLU, since they are almost interchangeable.
 
 
 ![[Residual block ]](docs/images/Residual_block_structure.svg)
 
->**Why AdaLN:** Duration is a numerical value, it can't go through the BGE-M3's embedding layer, so either I need to put it as a separate token or put it as a condition to diffuse the AW data. The former, seemingly it caused distribution mismatch(?) when I tried to implement it, so I used the latter approach.
+>**Why AdaLN:** Duration is a numerical value, it can't go through the BGE-M3's embedding layer, so it has to be either a separate token or a condition to diffuse the AW data. The former seemingly caused distribution mismatch(?) during testing, so the latter approach was chosen.
 
 
 
@@ -89,16 +89,16 @@ The output layer has two heads: an *interest* head and a *productive* head. The 
 
 ![[Output layer]](docs/images/output_layer_big.svg)
 
->**Why SWiGLU:** Previously the interest head couldn't quite converge (at least the fluctuation was larger than now), and since the sequence compressor for interest head is partially functional (It won't receive an app sequence to predict interest, so the output token just represents the duration that diffused in it). So probably adding a strong activation function in output layer would be a good idea
+>**Why SWiGLU:** Previously the interest head couldn't quite converge (at least the fluctuation was larger than now), and since the sequence compressor for interest head is partially functional -- it won't receive an app sequence to predict interest, so the output token just represents the duration diffused in it. Hence, adding a strong activation function in output layer seems like a good move.
 >
->I also switched the productive head to SWiGLU at that time as convenient, but it seems to have caused the overfitting problem Vrdndi is facing currently.  
+>The productive head was also switched to SWiGLU at that time for convenience, though it seems to have caused the overfitting problem Vrdndi is facing currently.  
 
 ## Model Performance
 
-The performance is fairly good, one of the 5 folds could reach 0.95 f1, which is suspiciously high. However, since only one fold reached that and my dataset is quite small (200-300 for productive,roughly 1000 for interest), so that's acceptable. And the model structure is decent enough, as the test may have shown.
+The performance is fairly good, one of the 5 folds could reach 0.95 f1, which is suspiciously high. However, since only one fold reached that and the dataset used for testing was quite small (200-300 for productive, roughly 1000 for interest), the result is acceptable. And the model structure is decent enough, as the test may have shown.
 
 >**Note**: The *productive* loss plateau you see in the diagram is likely caused by `0.5` output layer dropout.
-> And the instability of the *interest* loss is likely caused by my configuration (`0.75` interest sampling rate, but `0.33` interest loss weight).
+> And the instability of the *interest* loss is likely caused by the configuration used (`0.75` interest sampling rate, but `0.33` interest loss weight).
 
 **Productive head's mean F1 performance with Standard Deviation**:
 
@@ -113,7 +113,7 @@ The performance is fairly good, one of the 5 folds could reach 0.95 f1, which is
 Some references:
 
 - RTX 3060 laptop with 16 GB RAM works well for this project.
-- M1 Macbook Air with 16 GB RAM can run the inference and might be able to run training pipelines with `batch_size = 1`(with GA), but end-to-end training has't been tested.
+- M1 Macbook Air with 16 GB RAM can run the inference and might be able to run training pipelines with `batch_size = 1`(with GA), but end-to-end training hasn't been tested.
 
 
 ## Usage/Examples
@@ -182,12 +182,12 @@ Main page would render 21 videos at once. Press ``LOAD MORE`` button to get more
 
 
 ## Limitation
-Technically, the model *can* aim for productivity if you have enough high-quality data. **But** it's really difficult to reach since current state of the project doesn't do anything to explicitly form the feed in a way to achieve the primary goal.
+Technically, the model *can* aim for productivity if you have enough high-quality data. But it's really difficult to reach since current state of the project doesn't do anything to explicitly form the feed in a way to achieve the primary goal.
 
 
 It's more like keeping or organizing your feed as you want, even if it's not in a *productive* way. In the future version, we may reach that goal. (Say add RL?)
 
-Again current architecture is expermental; likely more data is required for further improvement
+Again current architecture is experimental; likely more data (more time) is required for further improvement
 
 ## File Strcuture
 
@@ -235,11 +235,11 @@ Again current architecture is expermental; likely more data is required for furt
 
 ## Notes
 
-Since this is my very first project in code (except code practise), and I'm still new to programming and ML. I may miss something completely.
+Since this is my very first project in code (except code practise), and I'm still new to programming and ML. I may have missed something completely.
 
-If you find any bug/issue or problem about the architecture (Say, the architecture cause some converagence problems) or anything else. Please feel free to open an issue in Github! (or even submit a PR!)
+If you find any bugs/issues or problems with the architecture (e.g.,if the architecture causes convergence problems) or anything else. Please feel free to open an issue or even submit a PR!
 
-Thank you for reading down here. If you could give a star for this project, it would be really helpful.
+Thank you for reading this far. If you find this project interesting, giving it a star would be really helpful.
 
 
 ## Related

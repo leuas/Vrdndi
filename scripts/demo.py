@@ -35,8 +35,9 @@ Expected Output:
         final output DataFrame .
         
 """
-
+import logging
 import pandas as pd
+from typing import Literal
 from unittest.mock import patch
 from datetime import datetime
 
@@ -116,6 +117,8 @@ fake_aw_sequence=[[{'data': {'$category': ['Productivity', 'Gemini'],
 
 
 if __name__=='__main__':
+
+
     demo=Demo()
 
     demo.predict_normally()

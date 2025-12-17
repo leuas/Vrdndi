@@ -1,4 +1,5 @@
 '''the config file of the project'''
+import logging
 import torch
 
 
@@ -17,6 +18,14 @@ PORT=5600
 WEBSITE_HOST='0.0.0.0'
 
 ENABLE_EXPERIMENTAL_FEATURES = False #Enable some feature that is still debuging and testing
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    datefmt='%H:%M:%S'
+    )
+
+
 
 @dataclass
 class ProductiveModelConfig:

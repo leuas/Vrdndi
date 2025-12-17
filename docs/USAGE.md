@@ -24,7 +24,7 @@
 * **Installed** project via the guide in ``README.md``
 
 * **Sign in** to Wandb. You could wait to do so until you run the training pipelines. Currently we use Wandb to log your training metrics and since we just save the LoRA layers (roughly 20 MB), so the 5 GB free storage is enough. 
->I am considering switching to ``mlflow`` later, but for now, sorry for introducing a third-party service.
+    >A switch to ``mlflow`` is being considered later, but for now, apologies for the extra third-party dependency
 
 
 
@@ -36,9 +36,9 @@
 
 **Step 3**: Go to its dashboard. Click ``Settings``, scroll down, find [Category Builder ](http://localhost:5600/#/settings/category-builder) (or click this) and set up some categories for what you did.
 
->**Why:** The function (``get_aw_raw_data``) that fetches data from AW  uses the ``get_classes`` function from ``aw_client.classes`` and sometimes if you haven't set up the categories, the fallback of ``get_classes`` to default class might not work correctly sometimes. (It's possible because I used the function incorrectly)
+>**Why:** The function (``get_aw_raw_data``) that fetches data from AW  uses the ``get_classes`` function from ``aw_client.classes`` and sometimes if you haven't set up the categories, the fallback of ``get_classes`` to default class might not work correctly. (It's possible due to incorrect usage )
 >
->So it's better to just set up the categories first to avoid that error. I've added this to the backlog, and might investigate and add an error handling in a future version.
+>So it's better to just set up the categories first to avoid that error. This issue has been added to the backlog; error handling might be added in a future version.
 
 **Step4**: Change the ``HOSTNAME`` in ``src/config.py`` to your actual hostname. You can find that in the AW dashboard.
 
@@ -104,7 +104,7 @@ Open ``data_saving.py``, change the function to ``like_dislike_streamlit_data_pr
 
 >**Note**: As the name suggests, you may need to label some data in streamlit before running this function, or currently you could delete `streamlit_data=db.get_data('streamlit_data')`line in that function. 
 >
-> Added to backlog to check if table if exist and hanle that in that function. 
+> Added to backlog to check if table exists and handle that in that function. 
 
 **Save training data**
 
@@ -120,7 +120,7 @@ See [Configuration](CONFIGURATION.md).
 
 ### Usage Example
 
-Currently all type of hyperparameters are mixed in two classes: ``ProductiveModelConfig`` and ``HybirdProductiveModelConfig``. Current stucture is tentative and might change.
+Currently all type of hyperparameters are mixed in two classes: ``ProductiveModelConfig`` and ``HybridProductiveModelConfig``. Current stucture is tentative and might change.
 
 
 ```python
@@ -146,7 +146,7 @@ test=HybridProductiveModelTraining(config=config)
 ## Training
 
 
-After you have the training data, just adjust the config parameterd and run it.
+After you have the training data, just adjust the config parameters and run it.
 
 **Example (Continued from above)**:
 
@@ -157,7 +157,7 @@ test.start_train(model_name='example.pth')
 If you want to test model performance, you can also use K-Fold training, though currently, it won't save the model.
 
 ```python
-test.kfold_start()
+test.kfold_start(group_name='example')
 ```
 
 **Note**
@@ -175,20 +175,20 @@ test.kfold_start()
 
 **Example**
 ```python
-from src.inference.productive import HybirdProductiveModelPredicting
-from src.config import HybirdProductiveModelConfig
+from src.inference.productive import HybridProductiveModelPredicting
+from src.config import HybridProductiveModelConfig
 
-config=HybirdProductiveModelConfig()
+config=HybridProductiveModelConfig()
 config.eval_test_num_workers=8
 
-model=HybirdProductiveModelPredicting('example.pth',config=config)
+model=HybridProductiveModelPredicting('example.pth',config=config)
 
 inference_data=model.prepare_predicting_data()
 
 model.predict(inference_data=inference_data) 
 ```
 
->Note: I haven't added a function to automatically clean the encoded tensor file yet (but it's on the backlog), so you may delete these manually. 
+>Note: The function that automatically clean the encoded tensor file haven't added yet (but it's on the backlog), so you may delete these manually. 
 
 
 ## NiceGUI Website
@@ -223,13 +223,13 @@ Just don't touch it for now. Baseline model haven't been connected to database y
 
 ## Remote Connect (Optional)
 
-If you want to train your model in the computer you don't usually used. You can use Tailscale
+If you want to train your model in the computer you don't usually used. Tools,like Tailscale, are recommended.
 
 **Example:**
 
 A person who usually uses Macbook, but want to train it on a windows computer, can use Tailscale to give both computers a specific IP address to connect to each other.
 
-Set ``HOST``,``PORT`` to the ip of the computer you usually use ( the one running Activity Watcher )
+Set ``HOST`` to the IP of the computer you usually use ( the one running Activity Watcher )
 
 ```python
 HOST='100.100.666.42'

@@ -506,7 +506,7 @@ class ProductiveModelTraining(Generic[ConfigType]):
 
         return f1_dict
 
-    def _check_if_name_exist(self,name:str) ->bool:
+    def _check_if_name_exists(self,name:str) ->bool:
         '''check if current model name is already in the artifacts folder'''
         logging.info(f'target path {ARTIFACTS_PATH/name}')
 
@@ -560,7 +560,7 @@ class ProductiveModelTraining(Generic[ConfigType]):
 
         if check_file_exist:
             print('checking file existence')
-            if_train=self._check_if_name_exist(name=model_name)
+            if_train=self._check_if_name_exists(name=model_name)
         else:
             if_train=True
 

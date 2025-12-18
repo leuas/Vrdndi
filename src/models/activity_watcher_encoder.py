@@ -7,8 +7,8 @@ from sentence_transformers import SentenceTransformer
 from src.config import DEVICE
 
 
-class ActivityWatcherEncoder(nn.Module):
-    '''Activity Watcher's data encoder, a sentence transformer'''
+class ActivityWatchEncoder(nn.Module):
+    '''ActivityWatch's data encoder, a sentence transformer'''
 
     def __init__(self):
         super().__init__()

@@ -200,7 +200,7 @@ class ProductiveModel(nn.Module):
 
 class HybridProductiveModel(ProductiveModel):
     '''
-    Model class that uses offline ActivityWatcher (AW) sequences with text to
+    Model class that uses offline ActivityWatch (AW) sequences with text to
     predict 'interest' and 'productive' scores.
 
     This class extends the base architecture by combining offline app sequence tensor

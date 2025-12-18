@@ -1,7 +1,7 @@
 ## Contents
 1. [Prerequisites](#prerequisites)
 
-2. [Setup Activity Watcher (AW)](#setup-activity-watcher-aw)
+2. [Setup ActivityWatch (AW)](#setup-activitywatch-aw)
 3. [Add API Key](#add-api-key)
 4. [Save Your Data To Database](#save-your-data-to-database)
 5. [Streamlit Data Labelling](#streamlit-data-labelling)
@@ -28,11 +28,11 @@
 
 
 
-## Setup Activity Watcher (AW)
+## Setup ActivityWatch (AW)
 
-**Step 1**: Install [ Activity Watcher](https://github.com/ActivityWatch/activitywatch) 
+**Step 1**: Install [ ActivityWatch](https://github.com/ActivityWatch/activitywatch) 
 
-**Step 2**: Just wander around or watch some videos on your computer while the Activity Watcher is running.
+**Step 2**: Just wander around or watch some videos on your computer while the ActivityWatch is running.
 
 **Step 3**: Go to its dashboard. Click ``Settings``, scroll down, find [Category Builder ](http://localhost:5600/#/settings/category-builder) (or click this) and set up some categories for what you did.
 
@@ -229,7 +229,7 @@ If you want to train your model in the computer you don't usually used. Tools,li
 
 A person who usually uses Macbook, but want to train it on a windows computer, can use Tailscale to give both computers a specific IP address to connect to each other.
 
-Set ``HOST`` to the IP of the computer you usually use ( the one running Activity Watcher )
+Set ``HOST`` to the IP of the computer you usually use ( the one running ActivityWatch )
 
 ```python
 HOST='100.100.666.42'

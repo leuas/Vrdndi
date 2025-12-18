@@ -41,7 +41,7 @@ dependencies = [
     # --- MLOps & Logging ---
     "wandb",                    # Weights & Biases Logging
     "mlflow",                   # May switch to mlflow in future 
-    "aw-client",                # ActivityWatcher Client 
+    "aw-client",                # ActivityWatch Client 
     "persist-queue[extra]",     # aw_client's dependency
     "aiosqlite",
     "python-dotenv",            

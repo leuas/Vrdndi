@@ -789,7 +789,7 @@ class HybridProductiveModelTraining(ProductiveModelTraining[HybridProductiveMode
             
             self.model=HybridProductiveModel(self.config).to(DEVICE)
 
-            self.optimizer=torch.optim.AdamW(self.model.parameters(),lr=5e-5)#reset the optimizer
+            self.optimizer=torch.optim.AdamW(self.model.parameters(),lr=5e-5,weight_decay=self.config.weight_decay)#reset the optimizer
 
 
             train_set=dataset.loc[train_id.flatten()]

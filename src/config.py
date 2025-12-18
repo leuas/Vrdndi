@@ -32,7 +32,7 @@ class ProductiveModelConfig:
     ''' THe config of Productive model'''
     model_name:str ='BAAI/bge-m3'
     lr=5e-5
-    weight_decay=1e-3
+    weight_decay=0.01
     compile_model:bool=True
 
     productive_out_feature:int=2

@@ -206,7 +206,7 @@ Again current architecture is experimental; likely more data (more time) is requ
 │   │   ├── loader.py                       # Dataloader class
 │   │   └── productive.py                   # Dataset class of main model
 │   ├── model
-│   │   ├── activity_watcher_encoder.py     # The model that encodes the text of the app sequence 
+│   │   ├── activitywatch_encoder.py        # The model that encodes the text of the app sequence 
 │   │   ├── components.py                   # Defines some model layers (e.g. AdaLN)
 │   │   └── productive.py                   # Main model class
 │   ├── pipelines                           # Training pipelines

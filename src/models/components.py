@@ -108,7 +108,7 @@ class ResBlock(nn.Module):
 
 
 class SEBlock(nn.Module):
-    '''Squeeze-and-Excitation (SE) Block for the sequence events data of AcivityWatcher (AW) in the ResBlock
+    '''Squeeze-and-Excitation (SE) Block for the sequence events data of AcivityWatch (AW) in the ResBlock
        
 
         Args:

@@ -118,14 +118,14 @@ def get_processed_data() ->pd.DataFrame:
 
 
 @pytest.fixture
-def get_activity_watcher_encoder_input(get_processed_data) ->tuple[np.ndarray,torch.Tensor]: 
+def get_activitywatch_encoder_input(get_processed_data) ->tuple[np.ndarray,torch.Tensor]: 
     '''get the input data of ActivityWatchEncoder'''
 
     return prepare_sentence_transformer_input(get_processed_data)
 
 
 @pytest.fixture
-def get_activity_watcher_encoder_output() -> torch.Tensor:
+def get_activitywatch_encoder_output() -> torch.Tensor:
     '''get the output  of ActivityWatch encoder(i.e. the data after encoded)'''
 
     output=torch.load(FIXTURE_PATH/'encode_aw_events_function_fixture.pt',map_location=DEVICE)

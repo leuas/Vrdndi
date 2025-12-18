@@ -11,7 +11,7 @@ The Basic configuration
 | `total_epoch`   | `int`       | `10`            | Total number of training epochs.                                |
 | `g`             | `Generator` | `None`          | Placeholder, it would be updated in the pipelines        |
 | `lr`           | `float`  | `5e-5`      | Learning rate for the optimizer.                                    |
-| `weight_decay` | `float`  | `1e-3`      | L2 penalty applied to weights to prevent overfitting.               |
+| `weight_decay` | `float`  | `0.01`      | L2 penalty applied to weights to prevent overfitting.               |
 | `ignore_index` | `int`    | `-100`      | Label index to ignore when calculating loss and weight. |
 | `wandb_config` | `dict`   | _{lr}_      | Dictionary configuration for Weights & Biases logging.              |
 | `productive_out_feature`          | `int`    | `2`         | Output dimension for the productive classification head. |

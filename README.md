@@ -3,10 +3,10 @@
 
 # Vrdndi
 
-Vrdndi (Verdandi) is a full-stack recommendation system that processes your media data (currently YouTube) to provide a personal feed based on what you did previously in your computer (i.e dynamically changing the feed based on time and previous app history)
+Vrdndi (Verdandi) is a full-stack recommendation system that processes your media data (currently YouTube) to provide a personal feed based on what you did previously on your computer (i.e dynamically changing the feed based on time and previous app history)
 
 The primary goal of this project is not to increase your watch time in your feed like other recommendation systems. It's the opposite: minimize your watch time and increase your productivity, but keep you interested.
-At least, that's the plan.
+*At least, that's the plan.*
 
 > ⚠️ **Note:** Vrdndi is currently in **Alpha**. The core features are functional, but the model architecture is still experimental. Real-world performance is unverified. For more detail, see [Limitation](#limitation)
 
@@ -174,7 +174,7 @@ Technically, the model *can* aim for productivity if you have enough high-qualit
 
 It's more like keeping or organizing your feed as you want, even if it's not in a *productive* way. In the future version, we may reach that goal. (Say add RL?)
 
-Again current architecture is experimental; likely more data (more time) is required for further improvement
+With the current test dataset, **sometimes** the model *can* give a good feed, which is not fully for productivity. (Might be caused by small dataset and noise) Again, the current architecture is experimental; likely more data (more time) is required for further improvement
 
 
 
@@ -214,9 +214,11 @@ Again current architecture is experimental; likely more data (more time) is requ
 │   │   └── productive.py                   # Pipelines of main model
 │   ├── utils
 │   │   ├── data_etl.py                     # Processes data from API
-│   │   └── ops.py                          # Data operation for model training or inference
-│   └── web
-│       └── website_frontend.py             # NiceGUI website frontend
+│   │   └── ops.py                          # Data operation for model training or inference 
+│   ├──web
+│   │   └── website_frontend.py             # NiceGUI website frontend
+│   └── streamlit                          
+│       └──  data_labeler.py                # Streamlit website code                
 └── test 
 
 ```
@@ -244,7 +246,7 @@ Again current architecture is experimental; likely more data (more time) is requ
 
 - Error handling for ``get_classes`` 
 
-- Write a `check_if_table_exist` function in *interest data* preprocess
+- Write a `check_if_table_exists` function in *interest data* preprocess
 
 
 ## Notes

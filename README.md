@@ -74,7 +74,7 @@ As shown in the picture below, the system fetches data from YouTube API and your
 
 **End-to-End Pipelines**:
 
-![[system_architecture]](docs/images/System_Architecture_big.svg)
+![system_architecture](docs/images/System_Architecture_big.svg)
 
 
 
@@ -94,7 +94,7 @@ There are two types of inputs:
 
 
 
-![[Main structure]](docs/images/Model_main_structure.svg)
+![Main structure](docs/images/Model_main_structure.svg)
 
 
 
@@ -104,7 +104,7 @@ There are two types of inputs:
 Used a pre-activation structure instead of post-activation for the Residual block; added an SE block to "gate" each token to pick out the important one;  and replaced the common GELU with SiLU to keep consistency with SWiGLU, since they are almost interchangeable.
 
 
-![[Residual block ]](docs/images/Residual_block_structure.svg)
+![Residual block ](docs/images/Residual_block_structure.svg)
 
 >**Why AdaLN:** Duration is a numerical value, it can't go through the BGE-M3's embedding layer, so it has to be either a separate token or a condition to diffuse the AW data. The former seemingly caused distribution mismatch(?) during testing, so the latter approach was chosen.
 
@@ -115,7 +115,7 @@ Used a pre-activation structure instead of post-activation for the Residual bloc
 The output layer has two heads: an *interest* head and a *productive* head. The interest head acts as a transition before you have enough *productive* data(i.e. The data you labelled on the website).  The *productive* head predicts a rate based on previous app history, current time for each media data. 
 
 
-![[Output layer]](docs/images/output_layer_big.svg)
+![Output layer](docs/images/output_layer_big.svg)
 
 >**Why SWiGLU:** Previously the interest head couldn't quite converge (at least the fluctuation was larger than now), and since the sequence compressor for interest head is partially functional -- it won't receive an app sequence to predict interest, so the output token just represents the duration diffused in it. Hence, adding a strong activation function in output layer seems like a good move.
 >
@@ -130,11 +130,11 @@ The performance is fairly good, one of the 5 folds could reach 0.95 f1, which is
 
 **Productive head's mean F1 performance with Standard Deviation**:
 
-![[Prodcuctive head's performance]](docs/images/productive_val_f1_with_std.svg)
+![Prodcuctive head's performance](docs/images/productive_val_f1_with_std.svg)
 
 **More performance detail**:
 
-![[detail performance chart]](docs/images/overall_model_performance_chart.png)
+![detail performance chart](docs/images/overall_model_performance_chart.png)
 
 
 
@@ -148,10 +148,10 @@ Main page would render 21 videos at once. Press ``LOAD MORE`` button to get more
 
 
 **Main Page**:
-![[main page]](docs/images/Main_page.png)
+![main page](docs/images/Main_page.png)
 
 **Video Page**:
-![[video page]](docs/images/Video-play_page.png)
+![video page](docs/images/Video-play_page.png)
 
 >For streamlit data labelling website, please see [Usage Guide](docs/USAGE.md)
 

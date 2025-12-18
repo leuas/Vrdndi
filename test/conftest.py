@@ -6,7 +6,7 @@ import numpy as np
 import pprint
 from datetime import datetime
 
-from src.pipelines.productive import HybirdProductiveModelTraining
+from src.pipelines.productive import HybridProductiveModelTraining
 
 from src.models.productive import ProductiveModel
 from src.models.activity_watcher_encoder import ActivityWatcherEncoder
@@ -15,7 +15,7 @@ from src.model_dataset.productive import ProductiveData
 from src.utils.ops import set_random_seed,duration_transform,iso_duration_transform
 from src.utils.ops import prepare_sentence_transformer_input
 
-from src.inference.productive import HybirdProductiveModelPredicting
+from src.inference.productive import HybridProductiveModelPredicting
 
 from src.config import DEVICE,ProductiveModelConfig
 from src.path import FIXTURE_PATH
@@ -38,10 +38,10 @@ def get_time() ->datetime:
     return datetime.fromisoformat('2025-11-01T09:31:05.401000+00:00')
 
 @pytest.fixture
-def get_hybird_productive_model_training_class() ->HybirdProductiveModelTraining:
+def get_hybird_productive_model_training_class() ->HybridProductiveModelTraining:
     '''get a fresh HybirdProductiveModelTraining class'''
 
-    return HybirdProductiveModelTraining()
+    return HybridProductiveModelTraining()
 
 @pytest.fixture
 def aw_raw_data() ->list:
@@ -193,10 +193,10 @@ def get_encoder():
 
 
 @pytest.fixture(name='hpm_predict')
-def get_fresh_hybird_productive_model_predicting_class() -> HybirdProductiveModelPredicting:
+def get_fresh_hybird_productive_model_predicting_class() -> HybridProductiveModelPredicting:
     '''just get a fresh class of HybirdProductiveModelPredicting'''
 
-    return HybirdProductiveModelPredicting()
+    return HybridProductiveModelPredicting()
 
 
 

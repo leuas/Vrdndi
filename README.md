@@ -46,7 +46,7 @@ pip3 install torch torchvision --index-url https://download.pytorch.org/whl/cu12
 **Step 3**: Install the package. Since you may need to adjust model hyperparameters , we recommend installing it in editable mode.
 
 ```bash
-pip install -e . 
+pip install -e .
 ```
 >**Note**: This installs the core library for running the Demo. To set up the full system (i.e. ActivityWatch & Database), please see the [Usage Guide](docs/USAGE.md)
 
@@ -178,7 +178,7 @@ With the current test dataset, **sometimes** the model *can* give a good feed, w
 
 
 
-## File Strcuture
+## File Structure
 
 ```
 .

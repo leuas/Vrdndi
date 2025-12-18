@@ -34,7 +34,6 @@ from nltk.corpus import stopwords
 from google.auth.transport.requests import Request
 from google_auth_oauthlib.flow import InstalledAppFlow
 
-from src.models.activity_watcher_encoder import ActivityWatchEncoder
 from src.db.database import VrdndiDatabase
 from src.config import CLIENT_SECRET_FILE
 

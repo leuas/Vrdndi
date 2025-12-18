@@ -9,7 +9,7 @@ from datetime import datetime
 from src.pipelines.productive import HybirdProductiveModelTraining
 
 from src.models.productive import ProductiveModel
-from src.models.activity_watcher_encoder import ActivityWatchEncoder
+from src.models.activitywatch_encoder import ActivityWatchEncoder
 
 from src.model_dataset.productive import ProductiveData
 from src.utils.ops import set_random_seed,duration_transform,iso_duration_transform

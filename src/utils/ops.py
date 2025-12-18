@@ -29,7 +29,7 @@ from sklearn.model_selection import train_test_split
 
 from src.db.database import VrdndiDatabase
 
-from src.models.activity_watcher_encoder import ActivityWatchEncoder
+from src.models.activitywatch_encoder import ActivityWatchEncoder
 from src.utils.data_etl import get_video,clean_yt_video,get_aw_raw_data,convert_timezone,get_video_data,videoid_split,duration_transform,iso_duration_transform
 from src.config import DEVICE,HOSTNAME,HOST,PORT
 from src.path import ARTIFACTS_PATH

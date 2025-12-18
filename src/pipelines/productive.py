@@ -506,12 +506,13 @@ class ProductiveModelTraining(Generic[ConfigType]):
 
         return f1_dict
 
-    def _check_if_name_exsit(self,name:str) ->bool:
+    def _check_if_name_exists(self,name:str) ->bool:
         '''check if current model name is already in the artifacts folder'''
+        logging.info(f'target path {ARTIFACTS_PATH/name}')
 
-        if os.path.isfile(name):
+        if os.path.isfile(ARTIFACTS_PATH/name):
 
-            answer=input(f'The file already exsited, are you sure you wanna override {name} and continnue training? y/n: ')
+            answer=input(f'The file already existed, are you sure you wanna overwrite {name} and continue training? y/n: ')
 
             if answer =='y':
                     
@@ -520,7 +521,7 @@ class ProductiveModelTraining(Generic[ConfigType]):
                 return True
 
             elif answer =='n':
-                logging.info('training process stop! process stopped!')
+                logging.info('training process stopped!')
 
                 return False
             else:
@@ -556,8 +557,10 @@ class ProductiveModelTraining(Generic[ConfigType]):
         if run_name is None:
             run_name=model_name
 
+
         if check_file_exist:
-            if_train=self._check_if_name_exsit(name=model_name)
+            print('checking file existence')
+            if_train=self._check_if_name_exists(name=model_name)
         else:
             if_train=True
 

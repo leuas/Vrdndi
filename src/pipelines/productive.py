@@ -509,7 +509,7 @@ class ProductiveModelTraining(Generic[ConfigType]):
     def _check_if_name_exsit(self,name:str) ->bool:
         '''check if current model name is already in the artifacts folder'''
 
-        if os.path.isfile(name):
+        if os.path.isfile(ARTIFACTS_PATH/name):
 
             answer=input(f'The file already exsited, are you sure you wanna override {name} and continnue training? y/n: ')
 

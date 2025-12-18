@@ -34,7 +34,6 @@ from nltk.corpus import stopwords
 from google.auth.transport.requests import Request
 from google_auth_oauthlib.flow import InstalledAppFlow
 
-from src.models.activity_watcher_encoder import ActivityWatcherEncoder
 from src.db.database import VrdndiDatabase
 from src.config import CLIENT_SECRET_FILE
 
@@ -250,13 +249,13 @@ def get_aw_raw_data(*,end_time:datetime|None=None,hours:int=3,hostname:str|None=
         end_time{datetime}: Fetch the aw data before this time. 
             Defualt to None. In that case, end_time would be now (current time)
         hours{int}: How many hours of data you want to fetch, default to 3 hours
-        hostname{str}: The network name of the device ( You may find it in the dashboard of Activity Watcher)
+        hostname{str}: The network name of the device ( You may find it in the dashboard of ActivityWatch)
             Default to None. In that case, hostname would be your current deivce's automatically
         host{str}: The server's IPv4 address, default to None,
             which mean you would fetch the data from your current device
             (e.g. '100.100.x.x' for using Tailscale , for localhost, just leave it to be default)
 
-        port{str}: The port number where the ActivityWatcher's server is listening to. 
+        port{str}: The port number where the ActivityWatch's server is listening to. 
             Default to None, leave it to be handled by aw_client
 
 
@@ -292,7 +291,7 @@ def get_aw_raw_data(*,end_time:datetime|None=None,hours:int=3,hostname:str|None=
     #if you haven't set the class in the aw dashboard, it may return a 'None' error 
     #(i.e. It doesn't return default classes as fallback somehow)
     #In that case, you may wanna read the code in aw_client(Github project)/aw_client(Folder)/classes.py/get_classes(Function)
-    #Or simply set the category(classes) in the Activity Watcher's dashboard (If you haven't set it yet! )
+    #Or simply set the category(classes) in the ActivityWatch's dashboard (If you haven't set it yet! )
 
     if hostname is None:
         hostname=socket.gethostname()

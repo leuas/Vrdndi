@@ -89,7 +89,7 @@ class Demo:
 
 
 
-#The fake app seuqence data that is fetched from Activity Watcher
+#The fake app seuqence data that is fetched from ActivityWatch
 fake_aw_sequence=[[{'data': {'$category': ['Productivity', 'Gemini'],
             'app': 'Zen',
             'title': 'Google Gemini'},

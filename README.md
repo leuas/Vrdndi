@@ -13,7 +13,7 @@ At least, that's the plan.
 ![PyTorch](https://img.shields.io/badge/PyTorch-%23EE4C2C.svg?style=plastic&logo=PyTorch&logoColor=white)
 ![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?style=plastic&logo=Streamlit&logoColor=white)
 ![SQLite3](https://img.shields.io/badge/SQLite-07405E?style=plastic&logo=sqlite&logoColor=white)
-![ActivityWatcher](https://img.shields.io/badge/ActivityWatcher-%23ffff?style=plastic&logo=activity)
+![ActivityWatch](https://img.shields.io/badge/ActivityWatch-%23ffff?style=plastic&logo=activity)
 ![NiceGUI](https://img.shields.io/badge/NiceGUI-5898d4?style=plastic&logoColor=white)
 
 ## Hardware requirement
@@ -48,7 +48,7 @@ pip3 install torch torchvision --index-url https://download.pytorch.org/whl/cu12
 ```bash
 pip install -e . 
 ```
->**Note**: This installs the core library for running the Demo. To set up the full system (i.e. ActivityWatcher & Database), please see the [Usage Guide](docs/USAGE.md)
+>**Note**: This installs the core library for running the Demo. To set up the full system (i.e. ActivityWatch & Database), please see the [Usage Guide](docs/USAGE.md)
 
 ## Usage/Examples
 
@@ -70,7 +70,7 @@ For general usage, please see the [Usage Guide](docs/USAGE.md)
 
 ## System Architecture
 
-As shown in the picture below, the system fetches data from YouTube API and your local ActivityWatcher server. It uses this data to predict your feed and uses database to transfer feed to website.
+As shown in the picture below, the system fetches data from YouTube API and your local ActivityWatch server. It uses this data to predict your feed and uses database to transfer feed to website.
 
 **End-to-End Pipelines**:
 
@@ -88,7 +88,7 @@ There are two types of inputs:
 
 1. **Media Data**: Textual data (Title/Description). Directly processed by the BGE-M3 embedding layer.
 
-2. **App Sequence Data**: Activity history from ActivityWatcher. Processed by a custom sequential residual block to encode the sequence into a single token.
+2. **App Sequence Data**: Activity history from ActivityWatch. Processed by a custom sequential residual block to encode the sequence into a single token.
     > Sequence data is pre-computed before running the main model to save memory usage. (Text part would be encoded by Sentence Transformer)
 
 
@@ -206,7 +206,7 @@ Again current architecture is experimental; likely more data (more time) is requ
 │   │   ├── loader.py                       # Dataloader class
 │   │   └── productive.py                   # Dataset class of main model
 │   ├── model
-│   │   ├── activity_watcher_encoder.py     # The model that encodes the text of the app sequence 
+│   │   ├── activitywatch_encoder.py        # The model that encodes the text of the app sequence 
 │   │   ├── components.py                   # Defines some model layers (e.g. AdaLN)
 │   │   └── productive.py                   # Main model class
 │   ├── pipelines                           # Training pipelines
@@ -258,7 +258,7 @@ Thank you for reading this far. If you find this project interesting, giving it 
 
 ## Related
 
-- [ActivityWatcher](https://activitywatch.net/)
+- [ActivityWatch](https://activitywatch.net/)
 - [NiceGUI](https://nicegui.io/)
 - [Streamlit](https://streamlit.io/)
 - [Pytorch](https://pytorch.org/)

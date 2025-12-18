@@ -9,7 +9,7 @@ from datetime import datetime
 from src.pipelines.productive import HybirdProductiveModelTraining
 
 from src.models.productive import ProductiveModel
-from src.models.activity_watcher_encoder import ActivityWatcherEncoder
+from src.models.activitywatch_encoder import ActivityWatchEncoder
 
 from src.model_dataset.productive import ProductiveData
 from src.utils.ops import set_random_seed,duration_transform,iso_duration_transform
@@ -118,15 +118,15 @@ def get_processed_data() ->pd.DataFrame:
 
 
 @pytest.fixture
-def get_activity_watcher_encoder_input(get_processed_data) ->tuple[np.ndarray,torch.Tensor]: 
-    '''get the input data of ActivityWatcherEncoder'''
+def get_activitywatch_encoder_input(get_processed_data) ->tuple[np.ndarray,torch.Tensor]: 
+    '''get the input data of ActivityWatchEncoder'''
 
     return prepare_sentence_transformer_input(get_processed_data)
 
 
 @pytest.fixture
-def get_activity_watcher_encoder_output() -> torch.Tensor:
-    '''get the output  of activity watcher encoder(i.e. the data after encoded)'''
+def get_activitywatch_encoder_output() -> torch.Tensor:
+    '''get the output  of ActivityWatch encoder(i.e. the data after encoded)'''
 
     output=torch.load(FIXTURE_PATH/'encode_aw_events_function_fixture.pt',map_location=DEVICE)
 
@@ -189,7 +189,7 @@ def get_encoder():
 
     set_random_seed()
 
-    return ActivityWatcherEncoder().to(DEVICE)
+    return ActivityWatchEncoder().to(DEVICE)
 
 
 @pytest.fixture(name='hpm_predict')

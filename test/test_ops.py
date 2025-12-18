@@ -58,13 +58,13 @@ def test_prepare_aw_events_data(mocker,get_aw_data,get_processed_data,get_time) 
 
 
 
-def test_encode_aw_events(get_activity_watcher_encoder_input,get_encoder) ->None:
+def test_encode_aw_events(get_activitywatch_encoder_input,get_encoder) ->None:
     ''''Test the encode aw events function'''
 
 
     model=get_encoder
 
-    aw_text,_=get_activity_watcher_encoder_input
+    aw_text,_=get_activitywatch_encoder_input
 
     output=model(aw_text)
 
@@ -77,16 +77,16 @@ def test_encode_aw_events(get_activity_watcher_encoder_input,get_encoder) ->None
 
 
 
-def test_pad_aw_sequence(get_activity_watcher_encoder_output) ->None:
+def test_pad_aw_sequence(get_activitywatch_encoder_output) ->None:
     '''test the pad_aw_sequence_data'''
     #Here I only use two timestamp as fixture to test, 
     # which may less robust than using real timestamp series which contains some -100
 
     #NOTE If you input a 3 dimension vector in size, say (batch,seq, feature ), then the output would also be that shape
     input_token_size=384
-    input_sq_len=len(get_activity_watcher_encoder_output)
+    input_sq_len=len(get_activitywatch_encoder_output)
 
-    aw_tensor,aw_attention_mask=pad_aw_sequence(get_activity_watcher_encoder_output,input_token_size)
+    aw_tensor,aw_attention_mask=pad_aw_sequence(get_activitywatch_encoder_output,input_token_size)
 
 
     assert isinstance(aw_tensor,torch.Tensor),f'aw_tensor expected type: torch.Tensor, but got {type(aw_tensor)} instead'

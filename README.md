@@ -74,7 +74,7 @@ As shown in the picture below, the system fetches data from YouTube API and your
 
 **End-to-End Pipelines**:
 
-![system_architecture](docs/images/System_Architecture_big.svg)
+![system_architecture](docs/images/system_structure.svg)
 
 
 
@@ -94,7 +94,7 @@ There are two types of inputs:
 
 
 
-![Main structure](docs/images/Model_main_structure.svg)
+![Main structure](docs/images/Model_main_structure_renamed.svg)
 
 
 
@@ -104,7 +104,7 @@ There are two types of inputs:
 Used a pre-activation structure instead of post-activation for the Residual block; added an SE block to "gate" each token to pick out the important one;  and replaced the common GELU with SiLU to keep consistency with SWiGLU, since they are almost interchangeable.
 
 
-![Residual block ](docs/images/Residual_block_structure.svg)
+![Residual block ](docs/images/residual_bock.svg)
 
 >**Why AdaLN:** Duration is a numerical value, it can't go through the BGE-M3's embedding layer, so it has to be either a separate token or a condition to diffuse the AW data. The former seemingly caused distribution mismatch(?) during testing, so the latter approach was chosen.
 
@@ -172,7 +172,7 @@ All data that's used in this project is processed locally and stores in the ``da
 Technically, the model *can* aim for productivity if you have enough high-quality data. But it's really difficult to reach since current state of the project doesn't do anything to explicitly form the feed in a way to achieve the primary goal.
 
 
-It's more like keeping or organizing your feed as you want, even if it's not in a *productive* way. In the future version, we may reach that goal. (Say add RL?)
+In other words, current architecture is a Supervised Learning system, which reflects what you did *previously*, rather than a Reinforcement Learning to optimize for a future goal (like a productivity reward).
 
 With the current test dataset, **sometimes** the model *can* give a good feed, which is not fully for productivity. (Might be caused by small dataset and noise) Again, the current architecture is experimental; likely more data (more time) is required for further improvement
 

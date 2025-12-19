@@ -15,6 +15,7 @@ The primary goal of this project is not to increase your watch time in your feed
 ![SQLite3](https://img.shields.io/badge/SQLite-07405E?style=plastic&logo=sqlite&logoColor=white)
 ![ActivityWatch](https://img.shields.io/badge/ActivityWatch-%23ffff?style=plastic&logo=activity)
 ![NiceGUI](https://img.shields.io/badge/NiceGUI-5898d4?style=plastic&logoColor=white)
+![Python](https://img.shields.io/badge/Python_3.11%2B-%233776AB?style=plastic&logo=python&logoColor=white)
 
 ## Hardware requirement
 

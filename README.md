@@ -10,12 +10,12 @@ The primary goal of this project is not to increase your watch time in your feed
 
 > ⚠️ **Note:** Vrdndi is currently in **Alpha**. The core features are functional, but the model architecture is still experimental. Real-world performance is unverified. For more detail, see [Limitation](#limitation)
 
+![Python](https://img.shields.io/badge/Python_3.11%2B-3776AB?style=plastic&logo=python&logoColor=white)
 ![PyTorch](https://img.shields.io/badge/PyTorch-%23EE4C2C.svg?style=plastic&logo=PyTorch&logoColor=white)
 ![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?style=plastic&logo=Streamlit&logoColor=white)
 ![SQLite3](https://img.shields.io/badge/SQLite-07405E?style=plastic&logo=sqlite&logoColor=white)
 ![ActivityWatch](https://img.shields.io/badge/ActivityWatch-%23ffff?style=plastic&logo=activity)
 ![NiceGUI](https://img.shields.io/badge/NiceGUI-5898d4?style=plastic&logoColor=white)
-![Python](https://img.shields.io/badge/Python_3.11%2B-%233776AB?style=plastic&logo=python&logoColor=white)
 
 ## Hardware requirement
 

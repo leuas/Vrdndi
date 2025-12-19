@@ -173,7 +173,7 @@ All data that's used in this project is processed locally and stores in the ``da
 Technically, the model *can* aim for productivity if you have enough high-quality data. But it's really difficult to reach since current state of the project doesn't do anything to explicitly form the feed in a way to achieve the primary goal.
 
 
-In other words, current architecture is a Supervised Learning system, which reflects what you did *previously*, rather than a Reinforcement Learning to optimize for a future goal (like a productivity reward).
+In other words, current architecture is a Supervised Learning system, which reflects what you did *previously*, rather than a Reinforcement Learning system to optimize for a future goal (like a productivity reward).
 
 With the current test dataset, **sometimes** the model *can* give a good feed, which is not fully for productivity. (Might be caused by small dataset and noise) Again, the current architecture is experimental; likely more data (more time) is required for further improvement
 

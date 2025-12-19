@@ -94,7 +94,7 @@ There are two types of inputs:
 
 
 
-![Main structure](docs/images/Model_main_structure_renamed.svg)
+![Main structure](docs/images/model_main_structure_renamed.svg)
 
 
 
@@ -104,7 +104,7 @@ There are two types of inputs:
 Used a pre-activation structure instead of post-activation for the Residual block; added an SE block to "gate" each token to pick out the important one;  and replaced the common GELU with SiLU to keep consistency with SWiGLU, since they are almost interchangeable.
 
 
-![Residual block ](docs/images/residual_bock.svg)
+![Residual block ](docs/images/residual_block.svg)
 
 >**Why AdaLN:** Duration is a numerical value, it can't go through the BGE-M3's embedding layer, so it has to be either a separate token or a condition to diffuse the AW data. The former seemingly caused distribution mismatch(?) during testing, so the latter approach was chosen.
 

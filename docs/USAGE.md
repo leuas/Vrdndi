@@ -83,7 +83,7 @@ cd vrdndi/scripts
 streamlit run data_labelling.py
 ```
 **Screenshot**:
-![[streamlit screenshot]](images/streamlit_screenshot.png)
+![streamlit screenshot](images/streamlit_screenshot.png)
 
 **Usage Explain**
 * **Skip**: Skip current video to next video

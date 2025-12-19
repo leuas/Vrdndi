@@ -94,8 +94,7 @@ There are two types of inputs:
 
 
 
-![Main structure](docs/images/Model_main_structure_renamed.svg)
-![Main structure](docs/images/Model_main_structure_renamed.svg)
+![Main structure](docs/images/model_main_structure_renamed.svg)
 
 
 

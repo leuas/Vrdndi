@@ -59,6 +59,9 @@ dependencies = [
     "pytest",
     "pytest-mock",
 
+    # --Others--
+    "dotenv"
+
 ]
 
 

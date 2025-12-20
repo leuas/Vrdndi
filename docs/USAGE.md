@@ -40,11 +40,11 @@
 >
 >So it's better to just set up the categories first to avoid that error. This issue has been added to the backlog; error handling might be added in a future version.
 
-**Step4**: Change the ``HOSTNAME`` in ``src/config.py`` to your actual hostname. You can find that in the AW dashboard.
+**Step4**: Rename `.env.example` to `.env` and fill `HOSTNAME` with your actual hostname. You can find that in the AW dashboard.
 
 Example:
-```python
-HOSTNAME='randompersonMacBook.local'
+```bash
+HOSTNAME=randompersonMacBook.local
 ```
 
 
@@ -55,7 +55,7 @@ HOSTNAME='randompersonMacBook.local'
 Go to Google Cloud, create a project and enable the ``YouTube API v3`` and download your client secret file(credentials file). Please place the client file in the ``secrets/`` folder.
 
 **Step 2**: 
-Copy file name of your client secret into ``CLIENT_SECRET_FILE`` in ``src/config.py``
+Rename `.env.example` to `.env` (if you haven't yet!) and fill `CLIENT_SECRET_FILE` with your actual client file name
 
 
 ## Save Your Data To Database
@@ -229,10 +229,10 @@ If you want to train your model in the computer you don't usually used. Tools,li
 
 A person who usually uses Macbook, but want to train it on a windows computer, can use Tailscale to give both computers a specific IP address to connect to each other.
 
-Set ``HOST`` to the IP of the computer you usually use ( the one running ActivityWatch )
+Set ``HOST`` to the IP of the computer you usually use ( the one running ActivityWatch ) in `.env` file.
 
-```python
-HOST='100.100.666.42'
+```bash
+HOST=100.100.666.42
 PORT=5600 #common port
 ```
 

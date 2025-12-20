@@ -142,19 +142,29 @@ The performance is fairly good, one of the 5 folds could reach 0.95 f1, which is
 
 
 ## Website
-The NiceGUI website is functional, allowing you to watch videos, scroll the feed and give feedback.
-
-Main page would render 21 videos at once. Press ``LOAD MORE`` button to get more videos.
-
+The NiceGUI website is functional, allowing you to watch videos, scroll the feed and give feedback to improve the model.
 
 
 **Main Page**:
+
+The main page renders 21 videos at once in a grid layout, drawing from the YouTube videos you saved to the database.
+
 ![main page](docs/images/Main_page.png)
 
+- **LOAD MORE**: Press it to load more videos.
+
 **Video Page**:
+
+When you click a video, it plays here. And you can use the buttons below to give feedback to the model.
+
 ![video page](docs/images/Video-play_page.png)
 
->For streamlit data labelling website, please see [Usage Guide](docs/USAGE.md)
+- **INTEREST / UNINTEREST**: Indicate whether or not you find this video interesting.
+- **CORRECT TIMING**: Label the current video as shown at the right time (good for productivity)
+- **NOT NOW**: Label the current video as shown at the wrong time (bad for productivity)
+- **BACK TO FEED**: Switch back to main page
+
+>And of course, you can connect the model with your own website! Also for streamlit data labelling website, please see [Usage Guide](docs/USAGE.md)
 
 
 ## Privacy

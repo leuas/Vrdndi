@@ -147,11 +147,11 @@ The NiceGUI website is functional, allowing you to watch videos, scroll the feed
 
 **Main Page**:
 
-Main page renders 21 videos at once in a grid layout.
+The main page renders 21 videos at once in a grid layout, drawing from the YouTube videos you saved to the database.
 
 ![main page](docs/images/Main_page.png)
 
-- **LOAD MORE**: Press it to get more videos.
+- **LOAD MORE**: Press it to load more videos.
 
 **Video Page**:
 
@@ -160,8 +160,8 @@ When you click a video, it plays here. And you can use the buttons below to give
 ![video page](docs/images/Video-play_page.png)
 
 - **INTEREST / UNINTEREST**: Indicate whether or not you find this video interesting.
-- **CORRECT TIMING**: Label current video as shown at the right time (good for productivity)
-- **NOT NOW**: Label current video as shown at the wrong time (bad for productivity)
+- **CORRECT TIMING**: Label the current video as shown at the right time (good for productivity)
+- **NOT NOW**: Label the current video as shown at the wrong time (bad for productivity)
 - **BACK TO FEED**: Switch back to main page
 
 >And of course, you can connect the model with your own website! Also for streamlit data labelling website, please see [Usage Guide](docs/USAGE.md)

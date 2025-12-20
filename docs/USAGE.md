@@ -40,7 +40,7 @@
 >
 >So it's better to just set up the categories first to avoid that error. This issue has been added to the backlog; error handling might be added in a future version.
 
-**Step4**: Rename `.env.example` to `.env` and fill `HOSTNAME` with your actual hostname. You can find that in the AW dashboard.
+**Step 4**: Rename `.env.example` to `.env` and fill `HOSTNAME` with your actual hostname. You can find that in the AW dashboard.
 
 Example:
 ```bash
@@ -165,7 +165,7 @@ test.kfold_start(group_name='example')
 - **Model Saving**: Current pipeline will overwrite model file saved from previous epoch, if current EMA f1 is higher than the previous one.
 - **Safety Check**: If you forgot to change the model saving name, there's a check function that runs before the actual training process.
 
-- **Warning**: If you see the warning `` Argument path is not specified. Defaulting to TRAIN_DATA_PATH ``, yes, that's ecptected output
+- **Warning**: If you see the warning `` Argument path is not specified. Defaulting to TRAIN_DATA_PATH ``, yes, that's expected output
 ## Inference
 
 - ``prepare_predicting_data()`` : Fetches the video data in a specific time range from now(e.g. the last 7 days) from database and encodes the app history sequence and saves it to ``data/processed/inference``.
@@ -223,7 +223,7 @@ Just don't touch it for now. Baseline model haven't been connected to database y
 
 ## Remote Connect (Optional)
 
-If you want to train your model in the computer you don't usually used. Tools,like Tailscale, are recommended.
+If you want to train your model in the computer you don't usually used. Tools, like Tailscale, are recommended.
 
 **Example:**
 

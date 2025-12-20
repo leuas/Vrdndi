@@ -3,6 +3,7 @@ import logging
 import torch
 import pandas as pd
 
+from tqdm import tqdm
 from datetime  import datetime
 from src.db.database import VrdndiDatabase
 from src.pipelines.productive import HybridProductiveModelTraining
@@ -108,9 +109,11 @@ class HybridProductiveModelPredicting:
         }
         self.model.eval()
 
+        tqdm_dataloader=tqdm(dataloader,desc="Running Inference")
+
         with torch.no_grad():
             
-            for batch in dataloader:
+            for batch in tqdm_dataloader:
 
                 prediction=self.model.predict_step(batch)
 

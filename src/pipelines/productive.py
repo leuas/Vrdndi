@@ -11,6 +11,7 @@ import torch
 import pandas as pd
 import numpy as np
 
+from tqdm import tqdm
 from typing import TypeVar,Generic
 from transformers import DataCollatorWithPadding
 from transformers.tokenization_utils_base import BatchEncoding
@@ -215,7 +216,7 @@ class ProductiveModelTraining(Generic[ConfigType]):
 
 
 
-    def _calc_model_loss(self,outputs:dict,batch:BatchEncoding,batch_idx:int, if_wandb:bool=True) ->torch.Tensor :
+    def _calc_model_loss(self,outputs:dict,batch:BatchEncoding, if_wandb:bool=True) ->torch.Tensor :
         '''calculate the model head loss and return the total loss'''
 
         pred_productive = outputs['productive_rate']
@@ -235,10 +236,6 @@ class ProductiveModelTraining(Generic[ConfigType]):
         productive_weight=self.config.productive_loss_weight
         interest_weight=self.config.interest_loss_weight
         total_loss=interest_loss*interest_weight+productive_loss+productive_weight
-
-        if batch_idx%10 == 0:
-
-            logging.info(f'Current batch index: {batch_idx}; productive loss: {productive_loss} ; intereset loss: {interest_loss} ')
 
         if if_wandb:
             wandb.log({'productive_loss':productive_loss,'interest_loss':interest_loss,'train_loss':total_loss})
@@ -267,13 +264,15 @@ class ProductiveModelTraining(Generic[ConfigType]):
         full_batch_loss=0
         batch_num_count=0
 
-        for batch_idx,batch in enumerate(data):
+        tqdm_data=tqdm(data,desc="Running Training Process")
+
+        for batch in enumerate(tqdm_data):
 
             outputs=self.model.predict_step(batch)
 
             self._update_train_metrics(batch,outputs)
 
-            total_loss=self._calc_model_loss(outputs,batch,batch_idx=batch_idx,if_wandb=if_wandb)
+            total_loss=self._calc_model_loss(outputs,batch,if_wandb=if_wandb)
 
             total_loss.backward()
 
@@ -710,7 +709,9 @@ class HybridProductiveModelTraining(ProductiveModelTraining[HybridProductiveMode
         full_batch_loss = 0
         batch_num_count = 0
 
-        for i,batch in enumerate(data):
+        tqdm_data=tqdm(data,desc="Running Training Process")
+
+        for i,batch in enumerate(tqdm_data):
             
             with autocast(device_type=DEVICE.type):#torch.device.type is the string name of the device(e.g. 'cuda')
             

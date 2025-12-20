@@ -108,9 +108,13 @@ class HybridProductiveModelPredicting:
         }
         self.model.eval()
 
+        total_batch_num=len(dataloader)
+
         with torch.no_grad():
             
-            for batch in dataloader:
+            for batch_idx,batch in enumerate(dataloader):
+
+                logging.info(f"Current batch: {batch_idx}/ {total_batch_num}")
 
                 prediction=self.model.predict_step(batch)
 

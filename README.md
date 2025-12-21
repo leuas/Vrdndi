@@ -187,7 +187,7 @@ In other words, current architecture is a Supervised Learning system, which refl
 
 With the current test dataset, **sometimes** the model *can* give a good feed, which is not fully for productivity. (Might be caused by small dataset and noise) Again, the current architecture is experimental; likely more data (more time) is required for further improvement
 
-**UPDATE (21 Dec):** Current structure has roughly 10 minutes inference latency and is too heavy for real-time updating. Potentially a Two-Tower architecture, using BGE-M3 to embed media data offline and a lightweight CNN as real-time app sequence processor, might improve the performance, but structure might change while investigating.
+**UPDATE (21 Dec):** Current structure has roughly 10 minutes inference latency and is too heavy for real-time updating. Potentially a Two-Tower architecture, using BGE-M3 to embed media data offline and a lightweight CNN as real-time app sequence processor, might improve the performance, though structure might change while investigating.
 
 
 

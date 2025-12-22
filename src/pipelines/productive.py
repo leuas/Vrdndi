@@ -26,7 +26,7 @@ from torchmetrics import F1Score,Recall,Precision,MetricCollection
 
 from sklearn.utils.class_weight import compute_class_weight
 from sklearn.metrics import accuracy_score,f1_score
-from sklearn.model_selection import KFold
+from sklearn.model_selection import TimeSeriesSplit,KFold
 
 from src.utils.ops import print_parameter_state,data_split,set_random_seed,if_load_model,FocalLoss
 from src.utils.data_etl import iso_duration_transform
@@ -115,6 +115,10 @@ class ProductiveModelTraining(Generic[ConfigType]):
 
         mask = input!=self.config.ignore_index
         maksed_y=input[mask]
+
+        if len(input.unique())<2:
+            logging.warning(f"WARNING: Skipping class weight calculation, Default to weight to 1.0")
+            return torch.tensor(1.0, dtype=torch.float32).to(DEVICE)
         
         classes=np.array([0,1])
 
@@ -773,9 +777,10 @@ class HybridProductiveModelTraining(ProductiveModelTraining[HybridProductiveMode
         dataset.loc[:,'duration'] = iso_duration_transform(dataset.loc[:,'duration'])
 
         kfold=KFold(n_splits=5,shuffle=True,random_state=self.config.seed)
+        tscv=TimeSeriesSplit(n_splits=5)
 
 
-        for fold,(train_id,val_id) in enumerate(kfold.split(dataset)):
+        for fold,(train_id,val_id) in enumerate(tscv.split(dataset)):
             logging.info(f'Fold {fold+1} / 5')
     
             wandb.init(

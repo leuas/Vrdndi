@@ -822,10 +822,8 @@ class HybridProductiveModelTraining(ProductiveModelTraining[HybridProductiveMode
 
             val_loader=self.loader.dataloader(val_set,batch_size=self.config.batch_size,shuffle=False)
 
-            f1_dict=self.epoch_training_loop(total_epoch=self.config.total_epoch,train_data=train_loader,val_data=val_loader)
+            self.epoch_training_loop(total_epoch=self.config.total_epoch,train_data=train_loader,val_data=val_loader)
             
-
-            self._clac_f1_mean_and_std(f1_dict)
 
             wandb.finish()
         

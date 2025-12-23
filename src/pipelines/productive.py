@@ -11,6 +11,8 @@ import torch
 import pandas as pd
 import numpy as np
 
+from dataclasses import asdict
+
 from tqdm import tqdm
 from typing import TypeVar,Generic
 from transformers import DataCollatorWithPadding
@@ -50,6 +52,9 @@ class ProductiveModelTraining(Generic[ConfigType]):
     def __init__(self,model:torch.nn.Module|None = None, config:ConfigType|None=None):
         
         self.config=self._setup_config(config)
+
+        if self.config.wandb_config.get('TrainingConfig') is None:
+            self.config.wandb_config['TrainingConfig']=asdict(self.config)
 
         self.model=self._setup_model(model)
 
@@ -554,7 +559,7 @@ class ProductiveModelTraining(Generic[ConfigType]):
         
         self._set_seed()
 
-        train_set,val_set,test_set=self.load_data(batch_size=self.config.batch_size)
+        train_set,val_set,_=self.load_data(batch_size=self.config.batch_size)
 
         #set the run name to model name if there's no name provided
         if run_name is None:
@@ -659,9 +664,9 @@ class HybridProductiveModelTraining(ProductiveModelTraining[HybridProductiveMode
     def __init__(self,config:HybridProductiveModelConfig|None = None):
 
         self.config=self._setup_config(config)
+        self.config.wandb_config['TrainingConfig']=asdict(self.config)
 
         model= HybridProductiveModel(config=self.config).to(DEVICE)
-
 
         super().__init__(model=model,config=self.config)
 

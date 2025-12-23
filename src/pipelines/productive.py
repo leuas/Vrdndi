@@ -769,18 +769,24 @@ class HybridProductiveModelTraining(ProductiveModelTraining[HybridProductiveMode
 
 
 
-    def kfold_train(self,group_name):
+    def kfold_train(self,group_name:str,n_split:int=5) ->None:
         '''train the model by using K Fold to test model performance '''
 
 
-        dataset=self.db.get_data('train_data')
-        dataset.loc[:,'duration'] = iso_duration_transform(dataset.loc[:,'duration'])
+        interest_data=self.db.get_data('interest_data')
+        productive_data=self.db.get_data('productive_data')
 
-        kfold=KFold(n_splits=5,shuffle=True,random_state=self.config.seed)
-        tscv=TimeSeriesSplit(n_splits=5)
+        interest_data.loc[:,'duration'] = iso_duration_transform(interest_data.loc[:,'duration'])
+        productive_data.loc[:,'duration'] = iso_duration_transform(productive_data.loc[:,'duration'])
 
+        kfold=KFold(n_splits=n_split,shuffle=True,random_state=self.config.seed)
+        tscv=TimeSeriesSplit(n_splits=n_split)
 
-        for fold,(train_id,val_id) in enumerate(tscv.split(dataset)):
+        interest_splits=list(kfold.split(interest_data))
+        productive_splits=list(tscv.split(productive_data))
+
+        for fold in range(n_split):
+    
             logging.info(f'Fold {fold+1} / 5')
     
             wandb.init(
@@ -797,10 +803,18 @@ class HybridProductiveModelTraining(ProductiveModelTraining[HybridProductiveMode
 
             self.optimizer=torch.optim.AdamW(self.model.parameters(),lr=5e-5,weight_decay=self.config.weight_decay)#reset the optimizer
 
+            produc_train_idx,produc_val_idx=productive_splits[fold]
+            interest_train_idx,interest_val_idx=interest_splits[fold]
 
-            train_set=dataset.loc[train_id.flatten()]
+            produc_train=productive_data[produc_train_idx]
+            produc_val=productive_data[produc_val_idx]
 
-            val_set=dataset.loc[val_id.flatten(),:]
+            inter_train=interest_data[interest_train_idx]
+            inter_val=interest_data[interest_val_idx]
+
+            train_set=pd.concat([produc_train,inter_train],axis=0).reset_index(drop=True)
+
+            val_set=pd.concat([produc_val,inter_val],axis=0).reset_index(drop=True)
 
             self._set_loss_fn(train_set)
 

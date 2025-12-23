@@ -806,11 +806,11 @@ class HybridProductiveModelTraining(ProductiveModelTraining[HybridProductiveMode
             produc_train_idx,produc_val_idx=productive_splits[fold]
             interest_train_idx,interest_val_idx=interest_splits[fold]
 
-            produc_train=productive_data[produc_train_idx]
-            produc_val=productive_data[produc_val_idx]
+            produc_train=productive_data.iloc[produc_train_idx]
+            produc_val=productive_data.iloc[produc_val_idx]
 
-            inter_train=interest_data[interest_train_idx]
-            inter_val=interest_data[interest_val_idx]
+            inter_train=interest_data.iloc[interest_train_idx]
+            inter_val=interest_data.iloc[interest_val_idx]
 
             train_set=pd.concat([produc_train,inter_train],axis=0).reset_index(drop=True)
 

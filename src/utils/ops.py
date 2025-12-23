@@ -707,11 +707,12 @@ def productive_data_preprocess()->pd.DataFrame:
     productive_df['productive_rate']=productive_data['productive_rate'].fillna(-100)
     productive_df['timestamp']=productive_data['timestamp']
 
+    db.save_data('productive_data',data=productive_df)
+
     logging.debug(productive_df)
 
     logging.info('processed productive data')
 
-    return productive_df
 
 
 
@@ -719,9 +720,10 @@ def interest_productive_data_preprocess()->None:
     '''preprocess the interest and productive model's training data'''
 
     like_dislike_streamlit_data_preprocess()
-    productive_df=productive_data_preprocess()
+    productive_data_preprocess()
 
     interest=db.get_data('interest_data')
+    productive_df=db.get_data('productive_data')
 
 
     interest['productive_rate']=-100

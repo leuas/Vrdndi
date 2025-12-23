@@ -17,11 +17,11 @@ from src.path import DATABASE_PATH
 
 
 WriteTableName: TypeAlias = Literal[
-    'like_data','dislike_data','interest_data'
+    'like_data','dislike_data','interest_data','productive_data'
     ]
 
 ReadTableName: TypeAlias = Literal[
-    'like_data', 'dislike_data', 'streamlit_data','train_data','history_data','interest_data'
+    'like_data', 'dislike_data', 'streamlit_data','train_data','history_data','interest_data','productive_data'
     ]
 
 

@@ -16,6 +16,8 @@ __pycache__/
 .tmp.driveupload
 .VScodeCounter
 .env
+debug.py
+
 
 /data
 /secrets

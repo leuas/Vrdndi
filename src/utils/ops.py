@@ -687,6 +687,11 @@ def like_dislike_streamlit_data_preprocess() ->None:
 
     total_df=pd.concat([like_data,dislike_data,streamlit_data],ignore_index=True).fillna('')
 
+    total_df['productive_rate']=-100
+    total_df['timestamp']=-100
+    total_df=total_df.rename(columns={'date':'upload_time'})
+    logging.debug(total_df)
+
     db.save_data('interest_data',total_df)
 
     logging.info('saved!')
@@ -725,11 +730,6 @@ def interest_productive_data_preprocess()->None:
     interest=db.get_data('interest_data')
     productive_df=db.get_data('productive_data')
 
-
-    interest['productive_rate']=-100
-    interest['timestamp']=-100
-    interest=interest.rename(columns={'date':'upload_time'})
-    logging.debug(interest)
 
     whole_data=pd.concat([interest,productive_df],ignore_index=True)
 

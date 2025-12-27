@@ -345,7 +345,7 @@ def prepare_aw_events_data(end_time:datetime|None=None) ->pd.DataFrame|int:
         end_time=datetime.now(tz=timezone.utc).astimezone()
 
 
-    data=get_aw_raw_data(end_time=end_time,hours=24,hostname=HOSTNAME,port= PORT,host=HOST)
+    data=get_aw_raw_data(end_time=end_time,hours=6,hostname=HOSTNAME,port= PORT,host=HOST)
 
     if not data.empty:
 

@@ -122,20 +122,12 @@ The output layer has two heads: an *interest* head and a *productive* head. The 
 
 ## Model Performance
 
-The performance is fairly good, some folds could reach 0.8 f1, after fixing the data leakage problem. However, since the mean performance is only 0.65 and the dataset used for testing was quite small (200-300 for productive, roughly 1000 for interest), the result is acceptable for now. Improvement is still investigating.
+After addressing a time-series related data leakage, the performance is fairly good, top-performing folds can reach 0.8 f1.  While the mean F1 is 0.65, given the small test dataset (200-300 samples for productive, ~1000 for interest), this result serves as a valid baseline. Further improvements are under investigation.
 
->**Note**: The *productive* loss plateau you see in the diagram is likely caused by `0.5` output layer dropout.
-> And the instability of the *interest* loss is likely caused by the configuration used (`0.75` interest sampling rate, but `0.33` interest loss weight).
 
 **Productive head's mean F1 performance with Standard Deviation**:
 
 ![Prodcuctive head's performance](docs/images/fix_data_leakage_pic.png)
-
-**More performance detail**:
->Haven't updated for new performance, this is the old, have-data-leakage performance.
-
-![detail performance chart](docs/images/overall_model_performance_chart.png)
-
 
 
 

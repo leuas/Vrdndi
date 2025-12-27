@@ -248,7 +248,8 @@ class HybridProductiveModel(ProductiveModel):
         )
 
         self.productive_layer=nn.Sequential(
-            SwiGLU(self.bge_feature_size,256),
+            nn.Linear(self.bge_feature_size,256),
+            nn.ReLU(),
             nn.Dropout(self.config.productive_output_layer_dropout),
             nn.Linear(256,self.config.productive_out_feature)
         )

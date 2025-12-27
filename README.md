@@ -119,24 +119,15 @@ The output layer has two heads: an *interest* head and a *productive* head. The 
 ![Output layer](docs/images/output_layer_big.svg)
 
 >**Why SWiGLU:** Previously the interest head couldn't quite converge (at least the fluctuation was larger than now), and since the sequence compressor for interest head is partially functional -- it won't receive an app sequence to predict interest, so the output token just represents the duration diffused in it. Hence, adding a strong activation function in output layer seems like a good move.
->
->The productive head was also switched to SWiGLU at that time for convenience, though it seems to have caused the overfitting problem Vrdndi is facing currently.  
 
 ## Model Performance
 
-The performance is fairly good, one of the 5 folds could reach 0.95 f1, which is suspiciously high. However, since only one fold reached that and the dataset used for testing was quite small (200-300 for productive, roughly 1000 for interest), the result is acceptable. And the model structure is decent enough, as the test may have shown.
+After addressing a time-series related data leakage, the performance is fairly good, top-performing folds can reach 0.8 f1.  While the mean F1 is 0.65, given the small test dataset (200-300 samples for productive, ~1000 for interest), this result serves as a valid baseline. Further improvements are under investigation.
 
->**Note**: The *productive* loss plateau you see in the diagram is likely caused by `0.5` output layer dropout.
-> And the instability of the *interest* loss is likely caused by the configuration used (`0.75` interest sampling rate, but `0.33` interest loss weight).
 
 **Productive head's mean F1 performance with Standard Deviation**:
 
-![Prodcuctive head's performance](docs/images/productive_val_f1_with_std.svg)
-
-**More performance detail**:
-
-![detail performance chart](docs/images/overall_model_performance_chart.png)
-
+![Prodcuctive head's performance](docs/images/fix_data_leakage_pic.png)
 
 
 
@@ -187,7 +178,6 @@ In other words, current architecture is a Supervised Learning system, which refl
 
 With the current test dataset, **sometimes** the model *can* give a good feed, which is not fully for productivity. (Might be caused by small dataset and noise) Again, the current architecture is experimental; likely more data (more time) is required for further improvement
 
-**UPDATE (21 Dec):** Current structure has roughly 10 minutes inference latency for ~10000 videos and is too heavy for real-time updating. A Two-Tower architecture potentially improves the performance by using BGE-M3 to embed media data offline and a lightweight CNN as a real-time app sequence processor, though the detailed structure might change while investigating.
 
 
 

@@ -11,6 +11,8 @@ import torch
 import pandas as pd
 import numpy as np
 
+from dataclasses import asdict
+
 from tqdm import tqdm
 from typing import TypeVar,Generic
 from transformers import DataCollatorWithPadding
@@ -26,7 +28,7 @@ from torchmetrics import F1Score,Recall,Precision,MetricCollection
 
 from sklearn.utils.class_weight import compute_class_weight
 from sklearn.metrics import accuracy_score,f1_score
-from sklearn.model_selection import KFold
+from sklearn.model_selection import TimeSeriesSplit,KFold
 
 from src.utils.ops import print_parameter_state,data_split,set_random_seed,if_load_model,FocalLoss
 from src.utils.data_etl import iso_duration_transform
@@ -50,6 +52,9 @@ class ProductiveModelTraining(Generic[ConfigType]):
     def __init__(self,model:torch.nn.Module|None = None, config:ConfigType|None=None):
         
         self.config=self._setup_config(config)
+
+        if self.config.wandb_config.get('TrainingConfig') is None:
+            self.config.wandb_config['TrainingConfig']=asdict(self.config)
 
         self.model=self._setup_model(model)
 
@@ -115,6 +120,10 @@ class ProductiveModelTraining(Generic[ConfigType]):
 
         mask = input!=self.config.ignore_index
         maksed_y=input[mask]
+
+        if len(input.unique())<2:
+            logging.warning(f"WARNING: Skipping class weight calculation, Default to weight to 1.0")
+            return torch.tensor(1.0, dtype=torch.float32).to(DEVICE)
         
         classes=np.array([0,1])
 
@@ -550,7 +559,7 @@ class ProductiveModelTraining(Generic[ConfigType]):
         
         self._set_seed()
 
-        train_set,val_set,test_set=self.load_data(batch_size=self.config.batch_size)
+        train_set,val_set,_=self.load_data(batch_size=self.config.batch_size)
 
         #set the run name to model name if there's no name provided
         if run_name is None:
@@ -655,9 +664,9 @@ class HybridProductiveModelTraining(ProductiveModelTraining[HybridProductiveMode
     def __init__(self,config:HybridProductiveModelConfig|None = None):
 
         self.config=self._setup_config(config)
+        self.config.wandb_config['TrainingConfig']=asdict(self.config)
 
         model= HybridProductiveModel(config=self.config).to(DEVICE)
-
 
         super().__init__(model=model,config=self.config)
 
@@ -765,17 +774,24 @@ class HybridProductiveModelTraining(ProductiveModelTraining[HybridProductiveMode
 
 
 
-    def kfold_train(self,group_name):
+    def kfold_train(self,group_name:str,n_split:int=5) ->None:
         '''train the model by using K Fold to test model performance '''
 
 
-        dataset=self.db.get_data('train_data')
-        dataset.loc[:,'duration'] = iso_duration_transform(dataset.loc[:,'duration'])
+        interest_data=self.db.get_data('interest_data')
+        productive_data=self.db.get_data('productive_data')
 
-        kfold=KFold(n_splits=5,shuffle=True,random_state=self.config.seed)
+        interest_data.loc[:,'duration'] = iso_duration_transform(interest_data.loc[:,'duration'])
+        productive_data.loc[:,'duration'] = iso_duration_transform(productive_data.loc[:,'duration'])
 
+        kfold=KFold(n_splits=n_split,shuffle=True,random_state=self.config.seed)
+        tscv=TimeSeriesSplit(n_splits=n_split)
 
-        for fold,(train_id,val_id) in enumerate(kfold.split(dataset)):
+        interest_splits=list(kfold.split(interest_data))
+        productive_splits=list(tscv.split(productive_data))
+
+        for fold in range(n_split):
+    
             logging.info(f'Fold {fold+1} / 5')
     
             wandb.init(
@@ -792,10 +808,18 @@ class HybridProductiveModelTraining(ProductiveModelTraining[HybridProductiveMode
 
             self.optimizer=torch.optim.AdamW(self.model.parameters(),lr=5e-5,weight_decay=self.config.weight_decay)#reset the optimizer
 
+            produc_train_idx,produc_val_idx=productive_splits[fold]
+            interest_train_idx,interest_val_idx=interest_splits[fold]
 
-            train_set=dataset.loc[train_id.flatten()]
+            produc_train=productive_data.iloc[produc_train_idx]
+            produc_val=productive_data.iloc[produc_val_idx]
 
-            val_set=dataset.loc[val_id.flatten(),:]
+            inter_train=interest_data.iloc[interest_train_idx]
+            inter_val=interest_data.iloc[interest_val_idx]
+
+            train_set=pd.concat([produc_train,inter_train],axis=0).reset_index(drop=True)
+
+            val_set=pd.concat([produc_val,inter_val],axis=0).reset_index(drop=True)
 
             self._set_loss_fn(train_set)
 
@@ -803,10 +827,8 @@ class HybridProductiveModelTraining(ProductiveModelTraining[HybridProductiveMode
 
             val_loader=self.loader.dataloader(val_set,batch_size=self.config.batch_size,shuffle=False)
 
-            f1_dict=self.epoch_training_loop(total_epoch=self.config.total_epoch,train_data=train_loader,val_data=val_loader)
+            self.epoch_training_loop(total_epoch=self.config.total_epoch,train_data=train_loader,val_data=val_loader)
             
-
-            self._clac_f1_mean_and_std(f1_dict)
 
             wandb.finish()
         

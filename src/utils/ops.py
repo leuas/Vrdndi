@@ -345,7 +345,7 @@ def prepare_aw_events_data(end_time:datetime|None=None) ->pd.DataFrame|int:
         end_time=datetime.now(tz=timezone.utc).astimezone()
 
 
-    data=get_aw_raw_data(end_time=end_time,hours=24,hostname=HOSTNAME,port= PORT,host=HOST)
+    data=get_aw_raw_data(end_time=end_time,hours=6,hostname=HOSTNAME,port= PORT,host=HOST)
 
     if not data.empty:
 
@@ -687,6 +687,11 @@ def like_dislike_streamlit_data_preprocess() ->None:
 
     total_df=pd.concat([like_data,dislike_data,streamlit_data],ignore_index=True).fillna('')
 
+    total_df['productive_rate']=-100
+    total_df['timestamp']=-100
+    total_df=total_df.rename(columns={'date':'upload_time'})
+    logging.debug(total_df)
+
     db.save_data('interest_data',total_df)
 
     logging.info('saved!')
@@ -707,11 +712,12 @@ def productive_data_preprocess()->pd.DataFrame:
     productive_df['productive_rate']=productive_data['productive_rate'].fillna(-100)
     productive_df['timestamp']=productive_data['timestamp']
 
+    db.save_data('productive_data',data=productive_df)
+
     logging.debug(productive_df)
 
     logging.info('processed productive data')
 
-    return productive_df
 
 
 
@@ -719,15 +725,11 @@ def interest_productive_data_preprocess()->None:
     '''preprocess the interest and productive model's training data'''
 
     like_dislike_streamlit_data_preprocess()
-    productive_df=productive_data_preprocess()
+    productive_data_preprocess()
 
     interest=db.get_data('interest_data')
+    productive_df=db.get_data('productive_data')
 
-
-    interest['productive_rate']=-100
-    interest['timestamp']=-100
-    interest=interest.rename(columns={'date':'upload_time'})
-    logging.debug(interest)
 
     whole_data=pd.concat([interest,productive_df],ignore_index=True)
 

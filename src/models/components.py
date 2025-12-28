@@ -4,6 +4,7 @@ import torch
 
 import torch.nn as nn
 
+from config import DEVICE
 
 class Permute(nn.Module):
     '''A helper class for using permute between different block or layer in Sequential'''
@@ -324,3 +325,128 @@ class SwiGLU(nn.Module):
         hidden=nn.functional.silu(gate) *value
 
         return self.output_proj(hidden)
+
+
+
+class RecursiveACTLayer(nn.Module):
+    '''A recurdive ACT layer by using a pretrained_layer or the transformer layer it create 
+    to recursively process the data
+    '''
+    def __init__(self, hidden_dim, max_steps=12, pretrained_layer=None):
+        super().__init__()
+        self.max_steps = max_steps
+        self.hidden_dim = hidden_dim
+
+        # --- 1. The "Brain" (Processing Block) ---
+        if pretrained_layer is not None:
+            # OPTION A: Warm Start (The Stolen Layer)
+            # This is a 'RobertaLayer' from the original BGE-M3
+            self.process_block = pretrained_layer
+            self.is_huggingface_layer = True
+        else:
+            # OPTION B: Fresh Start (Standard PyTorch Layer)
+            # Only use this if you aren't stealing weights
+            self.process_block = nn.TransformerEncoderLayer(
+                d_model=hidden_dim,
+                nhead=16, 
+                dim_feedforward=hidden_dim * 4,
+                activation="gelu",
+                batch_first=True
+            )
+            self.is_huggingface_layer = False
+
+        # --- 2. The "Router" (Halting Mechanism) ---
+        # Decides when to stop. 
+        self.halting_layer = nn.Linear(hidden_dim, 1)
+        
+        # Bias = 1.0 encourages the model to think at least a little bit
+        self.halting_layer.bias.data.fill_(1.0) 
+
+    def forward(self, x, attention_mask=None, tau=0.01):
+        """
+        x: Input embeddings (Batch, Seq_Len, Hidden_Dim)
+        attention_mask: (Batch, Seq_Len) - 1 for words, 0 for padding
+        tau: Ponder cost penalty
+        """
+        batch_size = x.size(0)
+        
+        # --- Initialize ACT Variables using the "Pro" method ---
+        accumulation_prob = x.new_zeros(batch_size, 1) # The Bucket
+        total_step_cost   = x.new_zeros(batch_size, 1) # The Taxi Meter
+        weighted_output   = torch.zeros_like(x)        # The Answer
+        active_mask       = x.new_ones(batch_size, 1)  # 1 = Thinking, 0 = Done
+        
+        state = x 
+
+        # --- THE RECURSIVE LOOP ---
+        for step in range(self.max_steps):
+            
+            # 1. Halting Decision (Should I stop?)
+            # We pool the state to get a single decision per sentence (or per word)
+            # Simple approach: Look at the first token ([CLS]) to decide for the whole sentence
+            decision_state = state[:, 0, :] # (Batch, Hidden)
+            p_stop = torch.sigmoid(self.halting_layer(decision_state)).unsqueeze(-1)
+            
+            # 2. Bucket Logic
+            space_left = 1.0 - accumulation_prob
+            is_overflow = (accumulation_prob + p_stop) > 1.0
+            usage_weight = torch.where(is_overflow, space_left, p_stop)
+            
+            # Broadcast usage_weight to match sequence length (Batch, 1, 1)
+            usage_weight_expanded = usage_weight.unsqueeze(-1)
+            active_mask_expanded = active_mask.unsqueeze(-1)
+
+            # 3. Accumulate Output
+            weighted_output += usage_weight_expanded * state * active_mask_expanded
+            
+            # 4. Update Costs
+            accumulation_prob += usage_weight * active_mask
+            total_step_cost += active_mask
+            
+            # 5. Check if finished
+            has_filled = (accumulation_prob >= (1.0 - 1e-6))
+            active_mask = torch.where(has_filled, torch.zeros_like(active_mask), active_mask)
+            
+            if active_mask.sum() == 0:
+                break
+
+            # --- 6. "THINKING" (Run the Stolen Layer) ---
+            
+            # Handle HuggingFace vs PyTorch difference
+            if self.is_huggingface_layer:
+                # HuggingFace layers return a tuple: (hidden_states,)
+                # We need to unpack [0] to get the tensor.
+                # We also MUST pass the attention_mask so it ignores padding!
+                
+                # HF expects mask shape (Batch, 1, 1, Seq_Len) usually, 
+                # but BGE-M3 might handle standard (Batch, Seq_Len). 
+                # Let's assume standard passing for now.
+                if attention_mask is not None:
+                     # Expand mask for Roberta: (Batch, 1, 1, Seq_Len)
+                     extended_mask = attention_mask[:, None, None, :]
+                     extended_mask = (1.0 - extended_mask) * -10000.0 # Standard BERT masking
+                     layer_out = self.process_block(state, extended_mask)[0]
+                else:
+                     layer_out = self.process_block(state)[0]
+            else:
+                # Standard PyTorch layer
+                layer_out = self.process_block(state, src_key_padding_mask=attention_mask)
+
+            # Residual Connection is usually inside the layer, but since we are looping,
+            # we treat 'layer_out' as the new candidate.
+            new_state = layer_out
+
+            # 7. State Freezing (Switch)
+            # Only update the states that are still thinking
+            active_mask_seq = active_mask.unsqueeze(-1) # Match sequence dim
+            state = (active_mask_seq * new_state) + ((1 - active_mask_seq) * state)
+
+        # Final Penalty
+        penalty = total_step_cost.mean() * tau
+        
+        return weighted_output, penalty
+
+
+
+
+

@@ -373,7 +373,7 @@ class HybridProductiveModel(ProductiveModel):
         
 
         return self._output_custom_layer(mean_pooled)
-    
+
 
     def predict_step(self,batch) ->dict:
         '''predict one step using model forward '''

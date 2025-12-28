@@ -99,7 +99,16 @@ class HybridProductiveModelConfig(ProductiveModelConfig):
 
 
 
+class RecursiveBGEConfig:
+    '''Config of recursive BGE-M3 model'''
+    ori_model_name:str="BAAI/bge-m3"
+    batch_size:int=4
+    max_steps:int=36
+    tau:float=0.01
+    lr:float=1e-4
+    total_epoch:int=5
 
+    init_layer_index:int=0
 
     
 

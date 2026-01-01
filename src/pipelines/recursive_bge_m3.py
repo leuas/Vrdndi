@@ -2,12 +2,16 @@
 
 import torch
 import torch.nn as nn
+import transformers
+
+from typing import Iterator
 from transformers import AutoTokenizer, AutoModel
 from torch.optim import AdamW
+from torch.utils.data import DataLoader
 
 from src.config import RecursiveBGEConfig,DEVICE
 from src.models.recursive_bge_m3 import DistillRecursiveModel
-from datasets import load_dataset
+from src.model_dataset.recursive_bge_m3 import RecursiveTrainingData
 
 class RecursiveBGETraining:
     '''training part of recursive model'''
@@ -28,57 +32,64 @@ class RecursiveBGETraining:
         
         self.optimizer = AdamW(self.distill_model.parameters(), lr=self.config.lr)
         self.loss_fn = nn.CosineEmbeddingLoss()
+
+        self.data=RecursiveTrainingData(buffer_size=self.config.buffer_size,seed=self.config.seed)
+
+    def _sort_train_data_to_batch(self,data_stream:Iterator[str]):
+        '''process the data and sort them to batch '''
+
+        batch_texts = []
+        for _ in range(self.config.batch_size):
+            try:
+                # Grab next sentence from internet/dataset
+                sentence = next(data_stream) 
+                batch_texts.append(sentence)
+            except StopIteration:
+                break
         
+        return batch_texts
 
-    def get_training_data_iterator(self):
-        # 1. Load mC4 (Multilingual) - Streaming mode so it doesn't fill your disk
-        # 'en' is English, you can mix in 'zh', 'fr', etc.
-        dataset = load_dataset("c4", "en", split="train", streaming=True)
-        
-        # 2. Infinite Loop Generator
-        # This creates a never-ending stream of sentences for your training loop
-        for row in dataset:
-            text = row['text']
-            
-            # Filter out garbage (too short/too long)
-            # In case the sentence is longer than the limitation of sequence size
-            if len(text) > 50 and len(text) < 2000:
-                yield text
-
-
-
-    def train(self,save_name:str="bge_recursive.pth"):
-        '''start training '''
-
-        print("Starting Training Loop...")
-        data_stream = self.get_training_data_iterator()
-
-        # --- THE LOOP ---
-        for epoch in range(self.config.total_epoch):
-            total_loss = 0
-            batch_texts = []
-        
-            # Manually fill the batch from the stream
-            for _ in range(self.config.batch_size):
-                try:
-                    # Grab next sentence from internet/dataset
-                    sentence = next(data_stream) 
-                    batch_texts.append(sentence)
-                except StopIteration:
-                    break
-            
-            # Simple batching (In production, use torch.utils.data.DataLoader)
-            for i in range(0, len(batch_texts), self.config.batch_size):
-                batch_texts = batch_texts[i : i + self.config.batch_size]
-                
-                # A. Tokenize
-                inputs = self.tokenizer(
+    def _tokenize_texts(self,batch_texts:list) ->transformers.tokenization_utils_base.BatchEncoding:
+        '''tokenize the text input '''
+        output = self.tokenizer(
                     batch_texts, 
                     padding=True, 
                     truncation=True, 
                     max_length=8192, 
                     return_tensors="pt"
                 ).to(DEVICE)
+        
+        return output
+    
+    def _get_dataloader(self):
+        '''get the dataloader from dataset'''
+
+        return DataLoader(
+            self.data,
+            batch_size=self.config.batch_size,
+            collate_fn=
+        )
+
+    def train(self,save_name:str="bge_recursive.pth"):
+        '''start training '''
+
+        print("Starting Training Loop...")
+
+        data_stream=DataLoader()
+
+
+        for epoch in range(self.config.total_epoch):
+            total_loss = 0
+
+        
+            batch_texts=self._sort_train_data_to_batch(data_stream)
+
+            # Simple batching (In production, use torch.utils.data.DataLoader)
+            for i in range(0, len(batch_texts), self.config.batch_size):
+                batch_texts = batch_texts[i : i + self.config.batch_size]
+                
+                input=self._tokenize_texts(batch_texts)
+                
 
                 # B. Get Teacher's "Gold Standard" Output
                 with torch.no_grad(): # Don't calculate gradients for Teacher! Saves RAM.

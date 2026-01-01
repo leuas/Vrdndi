@@ -110,6 +110,10 @@ class RecursiveBGEConfig:
 
     init_layer_index:int=0
 
+    buffer_size:int=10000
+    seed:int=42
+    
+
     
 
 

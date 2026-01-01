@@ -329,123 +329,156 @@ class SwiGLU(nn.Module):
 
 
 class RecursiveACTLayer(nn.Module):
-    '''A recurdive ACT layer by using a pretrained_layer or the transformer layer it create 
-    to recursively process the data
     '''
-    def __init__(self, hidden_dim, max_steps=12, pretrained_layer=None):
+    A recurdive ACT layer by using a pretrained_layer or the transformer layer it create 
+    to recursively process the data
+    
+    Args:
+        hidden_dim(int): THe hidden dimension of input,ouput channel of the pretrained
+            layer or transformer layer. Default to 1024, which is the hidden dimension 
+            of BGE-M3.
+        
+        max_steps(int): The maximal number of layer that model is allowed to go through.
+            Default to 36, which is 3/2 times larger than regular BGE-M3 encoder layers (24).
+
+        pretrained_lyaer: The pretrained hugging face layer. Default to None
+    
+    
+    '''
+
+    def __init__(self,hidden_dim:int=1024,max_steps:int=36,pretrained_layer=None) -> None:
         super().__init__()
-        self.max_steps = max_steps
-        self.hidden_dim = hidden_dim
 
-        # --- 1. The "Brain" (Processing Block) ---
+        self.max_steps=max_steps
+
+        self.hidden_dim=hidden_dim
+
         if pretrained_layer is not None:
-            # OPTION A: Warm Start (The Stolen Layer)
-            # This is a 'RobertaLayer' from the original BGE-M3
-            self.process_block = pretrained_layer
-            self.is_huggingface_layer = True
+            self.process_block=pretrained_layer
+            self.is_huggingface_layer=True
+
         else:
-            # OPTION B: Fresh Start (Standard PyTorch Layer)
-            # Only use this if you aren't stealing weights
-            self.process_block = nn.TransformerEncoderLayer(
+            self.process_block=nn.TransformerEncoderLayer(
                 d_model=hidden_dim,
-                nhead=16, 
-                dim_feedforward=hidden_dim * 4,
+                nhead=16,
+                dim_feedforward=hidden_dim*4,
                 activation="gelu",
-                batch_first=True
+                batch_first=True,
             )
-            self.is_huggingface_layer = False
+            self.is_huggingface_layer=False
 
-        # --- 2. The "Router" (Halting Mechanism) ---
-        # Decides when to stop. 
-        self.halting_layer = nn.Linear(hidden_dim, 1)
         
-        # Bias = 1.0 encourages the model to think at least a little bit
-        self.halting_layer.bias.data.fill_(1.0) 
+        self.model_decide_if_continue=nn.Linear(hidden_dim,1)
 
-    def forward(self, x, attention_mask=None, tau=0.01):
-        """
-        x: Input embeddings (Batch, Seq_Len, Hidden_Dim)
-        attention_mask: (Batch, Seq_Len) - 1 for words, 0 for padding
-        tau: Ponder cost penalty
-        """
-        batch_size = x.size(0)
+        # encourages model to think a bit longer(one more times)
+        self.model_decide_if_continue.bias.data.fill_(1.0)
+
+    def _update_confident_prob(self,state:torch.LongTensor,accumulation_prob:torch.Tensor) ->torch.Tensor:
+        ''' Get the confident prob from model, and compare the remaining available prob
+        If current confident prob plus the prob already has is larger than one, then 
+        use the remaining prob instead of the confident prob from the model.
         
-        # --- Initialize ACT Variables using the "Pro" method ---
-        accumulation_prob = x.new_zeros(batch_size, 1) # The Bucket
-        total_step_cost   = x.new_zeros(batch_size, 1) # The Taxi Meter
-        weighted_output   = torch.zeros_like(x)        # The Answer
-        active_mask       = x.new_ones(batch_size, 1)  # 1 = Thinking, 0 = Done
-        
-        state = x 
+        Args:
+            state(torch.LongTensor): The input embedding tensor or the processed tensor 
+                in each step
+            accumulation_prob (torch.Tensor): The accumulated confident probability accross
+                the past step the model took
 
-        # --- THE RECURSIVE LOOP ---
-        for step in range(self.max_steps):
-            
-            # 1. Halting Decision (Should I stop?)
-            # We pool the state to get a single decision per sentence (or per word)
-            # Simple approach: Look at the first token ([CLS]) to decide for the whole sentence
-            decision_state = state[:, 0, :] # (Batch, Hidden)
-            p_stop = torch.sigmoid(self.halting_layer(decision_state)).unsqueeze(-1)
-            
-            # 2. Bucket Logic
-            space_left = 1.0 - accumulation_prob
-            is_overflow = (accumulation_prob + p_stop) > 1.0
-            usage_weight = torch.where(is_overflow, space_left, p_stop)
-            
-            # Broadcast usage_weight to match sequence length (Batch, 1, 1)
-            usage_weight_expanded = usage_weight.unsqueeze(-1)
-            active_mask_expanded = active_mask.unsqueeze(-1)
 
-            # 3. Accumulate Output
-            weighted_output += usage_weight_expanded * state * active_mask_expanded
+        Returns:
+            The confident probability for this step
+        '''
+
+        decision_state=state[:,0.:]
+
+        #How confident the model thinks the current result is.
+        actual_confident_prob=torch.sigmoid(self.model_decide_if_continue(decision_state)).unsqueeze(-1)
+
+        #The remaining probability for updating the result
+        remain_confident_prob=1.0-accumulation_prob
+        #If the model is confident enough for the result
+        is_confident= (accumulation_prob+actual_confident_prob) >1.0
+
+        confident_prob=torch.where(is_confident,remain_confident_prob,actual_confident_prob)
+
+        return confident_prob
+
+
+    def forward(self,input_tensor:torch.LongTensor,attention_mask:torch.LongTensor,tau:float=0.01) -> tuple[torch.Tensor,torch.Tensor]:
+        '''
+        Args:
+            input_tensor(torch.LongTensor): The input embeddings (Batch,Seq_Len,HIdden_DIm)
+            attention_mask (torch.LongTensor): Mask, 1 for words, 0 for padding. (Batch,Seq_Len)
+
+            tau(int): The step cost (ponder cost) penalty
+        '''
+        batch_size=input_tensor.size(0)
+
+        accumulation_prob=input_tensor.new_zeros(batch_size,1)
+        total_step_cost=input_tensor.new_zeros(batch_size,1)
+        weighted_output=torch.zeros_like(input_tensor)
+        #1 = continue to process with another layer, 0 = stop
+        active_layer_mask=input_tensor.new_ones(batch_size,1) 
+
+        state=input_tensor
+        for _ in range(self.max_steps):
             
-            # 4. Update Costs
-            accumulation_prob += usage_weight * active_mask
-            total_step_cost += active_mask
+            confident_prob=self._update_confident_prob(state,accumulation_prob)
+
+            confident_prob_expanded=confident_prob.unsqueeze(-1)
+            active_layer_mask_expanded=active_layer_mask.unsqueeze(-1)
             
-            # 5. Check if finished
-            has_filled = (accumulation_prob >= (1.0 - 1e-6))
-            active_mask = torch.where(has_filled, torch.zeros_like(active_mask), active_mask)
-            
-            if active_mask.sum() == 0:
+            #update the output by plusing weighted current state IF current layer are permitted to process by model
+            weighted_output+=confident_prob_expanded*state*active_layer_mask_expanded
+
+            accumulation_prob+= confident_prob *active_layer_mask
+            total_step_cost+=active_layer_mask
+
+            confident_enough=(accumulation_prob >= (1.0-1e-6))
+            #If the model is confident enough for current result, set the active_layer_mask to 0
+            active_layer_mask= torch.where(confident_enough,torch.zeros_like(active_layer_mask),active_layer_mask)
+
+            #If all sequences data in current batch are finished, break the for loop
+            if active_layer_mask.sum() == 0:
                 break
 
-            # --- 6. "THINKING" (Run the Stolen Layer) ---
-            
-            # Handle HuggingFace vs PyTorch difference
             if self.is_huggingface_layer:
-                # HuggingFace layers return a tuple: (hidden_states,)
-                # We need to unpack [0] to get the tensor.
-                # We also MUST pass the attention_mask so it ignores padding!
+                extended_mask=attention_mask[:,None,None,:]
+                extended_mask=(1.0 -extended_mask) * -10000.0
                 
-                # HF expects mask shape (Batch, 1, 1, Seq_Len) usually, 
-                # but BGE-M3 might handle standard (Batch, Seq_Len). 
-                # Let's assume standard passing for now.
-                if attention_mask is not None:
-                     # Expand mask for Roberta: (Batch, 1, 1, Seq_Len)
-                     extended_mask = attention_mask[:, None, None, :]
-                     extended_mask = (1.0 - extended_mask) * -10000.0 # Standard BERT masking
-                     layer_out = self.process_block(state, extended_mask)[0]
-                else:
-                     layer_out = self.process_block(state)[0]
+                #Hugging Face returns a tuple (hidden_state,attention_map)
+                layer_output=self.process_block(state,extended_mask)[0]
+
             else:
-                # Standard PyTorch layer
-                layer_out = self.process_block(state, src_key_padding_mask=attention_mask)
+                layer_output=self.process_block(state,src_key_padding_mask=attention_mask)
 
-            # Residual Connection is usually inside the layer, but since we are looping,
-            # we treat 'layer_out' as the new candidate.
-            new_state = layer_out
+            new_state=layer_output
 
-            # 7. State Freezing (Switch)
-            # Only update the states that are still thinking
-            active_mask_seq = active_mask.unsqueeze(-1) # Match sequence dim
-            state = (active_mask_seq * new_state) + ((1 - active_mask_seq) * state)
+            active_layer_mask_seq=active_layer_mask.unsqueeze(-1)
 
-        # Final Penalty
+            state=(active_layer_mask_seq*new_state) + ((1-active_layer_mask_seq) *state )
+
+
         penalty = total_step_cost.mean() * tau
+
         
         return weighted_output, penalty
 
+
+
+            
+                
+                    
+
+            
+
+
+
+
+
+
+            
+            
 
 
 

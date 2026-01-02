@@ -25,7 +25,7 @@ class RecursiveTrainingData(IterableDataset):
     
         # Only shuffle training data.
         if split == "train":
-            self.hf_dataset = self.hf_dataset.shuffle(buffer_size=self.config.buffer_size,seed=self.config.seed)
+            self.dataset = self.dataset.shuffle(buffer_size=self.config.buffer_size,seed=self.config.seed)
     
     def _load_dataset(self,ori_dataset_path:str):
         '''load different lanaguage from the dataset'''

@@ -98,7 +98,7 @@ class HybridProductiveModelConfig(ProductiveModelConfig):
 
 
 
-
+@dataclass
 class RecursiveBGEConfig:
     '''Config of recursive BGE-M3 model'''
     ori_model_name:str="BAAI/bge-m3"

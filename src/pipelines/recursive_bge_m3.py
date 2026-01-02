@@ -21,6 +21,8 @@ from src.config import RecursiveBGEConfig,DEVICE
 from src.models.recursive_bge_m3 import DistillRecursiveModel
 from src.model_dataset.loader import RecursiveDataLoader
 
+from src.utils.ops import move_batch_to_device
+
 class RecursiveBGETraining:
     '''training part of recursive model'''
 
@@ -60,9 +62,10 @@ class RecursiveBGETraining:
         '''
         use original model to predict current batch
         '''
+        new_batch=move_batch_to_device(batch)
 
         with torch.no_grad(): 
-            ori_model_output = self.ori_model(**batch)
+            ori_model_output = self.ori_model(**new_batch)
             ori_model_state = ori_model_output.last_hidden_state
             # Normalize data
             ori_model_state_normed = torch.nn.functional.normalize(ori_model_state, dim=2)

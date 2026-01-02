@@ -7,6 +7,7 @@ import torch.nn as nn
 from src.models.components import RecursiveACTLayer
 from transformers import AutoModel, AutoConfig
 
+from src.config import DEVICE
 
 class DistillRecursiveModel(nn.Module):
     '''recursive small BGE-M3
@@ -37,7 +38,7 @@ class DistillRecursiveModel(nn.Module):
         del original_model
 
 
-    def forward(self, input_ids:torch.LongTensor,attention_mask:torch.LongTensor,tau:float=0.01) ->tuple[torch.Tensor,torch.Tensor]:
+    def forward(self, input_ids:torch.LongTensor,attention_mask:torch.LongTensor,tau:float=0.01,**kargs) ->tuple[torch.Tensor,torch.Tensor]:
         '''
         forward process for distill model
         
@@ -47,10 +48,34 @@ class DistillRecursiveModel(nn.Module):
 
         encoded_tensor,step_cost=self.recursive_block(embedded_tensor,attention_mask,tau)
 
-        sentence_embedding=torch.nn.functional.normalize(encoded_tensor,p=2,dim=2) #normalize the hidden_dim
+        sentence_embedding=torch.nn.functional.normalize(encoded_tensor,dim=2) #normalize the hidden_dim
 
 
         return sentence_embedding,step_cost
+    
+    def _move_batch_to_device(self,batch):
+        '''Helper function: move the element in the batch to device'''
+
+
+        new_batch={}
+
+        for key,value in batch.items():
+            if isinstance(value,torch.Tensor):
+                new_batch[key]=value.to(DEVICE)
+
+            else:
+                new_batch[key]=value
+
+        
+        return new_batch
+
+    def predict_step(self,batch) ->dict:
+        '''predict one step using model forward '''
+
+
+        new_batch=self._move_batch_to_device(batch)
+
+        return self(**new_batch)
 
 
         

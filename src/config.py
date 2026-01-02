@@ -84,7 +84,7 @@ class HybridProductiveModelConfig(ProductiveModelConfig):
     train_num_workers:int=0
     eval_test_num_workers:int=0
 
-    max_length:int=8094
+    max_length:int=8192
 
     sampler_interest_ratio:float=0.5
     sampler_productive_ratio:float=1-sampler_interest_ratio
@@ -122,6 +122,8 @@ class RecursiveBGEConfig:
     eval_batch_num:int=200
 
     debug_mode:bool=False
+
+    max_lengh:int=8192
     
 
     

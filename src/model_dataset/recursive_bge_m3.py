@@ -1,5 +1,5 @@
 
-
+from transformers import AutoTokenizer
 from typing import Iterator, Literal
 from torch.utils.data import IterableDataset
 from datasets import load_dataset,interleave_datasets, get_dataset_config_names
@@ -26,6 +26,8 @@ class RecursiveTrainingData(IterableDataset):
         # Only shuffle training data.
         if split == "train":
             self.dataset = self.dataset.shuffle(buffer_size=self.config.buffer_size,seed=self.config.seed)
+
+        self.tokenizer = AutoTokenizer.from_pretrained(self.config.ori_model_name)
     
     def _load_dataset(self,ori_dataset_path:str):
         '''load different lanaguage from the dataset'''
@@ -60,9 +62,19 @@ class RecursiveTrainingData(IterableDataset):
         
         for row in self.dataset:
             text = row['text']
+
+            encodings=self.tokenizer(
+            text,
+            truncation=True,
+            padding=False,
+            max_length=self.config.max_lengh
+            )
             
             if 50 <= len(text) <= 2000:
-                yield text
+                yield {
+                    'input_ids':encodings['input_ids'],
+                    'attention_mask':encodings['attention_mask']
+                }
 
 
 

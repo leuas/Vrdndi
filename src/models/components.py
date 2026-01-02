@@ -388,7 +388,7 @@ class RecursiveACTLayer(nn.Module):
             The confident probability for this step
         '''
 
-        decision_state=state[:,0.:]
+        decision_state=state[:,0,:]
 
         #How confident the model thinks the current result is.
         actual_confident_prob=torch.sigmoid(self.model_decide_if_continue(decision_state)).unsqueeze(-1)

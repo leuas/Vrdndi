@@ -234,18 +234,36 @@ class RecursiveDataLoader:
 
         self.g=torch.Generator().manual_seed(self.seed)
         self.tokenizer = AutoTokenizer.from_pretrained(self.config.ori_model_name)
-        self.data=RecursiveTrainingData(buffer_size=self.config.buffer_size,seed=self.config.seed)
 
         self.collator = DataCollatorWithPadding(tokenizer=self.tokenizer)
 
     
 
-    def dataloader(self) ->DataLoader:
-        '''get the dataloader from dataset'''
+    def train_dataloader(self) ->DataLoader:
+        '''get the training data from dataset'''
+
+        data=RecursiveTrainingData(buffer_size=self.config.buffer_size,seed=self.config.seed)
+
 
 
         return DataLoader(
-            self.data,
+            data,
+            batch_size=self.config.batch_size,
+            collate_fn=self.collator,
+            generator=self.g,
+            num_workers=self.config.num_workers,
+            worker_init_fn=seed_worker
+        )
+    
+    def eval_dataloader(self) ->DataLoader:
+        '''get the eval data from dataset'''
+
+        data=RecursiveTrainingData(buffer_size=0,seed=self.config.seed,split='validation')
+
+
+
+        return DataLoader(
+            data,
             batch_size=self.config.batch_size,
             collate_fn=self.collator,
             generator=self.g,

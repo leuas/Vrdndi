@@ -62,9 +62,9 @@ class RecursiveBGETraining:
         '''
 
         with torch.no_grad(): 
-            ori_model_output = self.ori_model(batch)
+            ori_model_output = self.ori_model(**batch)
             ori_model_state = ori_model_output.last_hidden_state
-            # Normalize Teacher (Crucial!)
+            # Normalize data
             ori_model_state_normed = torch.nn.functional.normalize(ori_model_state, dim=2)
 
         return ori_model_state_normed

@@ -9,12 +9,12 @@ from pathlib import Path
 from torch.utils.data import DataLoader,WeightedRandomSampler
 
 from src.model_dataset.productive import ProductiveData,HybridProductiveData
-
+from src.model_dataset.recursive_bge_m3 import RecursiveTrainingData
 from transformers import AutoTokenizer
 from transformers import DataCollatorWithPadding
 
 from src.utils.ops import split_xy
-from src.config import HybridProductiveModelConfig
+from src.config import HybridProductiveModelConfig,RecursiveBGEConfig
 
 from src.path import TRAIN_DATA_PATH,INFERENCE_DATA_PATH
 
@@ -221,6 +221,41 @@ class HybridProductiveLoader:
         
         
 
+class RecursiveDataLoader:
+    '''
+    The DataLoader for Recursive BGE-M3
+    '''
+    def __init__(self,config:RecursiveBGEConfig) -> None:
+
+        self.config=config
+
+        self.seed=self.config.seed
+        self.buffer_size=self.config.buffer_size
+
+        self.g=torch.Generator().manual_seed(self.seed)
+        self.tokenizer = AutoTokenizer.from_pretrained(self.config.ori_model_name)
+        self.data=RecursiveTrainingData(buffer_size=self.config.buffer_size,seed=self.config.seed)
+
+        self.collator = DataCollatorWithPadding(tokenizer=self.tokenizer)
+
     
+
+    def dataloader(self) ->DataLoader:
+        '''get the dataloader from dataset'''
+
+
+        return DataLoader(
+            self.data,
+            batch_size=self.config.batch_size,
+            collate_fn=self.collator,
+            generator=self.g,
+            num_workers=self.config.num_workers,
+            worker_init_fn=seed_worker
+        )
+
+
+        
+        
+
 
 

@@ -4,6 +4,8 @@ import logging
 import torch
 
 import torch.nn as nn
+
+from src.utils.ops import move_batch_to_device
 from src.models.components import RecursiveACTLayer
 from transformers import AutoModel, AutoConfig
 
@@ -53,27 +55,12 @@ class DistillRecursiveModel(nn.Module):
 
         return sentence_embedding,step_cost
     
-    def _move_batch_to_device(self,batch):
-        '''Helper function: move the element in the batch to device'''
-
-
-        new_batch={}
-
-        for key,value in batch.items():
-            if isinstance(value,torch.Tensor):
-                new_batch[key]=value.to(DEVICE)
-
-            else:
-                new_batch[key]=value
-
-        
-        return new_batch
 
     def predict_step(self,batch) ->dict:
         '''predict one step using model forward '''
 
 
-        new_batch=self._move_batch_to_device(batch)
+        new_batch=move_batch_to_device(batch)
 
         return self(**new_batch)
 

@@ -87,6 +87,21 @@ class FocalLoss(Module):
 #------------------------Helper function for model itself -------------------------------
 #----------------------------------------------------------------------------------------
 
+def move_batch_to_device(batch):
+    '''Helper function: move the element in the batch to device'''
+
+
+    new_batch={}
+
+    for key,value in batch.items():
+        if isinstance(value,torch.Tensor):
+            new_batch[key]=value.to(DEVICE)
+
+        else:
+            new_batch[key]=value
+
+    
+    return new_batch
 
 
 
@@ -158,6 +173,9 @@ def print_parameter_state(model:torch.nn.Module) ->None:
 
     else:
         logging.info("there's frozen layer")
+
+
+
 
 def if_load_model(model:torch.nn.Module,model_name:str,path=ARTIFACTS_PATH,lora:bool=False) ->torch.nn.Module :
     '''load the model '''

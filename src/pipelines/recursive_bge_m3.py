@@ -52,7 +52,12 @@ class RecursiveBGETraining:
         '''compute the Embeddings loss between ori model and distill model'''
         #Pick [batch_size,seq_len] so it could compare the token_size
         target_ones = ori_output.new_ones([ori_output.size(0),ori_output.size(1)])
-        similarity_loss = self.loss_fn(distill_output, ori_output, target_ones)
+
+        distill_output_flat=distill_output.view(-1,distill_output.size(-1))
+        ori_output_flat=ori_output.view(-1,ori_output.size(-1))
+
+        target_flat=target_ones.view(-1)
+        similarity_loss = self.loss_fn(distill_output_flat, ori_output_flat, target_flat)
 
         loss = similarity_loss + step_cost
 

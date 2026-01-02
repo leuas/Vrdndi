@@ -120,6 +120,8 @@ class RecursiveBGEConfig:
     train_batch_num:int=1000
 
     eval_batch_num:int=200
+
+    debug_mode:bool=False
     
 
     

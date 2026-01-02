@@ -11,12 +11,26 @@ class RecursiveTrainingData(IterableDataset):
     The dataset class for recursive BGE-M3 dataset
     
     '''
-    def __init__(self,config:RecursiveBGEConfig,dataset:str="uonlp/CulturaX",split:Literal['train','validation']='train') -> None:
+    def __init__(self,config:RecursiveBGEConfig,dataset_path:str="uonlp/CulturaX",split:Literal['train','validation']='train') -> None:
         super().__init__()
 
         self.config=config
+        self.split=split
 
-        all_languages=get_dataset_config_names(dataset)
+        if not self.config.debug_mode:
+            self.dataset=self._load_dataset(dataset_path)
+        else:
+            self.dataset=load_dataset(dataset_path,name='en',split=split,streaming=True)
+
+    
+        # Only shuffle training data.
+        if split == "train":
+            self.hf_dataset = self.hf_dataset.shuffle(buffer_size=self.config.buffer_size,seed=self.config.seed)
+    
+    def _load_dataset(self,ori_dataset_path:str):
+        '''load different lanaguage from the dataset'''
+
+        all_languages=get_dataset_config_names(ori_dataset_path)
 
         datasets_list=[]
 
@@ -24,9 +38,9 @@ class RecursiveTrainingData(IterableDataset):
             try:
                 # Load ONE language at a time
                 ds = load_dataset(
-                    dataset, 
+                    ori_dataset_path, 
                     name=lang,
-                    split=split,
+                    split=self.split,
                     streaming=True
                 )
                 datasets_list.append(ds)
@@ -35,14 +49,12 @@ class RecursiveTrainingData(IterableDataset):
 
         # 3. Combine them into one single dataset
         if datasets_list:
-            self.dataset = interleave_datasets(datasets_list, seed=self.config.seed)
+            whole_dataset = interleave_datasets(datasets_list, seed=self.config.seed)
         else:
             raise ValueError("No languages were loaded successfully.")
-    
-        # Only shuffle training data.
-        if split == "train":
-            self.hf_dataset = self.hf_dataset.shuffle(buffer_size=self.config.buffer_size,seed=self.config.seed)
-    
+        
+        return whole_dataset
+
 
     def __iter__(self) -> Iterator:
         

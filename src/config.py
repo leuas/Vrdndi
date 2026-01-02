@@ -114,6 +114,12 @@ class RecursiveBGEConfig:
     seed:int=42
 
     num_workers:int=0
+
+    wandb_config={}
+
+    train_batch_num:int=1000
+
+    eval_batch_num:int=200
     
 
     

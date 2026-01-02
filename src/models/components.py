@@ -391,7 +391,7 @@ class RecursiveACTLayer(nn.Module):
         decision_state=state[:,0,:]
 
         #How confident the model thinks the current result is.
-        actual_confident_prob=torch.sigmoid(self.model_decide_if_continue(decision_state)).unsqueeze(-1)
+        actual_confident_prob=torch.sigmoid(self.model_decide_if_continue(decision_state))
 
         #The remaining probability for updating the result
         remain_confident_prob=1.0-accumulation_prob
@@ -451,11 +451,10 @@ class RecursiveACTLayer(nn.Module):
             else:
                 layer_output=self.process_block(state,src_key_padding_mask=attention_mask)
 
-            new_state=layer_output
 
             active_layer_mask_seq=active_layer_mask.unsqueeze(-1)
 
-            state=(active_layer_mask_seq*new_state) + ((1-active_layer_mask_seq) *state )
+            state=(active_layer_mask_seq*layer_output) + ((1-active_layer_mask_seq) *state )
 
 
         penalty = total_step_cost.mean() * tau

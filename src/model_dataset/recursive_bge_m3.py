@@ -18,11 +18,27 @@ class RecursiveTrainingData(IterableDataset):
 
         all_languages=get_dataset_config_names(dataset)
 
-        languages_to_load=[lang for lang in all_languages]
+        datasets_list=[]
+
+        for lang in list(all_languages):
+            try:
+                # Load ONE language at a time
+                ds = load_dataset(
+                    dataset, 
+                    name=lang,
+                    split=split,
+                    streaming=True
+                )
+                datasets_list.append(ds)
+            except Exception as e:
+                print(f"Warning: Could not load language '{lang}': {e}")
+
+        # 3. Combine them into one single dataset
+        if datasets_list:
+            self.dataset = interleave_datasets(datasets_list, seed=self.config.seed)
+        else:
+            raise ValueError("No languages were loaded successfully.")
     
-
-        self.dataset=load_dataset(dataset,name=languages_to_load,split=split, streaming=True)
-
         # Only shuffle training data.
         if split == "train":
             self.hf_dataset = self.hf_dataset.shuffle(buffer_size=self.config.buffer_size,seed=self.config.seed)

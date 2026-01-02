@@ -112,6 +112,8 @@ class RecursiveBGEConfig:
 
     buffer_size:int=10000
     seed:int=42
+
+    num_workers:int=0
     
 
     

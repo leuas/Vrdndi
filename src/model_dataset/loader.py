@@ -242,7 +242,7 @@ class RecursiveDataLoader:
     def train_dataloader(self) ->DataLoader:
         '''get the training data from dataset'''
 
-        data=RecursiveTrainingData(buffer_size=self.config.buffer_size,seed=self.config.seed)
+        data=RecursiveTrainingData(self.config)
 
 
 
@@ -258,7 +258,7 @@ class RecursiveDataLoader:
     def eval_dataloader(self) ->DataLoader:
         '''get the eval data from dataset'''
 
-        data=RecursiveTrainingData(buffer_size=0,seed=self.config.seed,split='validation')
+        data=RecursiveTrainingData(self.config,split='validation')
 
 
 

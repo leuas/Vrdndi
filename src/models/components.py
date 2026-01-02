@@ -4,7 +4,6 @@ import torch
 
 import torch.nn as nn
 
-from config import DEVICE
 
 class Permute(nn.Module):
     '''A helper class for using permute between different block or layer in Sequential'''

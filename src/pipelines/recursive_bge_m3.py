@@ -50,8 +50,8 @@ class RecursiveBGETraining:
     
     def _compute_loss(self,ori_output:torch.Tensor,distill_output:torch.Tensor,step_cost:torch.Tensor) ->torch.Tensor:
         '''compute the Embeddings loss between ori model and distill model'''
-
-        target_ones = ori_output.new_ones(ori_output.size(0))
+        #Pick [batch_size,seq_len] so it could compare the token_size
+        target_ones = ori_output.new_ones([ori_output.size(0),ori_output.size(1)])
         similarity_loss = self.loss_fn(distill_output, ori_output, target_ones)
 
         loss = similarity_loss + step_cost

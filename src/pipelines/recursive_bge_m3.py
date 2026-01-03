@@ -25,6 +25,8 @@ from src.model_dataset.loader import RecursiveDataLoader
 
 from src.utils.ops import move_batch_to_device,set_random_seed
 
+from src.path import ARTIFACTS_PATH
+
 class RecursiveBGETraining:
     '''training part of recursive model'''
 
@@ -173,9 +175,24 @@ class RecursiveBGETraining:
 
         self._calc_metrics(total_loss,self.config.eval_batch_num)
 
+    def save_model(self,model_name:str) ->None:
+        '''save the mdoel to disk'''
+        
+        model_artifact=wandb.Artifact(
+                model_name,
+                type='model',
+                description=model_name
+            )
+
+        model_dict=self.distill_model.state_dict()
+        torch.save(model_dict,ARTIFACTS_PATH/model_name)
+
+        model_artifact.add_file(ARTIFACTS_PATH/model_name)
+        wandb.log_artifact(model_artifact)
+        
 
 
-    def epoch_training_loop(self):
+    def epoch_training_loop(self) ->None:
         '''train in a epoch loop'''
 
         for epoch in range(self.config.total_epoch):

@@ -108,7 +108,7 @@ class RecursiveBGETraining:
 
                 loss=loss/self.config.accumulation_steps
 
-            self.scaler.scale(total_loss).backward()
+            self.scaler.scale(loss).backward()
 
 
             if (i+1)%self.config.accumulation_steps==0:

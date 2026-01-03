@@ -1,4 +1,15 @@
 
+
+*
+
+!Dockerfile
+!requirements.txt
+!pyproject.toml
+!README.md
+!src/
+!scripts/
+!*.py
+
 .git
 .env
 
@@ -11,4 +22,29 @@ data/
 artifacts/
 *.pth
 wandb/
+
+.dvc/
+.nicegui/
+.VScodeCounter
+.tmp.driveupload
+
+/secrets
+.DS_Store
+
+*.wandb
+*.sqlite
+__pycache__
+
+.git
+.vscode
+__pycache__
+wandb/
+artifacts/
+data/
+*.wandb
+*.sqlite
+*.pth
+*.bin
+*.safetensors
+
 

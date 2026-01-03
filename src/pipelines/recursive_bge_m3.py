@@ -37,6 +37,7 @@ class RecursiveBGETraining:
             self.config.wandb_config['TrainingConfig']=asdict(self.config)
 
         self.ori_model=AutoModel.from_pretrained(self.config.ori_model_name).to(DEVICE)
+        self.ori_model=self.ori_model.to(torch.bfloat16)
 
         self.distill_model=DistillRecursiveModel(
             model_name=self.config.ori_model_name,

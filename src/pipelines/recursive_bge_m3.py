@@ -1,4 +1,5 @@
 '''Training part of the Recursive model'''
+import os
 
 import torch
 import torch.nn as nn
@@ -12,6 +13,8 @@ from typing import Iterator
 
 from transformers import DataCollatorWithPadding
 from transformers import AutoTokenizer, AutoModel
+
+from huggingface_hub import HfApi
 
 from torch.optim import AdamW
 from torch.utils.data import DataLoader
@@ -85,7 +88,7 @@ class RecursiveBGETraining:
 
 
 
-    def train(self,save_name:str="bge_recursive.pth") ->None:
+    def train(self) ->None:
         '''start training '''
 
         print("Starting Training Loop...")
@@ -177,19 +180,14 @@ class RecursiveBGETraining:
 
     def save_model(self,model_name:str) ->None:
         '''save the mdoel to disk'''
-        
-        model_artifact=wandb.Artifact(
-                model_name,
-                type='model',
-                description=model_name
-            )
+
 
         model_dict=self.distill_model.state_dict()
         torch.save(model_dict,ARTIFACTS_PATH/model_name)
 
-        model_artifact.add_file(ARTIFACTS_PATH/model_name)
-        wandb.log_artifact(model_artifact)
-        
+
+        self.distill_model.push_to_hub("chuanbai66/recursive-bge-m3",private=True,token="")
+
 
 
     def epoch_training_loop(self) ->None:
@@ -201,6 +199,8 @@ class RecursiveBGETraining:
             self.train()
 
             self.eval()
+
+            self.save_model(f"bge_recursive_test_{epoch}.pth")
 
             wandb.log({"epoch":epoch})
 

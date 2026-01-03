@@ -5,13 +5,16 @@ import torch
 
 import torch.nn as nn
 
+from huggingface_hub import PyTorchModelHubMixin
+from transformers import AutoModel, AutoConfig
+
 from src.utils.ops import move_batch_to_device
 from src.models.components import RecursiveACTLayer
-from transformers import AutoModel, AutoConfig
+
 
 from src.config import DEVICE
 
-class DistillRecursiveModel(nn.Module):
+class DistillRecursiveModel(nn.Module,PyTorchModelHubMixin):
     '''recursive small BGE-M3
     Args:
         model_name(str): The original model's name that you used for distill.

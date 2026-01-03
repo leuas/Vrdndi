@@ -117,8 +117,10 @@ class RecursiveBGETraining:
 
                 # Backpropagation
                 self.optimizer.zero_grad()
-                loss.backward()
-                self.optimizer.step()
+                self.scaler.step(self.optimizer)
+                
+                self.scaler.update()
+
 
             # Logging
             total_loss += loss.item()

@@ -124,6 +124,8 @@ class RecursiveBGEConfig:
     debug_mode:bool=False
 
     max_lengh:int=8192
+
+    accumulation_steps:int=16
     
 
     

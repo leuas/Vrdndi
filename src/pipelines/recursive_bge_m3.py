@@ -15,13 +15,15 @@ from transformers import AutoTokenizer, AutoModel
 
 from torch.optim import AdamW
 from torch.utils.data import DataLoader
+from torch.amp.grad_scaler import GradScaler
+from torch.amp.autocast_mode import autocast
 
 
 from src.config import RecursiveBGEConfig,DEVICE
 from src.models.recursive_bge_m3 import DistillRecursiveModel
 from src.model_dataset.loader import RecursiveDataLoader
 
-from src.utils.ops import move_batch_to_device
+from src.utils.ops import move_batch_to_device,set_random_seed
 
 class RecursiveBGETraining:
     '''training part of recursive model'''
@@ -46,6 +48,7 @@ class RecursiveBGETraining:
         self.loss_fn = nn.CosineEmbeddingLoss()
         
         self.data=RecursiveDataLoader(self.config)
+        self.scaler=GradScaler()
 
     
     def _compute_loss(self,ori_output:torch.Tensor,distill_output:torch.Tensor,step_cost:torch.Tensor) ->torch.Tensor:
@@ -93,23 +96,33 @@ class RecursiveBGETraining:
         self.ori_model.eval()
         self.distill_model.train()
 
-        for batch in tqdm_data:
-
-            ori_model_output=self.ori_model_predict(batch)
+        for i,batch in enumerate(tqdm_data):
+            with autocast(device_type=DEVICE.type):
             
-            distill_output, step_cost = self.distill_model.predict_step(batch)
+                ori_model_output=self.ori_model_predict(batch)
+                
+                distill_output, step_cost = self.distill_model.predict_step(batch)
 
-            loss=self._compute_loss(ori_model_output,distill_output,step_cost)
+                loss=self._compute_loss(ori_model_output,distill_output,step_cost)
 
-            # Backpropagation
-            self.optimizer.zero_grad()
-            loss.backward()
-            self.optimizer.step()
+                loss=loss/self.config.accumulation_steps
+
+            self.scaler.scale(total_loss).backward()
+
+
+            if (i+1)%self.config.accumulation_steps==0:
+
+                self.scaler.unscale_(self.optimizer)
+
+                # Backpropagation
+                self.optimizer.zero_grad()
+                loss.backward()
+                self.optimizer.step()
 
             # Logging
             total_loss += loss.item()
 
-            wandb.log({"Training Loss":loss})
+            wandb.log({"Training Loss":loss, "batch_num":i})
 
 
     def eval(self) -> None:
@@ -158,6 +171,13 @@ class RecursiveBGETraining:
 
             self.eval()
 
+    def _set_seed(self,seed:int = 42) -> None:
+        '''set the random seed for random,numpy,torch mps,os,sklearn and torch generator'''
+
+        set_random_seed(seed)
+
+        self.config.seed=seed
+
 
     def start_train(self,run_name:str):
         '''start the training process'''
@@ -168,6 +188,8 @@ class RecursiveBGETraining:
             )
 
         wandb.watch(self.distill_model,log='all',log_freq=10)
+
+        self._set_seed(self.config.seed)
 
         self.epoch_training_loop()
 

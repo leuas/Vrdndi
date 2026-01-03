@@ -22,10 +22,13 @@ class RecursiveTrainingData(IterableDataset):
         else:
             self.dataset=load_dataset(dataset_path,name='en',split=split,streaming=True)
 
-    
-        # Only shuffle training data.
+        self.dataset = self.dataset.shuffle(buffer_size=self.config.buffer_size,seed=self.config.seed)
+
         if split == "train":
-            self.dataset = self.dataset.shuffle(buffer_size=self.config.buffer_size,seed=self.config.seed)
+            self.dataset= self.dataset.skip(self.config.eval_set_size)
+            
+        else:
+            self.dataset = self.dataset.take(self.config.eval_set_size)
 
         self.tokenizer = AutoTokenizer.from_pretrained(self.config.ori_model_name)
     

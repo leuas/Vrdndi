@@ -121,6 +121,8 @@ class RecursiveBGEConfig:
 
     eval_batch_num:int=200
 
+    eval_set_size:int=10_000
+
     debug_mode:bool=False
 
     max_lengh:int=8192

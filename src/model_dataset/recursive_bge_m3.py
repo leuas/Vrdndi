@@ -20,7 +20,7 @@ class RecursiveTrainingData(IterableDataset):
         if not self.config.debug_mode:
             self.dataset=self._load_dataset(dataset_path)
         else:
-            self.dataset=load_dataset(dataset_path,name='en',split=split,streaming=True)
+            self.dataset=load_dataset(dataset_path,name='en',split='train',streaming=True)
 
         self.dataset = self.dataset.shuffle(buffer_size=self.config.buffer_size,seed=self.config.seed)
 

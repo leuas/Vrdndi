@@ -125,7 +125,21 @@ class RecursiveBGETraining:
             # Logging
             total_loss += loss.item()
 
-            wandb.log({"Training Loss":loss, "batch_num":i})
+            wandb.log({"Training Loss":loss,"Simlarity_score":(1-loss)*100,"Training step cost":step_cost})
+
+
+    def _calc_metrics(self,total_loss:torch.Tensor,batch_num:int) ->None:
+        '''caculate the metrics '''
+        
+        avg_loss=total_loss/batch_num
+
+        similarity_score = 1 - avg_loss
+    
+        print(f"Validation Loss: {avg_loss:.4f}")
+        print(f"Similarity: {similarity_score * 100:.2f}%")
+
+        wandb.log({"Aeverage Loss":avg_loss, "Aeverage Similarity":similarity_score*100})
+
 
 
     def eval(self) -> None:
@@ -153,26 +167,25 @@ class RecursiveBGETraining:
 
             total_loss+=loss.item()
 
+            wandb.log({"Validation loss":loss, "Validation Similarity":(1-loss)*100, "Validation step cost":step_cost})
 
-        avg_loss=total_loss/self.config.eval_batch_num
 
-        similarity_score = 1 - avg_loss
-    
-        print(f"Validation Loss: {avg_loss:.4f}")
-        print(f"Similarity: {similarity_score * 100:.2f}%")
 
-        wandb.log({"Validation Loss":avg_loss, "Similarity":similarity_score*100})
+        self._calc_metrics(total_loss,self.config.eval_batch_num)
 
 
 
     def epoch_training_loop(self):
         '''train in a epoch loop'''
 
-        for _ in range(self.config.total_epoch):
+        for epoch in range(self.config.total_epoch):
+            print(f"Current epoch: {epoch} / {self.config.total_epoch}")
 
             self.train()
 
             self.eval()
+
+            wandb.log({"epoch":epoch})
 
     def _set_seed(self,seed:int = 42) -> None:
         '''set the random seed for random,numpy,torch mps,os,sklearn and torch generator'''

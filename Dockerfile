@@ -1,8 +1,7 @@
-FROM pytorch/pytorch:2.1.0-cuda12.1-cudnn8-runtime
+FROM pytorch/pytorch:2.9.1-cuda12.6-cudnn9-runtime
 
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
 
 
 COPY pyproject.toml ./

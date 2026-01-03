@@ -10,3 +10,5 @@ __pycache__/
 data/
 artifacts/
 *.pth
+wandb/
+

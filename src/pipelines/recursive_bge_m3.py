@@ -116,10 +116,10 @@ class RecursiveBGETraining:
                 self.scaler.unscale_(self.optimizer)
 
                 # Backpropagation
-                self.optimizer.zero_grad()
                 self.scaler.step(self.optimizer)
                 
                 self.scaler.update()
+                self.optimizer.zero_grad()
 
 
             # Logging

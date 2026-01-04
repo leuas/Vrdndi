@@ -52,7 +52,7 @@ class RecursiveTrainingData(IterableDataset):
                 )
             
             next(iter(ds))
-            return (ds,lang)
+            return (ds.select_columns(['text']),lang)
             
         except Exception as e:
             print(f'ERROR: FAILED {lang}: {str(e)}')
@@ -63,7 +63,6 @@ class RecursiveTrainingData(IterableDataset):
 
         all_languages=get_dataset_config_names(self.dataset_path)
         
-        func_args=[(self.dataset_path,lang) for lang in all_languages]
 
         with ThreadPoolExecutor(max_workers=self.config.thread_pool_max_worker) as ex:
             output=ex.map(self._load_language_dataset,all_languages)
@@ -100,16 +99,15 @@ class RecursiveTrainingData(IterableDataset):
     def __iter__(self) -> Iterator:
         
         for row in self.dataset:
-            text = row['text']
 
             encodings=self.tokenizer(
-            text,
+            row,
             truncation=True,
             padding=False,
             max_length=self.config.max_lengh
             )
             
-            if 50 <= len(text) <= 2000:
+            if 50 <= len(row) <= 2000:
                 yield {
                     'input_ids':encodings['input_ids'],
                     'attention_mask':encodings['attention_mask']

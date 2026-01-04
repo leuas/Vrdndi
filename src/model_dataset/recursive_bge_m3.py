@@ -16,14 +16,15 @@ class RecursiveTrainingData(IterableDataset):
     The dataset class for recursive BGE-M3 dataset
     
     '''
-    def __init__(self,config:RecursiveBGEConfig,dataset_path:str="uonlp/CulturaX",split:Literal['train','validation']='train') -> None:
+    def __init__(self,config:RecursiveBGEConfig,dataset_path:str="allenai/c4",split:Literal['train','validation']='train') -> None:
         super().__init__()
 
         self.config=config
         self.split=split
+        self.dataset_path=dataset_path
 
         if not self.config.debug_mode:
-            self.dataset=self._load_datasets(dataset_path)
+            self.dataset=self._load_datasets()
         else:
             self.dataset=load_dataset(dataset_path,name='en',split='train',streaming=True)
 
@@ -37,26 +38,35 @@ class RecursiveTrainingData(IterableDataset):
 
         self.tokenizer = AutoTokenizer.from_pretrained(self.config.ori_model_name)
 
-    def _load_language_dataset(self,dataset_path:str,lang:str) ->tuple[IterableDataset,str]:
+
+    def _load_language_dataset(self,lang:str) ->tuple[IterableDataset,str]:
         '''Helper function: load one lanaguage from a dataset'''
         
         try:
-            return (load_dataset(
-                    dataset_path, 
+
+            ds=load_dataset(
+                    self.dataset_path, 
                     name=lang,
                     split=self.split,
-                    streaming=True
-                ),lang)
-        except Exception:
+                    streaming=True,
+                )
+            
+            next(iter(ds))
+            return (ds,lang)
+            
+        except Exception as e:
+            print(f'ERROR: FAILED {lang}: {str(e)}')
             return None
     
-    def _load_datasets(self,ori_dataset_path:str):
+    def _load_datasets(self):
         '''load different lanaguage from the dataset'''
 
-        all_languages=get_dataset_config_names(ori_dataset_path)
+        all_languages=get_dataset_config_names(self.dataset_path)
+        
+        func_args=[(self.dataset_path,lang) for lang in all_languages]
 
         with ThreadPoolExecutor(max_workers=self.config.thread_pool_max_worker) as ex:
-            output=ex.map(self._load_language_dataset,ori_dataset_path,all_languages)
+            output=ex.map(self._load_language_dataset,all_languages)
 
         
         valid_output=[o for o in output if o is not None]

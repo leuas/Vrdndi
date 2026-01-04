@@ -1,8 +1,13 @@
 
-from transformers import AutoTokenizer
+
 from typing import Iterator, Literal
+from concurrent.futures import ThreadPoolExecutor
+
+from transformers import AutoTokenizer
+
 from torch.utils.data import IterableDataset
 from datasets import load_dataset,interleave_datasets, get_dataset_config_names
+
 
 from src.config import RecursiveBGEConfig
 
@@ -18,7 +23,7 @@ class RecursiveTrainingData(IterableDataset):
         self.split=split
 
         if not self.config.debug_mode:
-            self.dataset=self._load_dataset(dataset_path)
+            self.dataset=self._load_datasets(dataset_path)
         else:
             self.dataset=load_dataset(dataset_path,name='en',split='train',streaming=True)
 
@@ -31,32 +36,53 @@ class RecursiveTrainingData(IterableDataset):
             self.dataset = self.dataset.take(self.config.eval_set_size)
 
         self.tokenizer = AutoTokenizer.from_pretrained(self.config.ori_model_name)
+
+    def _load_language_dataset(self,dataset_path:str,lang:str) ->tuple[IterableDataset,str]:
+        '''Helper function: load one lanaguage from a dataset'''
+        
+        try:
+            return (load_dataset(
+                    dataset_path, 
+                    name=lang,
+                    split=self.split,
+                    streaming=True
+                ),lang)
+        except Exception:
+            return None
     
-    def _load_dataset(self,ori_dataset_path:str):
+    def _load_datasets(self,ori_dataset_path:str):
         '''load different lanaguage from the dataset'''
 
         all_languages=get_dataset_config_names(ori_dataset_path)
 
-        datasets_list=[]
+        with ThreadPoolExecutor(max_workers=self.config.thread_pool_max_worker) as ex:
+            output=ex.map(self._load_language_dataset,ori_dataset_path,all_languages)
 
-        for lang in list(all_languages):
-            try:
-                # Load ONE language at a time
-                ds = load_dataset(
-                    ori_dataset_path, 
-                    name=lang,
-                    split=self.split,
-                    streaming=True
-                )
-                datasets_list.append(ds)
-            except Exception as e:
-                print(f"Warning: Could not load language '{lang}': {e}")
+        
+        valid_output=[o for o in output if o is not None]
 
+        datasets_list=[output[0] for output in valid_output]
+
+        loaded_languages= [output[1] for output in valid_output] 
+
+        if not datasets_list:
+            raise ValueError("No languages of dataset loaded successfully.")
+        
+        has_en='en' in loaded_languages
+
+        non_en_prob=0.5/(len(loaded_languages)-1)\
+            if has_en and len(loaded_languages) > 1 else 1.0/len(loaded_languages)
+        
+        probabilities = [0.5 if lang == 'en' else non_en_prob for lang in loaded_languages]
+        
+        
         # 3. Combine them into one single dataset
-        if datasets_list:
-            whole_dataset = interleave_datasets(datasets_list, seed=self.config.seed)
-        else:
-            raise ValueError("No languages were loaded successfully.")
+        whole_dataset = interleave_datasets(
+            datasets_list,
+            seed=self.config.seed,
+            stopping_strategy="all_exhausted",
+            probabilities=probabilities
+            )
         
         return whole_dataset
 

@@ -268,7 +268,7 @@ class RecursiveDataLoader:
             collate_fn=self.collator,
             generator=self.g,
             num_workers=self.config.num_workers,
-            worker_init_fn=seed_worker
+            worker_init_fn=seed_worker,
         )
 
 

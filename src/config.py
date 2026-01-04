@@ -128,6 +128,8 @@ class RecursiveBGEConfig:
     max_lengh:int=8192
 
     accumulation_steps:int=16
+
+    thread_pool_max_worker:int=16
     
 
     

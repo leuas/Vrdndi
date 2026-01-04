@@ -1,18 +1,20 @@
 '''the recursive BGE-M3 model'''
 
 import logging
+import numpy as np
 import torch
 
 import torch.nn as nn
 
+
 from huggingface_hub import PyTorchModelHubMixin
-from transformers import AutoModel, AutoConfig
+from transformers import AutoModel, AutoConfig,AutoTokenizer
 
 from src.utils.ops import move_batch_to_device
 from src.models.components import RecursiveACTLayer
 
 
-from src.config import DEVICE
+from src.config import DEVICE,RecursiveBGEConfig
 
 class DistillRecursiveModel(nn.Module,PyTorchModelHubMixin):
     '''recursive small BGE-M3
@@ -68,7 +70,43 @@ class DistillRecursiveModel(nn.Module,PyTorchModelHubMixin):
         return self(**new_batch)
 
 
+class MTEBWrapper:
+    '''wrap the distill recursive model to use in METB test'''
+
+    def __init__(self,model:DistillRecursiveModel,config:RecursiveBGEConfig) -> None:
         
+        self.model=model.to(DEVICE).eval()
+        self.config=config
+        self.tokenizer = AutoTokenizer.from_pretrained(self.config.ori_model_name)
+
+    def encode(self, sentences:list[str],**kwargs):
+        '''encode the text by using recursive model'''
+
+        all_embeddings = []
+        
+        # Loop through batches
+        for i in range(0, len(sentences), self.config.batch_size):
+            batch_texts = sentences[i : i + self.config.batch_size]
+            
+            # 1. Tokenize
+            inputs = self.tokenizer(
+                batch_texts,
+                padding=True,
+                truncation=True,
+                max_length=self.config.max_lengh
+            ).to(DEVICE)
+
+            with torch.no_grad():
+                # Adapt this line if your model returns a dict or tuple
+                outputs,_ = self.model(**inputs)
+                cls_token=outputs[:, 0, :]
+
+
+            all_embeddings.append(cls_token.cpu().numpy())
+
+        return np.concatenate(all_embeddings, axis=0)
+
+
 
 
 

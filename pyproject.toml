@@ -61,7 +61,8 @@ dependencies = [
 
     # --Others--
     "dotenv",
-    "tqdm"
+    "tqdm",
+    "mteb"
 
 ]
 

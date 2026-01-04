@@ -5,6 +5,7 @@ import torch
 import torch.nn as nn
 import transformers
 import wandb
+import mteb
 
 from dataclasses import asdict
 from tqdm import tqdm
@@ -23,7 +24,7 @@ from torch.amp.autocast_mode import autocast
 
 
 from src.config import RecursiveBGEConfig,DEVICE
-from src.models.recursive_bge_m3 import DistillRecursiveModel
+from src.models.recursive_bge_m3 import DistillRecursiveModel,MTEBWrapper
 from src.model_dataset.loader import RecursiveDataLoader
 
 from src.utils.ops import move_batch_to_device,set_random_seed
@@ -55,6 +56,7 @@ class RecursiveBGETraining:
         
         self.data=RecursiveDataLoader(self.config)
         self.scaler=GradScaler()
+
 
     
     def _compute_loss(self,ori_output:torch.Tensor,distill_output:torch.Tensor,step_cost:torch.Tensor) ->torch.Tensor:
@@ -130,7 +132,7 @@ class RecursiveBGETraining:
             # Logging
             total_loss += loss.item()
 
-            wandb.log({"Training Loss":loss,"Simlarity_score":(1-loss)*100,"Training step cost":step_cost})
+            wandb.log({"Training Loss":loss," Training Similarity_score":(1-loss)*100,"Training step cost":step_cost})
 
 
     def _calc_metrics(self,total_loss:torch.Tensor,batch_num:int) ->None:
@@ -175,9 +177,27 @@ class RecursiveBGETraining:
             wandb.log({"Validation loss":loss, "Validation Similarity":(1-loss)*100, "Validation step cost":step_cost})
 
 
-
         self._calc_metrics(total_loss,self.config.eval_batch_num)
 
+
+
+    def mteb_eval(self) ->None:
+        '''test the model with MTEB'''
+
+        model=MTEBWrapper(self.distill_model,self.config)
+
+        evaluation = mteb.MTEB(tasks=["STSBenchmark"])
+
+        results = evaluation.run(model, output_folder="eval_results")
+
+        primary_score = results[0].scores['test'][0]['cosine_spearman']
+        pearson_score = results[0].scores['test'][0]['cosine_pearson']
+        wandb.log({
+        "eval/STS_Spearman": primary_score,  # The main accuracy line
+        "eval/STS_Pearson": pearson_score
+        })
+
+        
     def save_model(self,model_name:str) ->None:
         '''save the mdoel to disk'''
 
@@ -199,6 +219,8 @@ class RecursiveBGETraining:
             self.train()
 
             self.eval()
+            
+            self.mteb_eval()
 
             self.save_model(f"bge_recursive_test_{epoch}.pth")
 

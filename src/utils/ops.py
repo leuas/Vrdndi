@@ -748,7 +748,7 @@ def convert_timestamp_to_pt_file(timestamp:datetime|pd.Series,path:Path) ->None:
     
     encoder=ActivityWatchEncoder()
 
-    tensor_series=convert_timestamp_to_tensor_series(timestamp)
+    tensor_series=convert_timestamp_to_tensor_series(timestamp,encoder)
 
     logging.debug('tensor_series generated!')
 

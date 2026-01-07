@@ -13,7 +13,7 @@ class ActivityWatchEncoder(nn.Module):
     def __init__(self):
         super().__init__()
 
-        self.event_encoder=SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2').to(DEVICE)
+        self.event_encoder=SentenceTransformer('intfloat/multilingual-e5-small').to(DEVICE)
 
 
     def forward(self,aw_text:np.ndarray) ->torch.Tensor:
@@ -34,6 +34,8 @@ class ActivityWatchEncoder(nn.Module):
             '''
         
         self.event_encoder.eval()
+
+        aw_text=np.char.add("passage: ", aw_text)
 
 
         with torch.no_grad():

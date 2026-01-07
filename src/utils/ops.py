@@ -452,7 +452,7 @@ def prepare_sentence_transformer_input(aw_data:pd.DataFrame):
     return aw_text,num_tensor
 
 
-def encode_aw_data(aw_data:pd.DataFrame) -> dict:
+def encode_aw_data(aw_data:pd.DataFrame,model:torch.nn.Module|ActivityWatchEncoder) -> dict:
     '''convert the aw_data to vector tensor
         Args:
             aw_data{pd.dataframe}: 
@@ -474,10 +474,10 @@ def encode_aw_data(aw_data:pd.DataFrame) -> dict:
 
     aw_text,num_tensor=prepare_sentence_transformer_input(aw_data)
 
-    encoder=ActivityWatchEncoder()
+
 
     
-    text_tensor=encoder(aw_text=aw_text)
+    text_tensor=model(aw_text=aw_text)
     
     tensor_dict={
         'aw_text_tensor':text_tensor.detach().cpu(),
@@ -488,7 +488,7 @@ def encode_aw_data(aw_data:pd.DataFrame) -> dict:
     return tensor_dict
 
 
-def convert_timestamp_to_tensor_series(timestamp:pd.Series) ->pd.Series:
+def convert_timestamp_to_tensor_series(timestamp:pd.Series,model:torch.nn.Module|ActivityWatchEncoder) ->pd.Series:
     '''Convert the timestamp Series to  a tensor series
     
         Args:
@@ -506,7 +506,7 @@ def convert_timestamp_to_tensor_series(timestamp:pd.Series) ->pd.Series:
     aw_data=converted_timestamp.apply(lambda onetime:prepare_aw_events_data(end_time=onetime) if onetime !=-100 else -100)
 
     logging.info("Encoding AW events data..")
-    aw_encode_data=aw_data.apply(lambda onedata:encode_aw_data(aw_data=onedata) if isinstance(onedata,pd.DataFrame) else -100)
+    aw_encode_data=aw_data.apply(lambda onedata:encode_aw_data(aw_data=onedata,model=model) if isinstance(onedata,pd.DataFrame) else -100)
 
     logging.info("Data encoded!")
     return aw_encode_data
@@ -745,8 +745,10 @@ def convert_timestamp_to_pt_file(timestamp:datetime|pd.Series,path:Path) ->None:
 
     if isinstance(timestamp,datetime):
         timestamp=pd.Series(timestamp.isoformat())
+    
+    encoder=ActivityWatchEncoder()
 
-    tensor_series=convert_timestamp_to_tensor_series(timestamp)
+    tensor_series=convert_timestamp_to_tensor_series(timestamp,encoder)
 
     logging.debug('tensor_series generated!')
 

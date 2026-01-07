@@ -122,7 +122,7 @@ The output layer has two heads: an *interest* head and a *productive* head. The 
 
 ## Model Performance
 
-After addressing a time-series related data leakage and some other issues, the productive head's performance is fairly good, top-performing folds can reach an F1 of 0.8. While the mean is F1  0.74, given the small test dataset (200-300 samples for productive, ~1000 for interest), this result serves as a valid baseline. Further improvements are under investigation.
+After addressing a time-series related data leakage and some other issues, the productive head's performance is fairly good, top-performing folds can reach an F1 of 0.8. While the mean F1 is 0.74, given the small test dataset (200-300 samples for productive, ~1000 for interest), this result serves as a valid baseline. Further improvements are under investigation.
 
 
 **Productive head's mean F1 performance with Standard Deviation**:

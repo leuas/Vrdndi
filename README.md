@@ -75,7 +75,7 @@ As shown in the picture below, the system fetches data from YouTube API and your
 
 **End-to-End Pipelines**:
 
-![system_architecture](docs/images/system_structure.svg)
+![system_architecture](https://cdn.jsdelivr.net/gh/leuas/Vrdndi/docs/images/system_structure.svg)
 
 
 
@@ -95,7 +95,7 @@ There are two types of inputs:
 
 
 
-![Main structure](docs/images/model_main_structure_renamed.svg)
+![Main structure](https://cdn.jsdelivr.net/gh/leuas/Vrdndi/docs/images/model_main_structure_renamed.svg)
 
 
 
@@ -105,7 +105,7 @@ There are two types of inputs:
 Used a pre-activation structure instead of post-activation for the Residual block; added an SE block to "gate" each token to pick out the important one;  and replaced the common GELU with SiLU to keep consistency with SWiGLU, since they are almost interchangeable.
 
 
-![Residual block ](docs/images/residual_block.svg)
+![Residual block ](https://cdn.jsdelivr.net/gh/leuas/Vrdndi/docs/images/residual_block.svg)
 
 >**Why AdaLN:** Duration is a numerical value, it can't go through the BGE-M3's embedding layer, so it has to be either a separate token or a condition to diffuse the AW data. The former seemingly caused distribution mismatch(?) during testing, so the latter approach was chosen.
 
@@ -116,7 +116,7 @@ Used a pre-activation structure instead of post-activation for the Residual bloc
 The output layer has two heads: an *interest* head and a *productive* head. The interest head acts as a transition before you have enough *productive* data(i.e. The data you labelled on the website).  The *productive* head predicts a rate based on previous app history, current time for each media data. 
 
 
-![Output layer](docs/images/output_layer_big.svg)
+![Output layer](https://cdn.jsdelivr.net/gh/leuas/Vrdndi/docs/images/output_layer_big.svg)
 
 >**Why SWiGLU:** Previously the interest head couldn't quite converge (at least the fluctuation was larger than now), and since the sequence compressor for interest head is partially functional -- it won't receive an app sequence to predict interest, so the output token just represents the duration diffused in it. Hence, adding a strong activation function in output layer seems like a good move.
 
@@ -126,9 +126,9 @@ After addressing a time-series related data leakage and some other issues, the p
 
 
 **Productive head's mean F1 performance with Standard Deviation**:
-![Prodcuctive head's performance](docs/images/grouped_fold_performance_chart.png)
+![Prodcuctive head's performance](https://cdn.jsdelivr.net/gh/leuas/Vrdndi/docs/images/grouped_fold_performance_chart.png)
 
-![Prodcuctive head's performance](docs/images/separated_fold_performance_chart.png)
+![Prodcuctive head's performance](https://cdn.jsdelivr.net/gh/leuas/Vrdndi/docs/images/separated_fold_performance_chart.png)
 
 
 
@@ -143,7 +143,7 @@ The NiceGUI website is functional, allowing you to watch videos, scroll the feed
 
 The main page renders 21 videos at once in a grid layout, drawing from the YouTube videos you saved to the database.
 
-![main page](docs/images/Main_page.png)
+![main page](https://cdn.jsdelivr.net/gh/leuas/Vrdndi/docs/images/Main_page.png)
 
 - **LOAD MORE**: Press it to load more videos.
 
@@ -151,7 +151,7 @@ The main page renders 21 videos at once in a grid layout, drawing from the YouTu
 
 When you click a video, it plays here. And you can use the buttons below to give feedback to the model.
 
-![video page](docs/images/Video-play_page.png)
+![video page](https://cdn.jsdelivr.net/gh/leuas/Vrdndi/docs/images/Video-play_page.png)
 
 - **INTEREST / UNINTEREST**: Indicate whether or not you find this video interesting.
 - **CORRECT TIMING**: Label the current video as shown at the right time (good for productivity)
